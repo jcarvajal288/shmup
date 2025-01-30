@@ -24,10 +24,9 @@ fn setup(mut commands: Commands) {
 
 mod menu {
     use bevy::{prelude::*};
-    use bevy::sprite::Anchor;
     use crate::GameState;
 
-    #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+    #[derive(Resource, Default, Clone, Eq, PartialEq)]
     enum MainMenuState {
         #[default]
         PLAY,
@@ -41,10 +40,7 @@ mod menu {
     struct QuitMenuOption;
 
     pub fn menu_plugin(app: &mut App) {
-        app
-            .init_state::<MainMenuState>()
-            .add_systems(OnEnter(GameState::MENU), main_menu_setup)
-        ;
+        app.add_systems(OnEnter(GameState::MENU), main_menu_setup);
     }
 
     fn main_menu_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -55,11 +51,14 @@ mod menu {
             ..default()
         };
         let text_justification = JustifyText::Center;
+        let selected_color = Color::srgb(0.9, 0.0, 0.9);
+        let unselected_color = Color::srgb(0.9, 0.9, 0.9);
 
         commands.spawn((
             Text2d::new("Play"),
             text_font.clone(),
             TextLayout::new_with_justify(text_justification),
+            TextColor(selected_color),
             PlayMenuOption
         ));
         commands.spawn((
@@ -67,6 +66,7 @@ mod menu {
             text_font.clone(),
             TextLayout::new_with_justify(text_justification),
             Transform::from_xyz(0.0, -50.0, 100.0),
+            TextColor(unselected_color),
             QuitMenuOption
         ));
     }
