@@ -3,8 +3,9 @@ use bevy::{prelude::*};
 use crate::GameState;
 
 // implement menu as a vector of MainMenuStates
+#[derive(Component)]
 enum MainMenuOption {
-    PLAY = 0,
+    PLAY,
     QUIT,
 }
 
@@ -13,12 +14,6 @@ struct MenuState {
     options: Vec<Entity>,
     selected: usize,
 }
-
-#[derive(Component)]
-struct PlayMenuOption;
-
-#[derive(Component)]
-struct QuitMenuOption;
 
 const SELECTED_COLOR: Color = Color::srgb(0.9, 0.0, 0.9);
 const UNSELECTED_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
@@ -49,7 +44,7 @@ fn main_menu_setup(
         text_font.clone(),
         TextLayout::new_with_justify(text_justification),
         TextColor(SELECTED_COLOR),
-        PlayMenuOption
+        MainMenuOption::PLAY,
     )).id();
     let quit_option_id = commands.spawn((
         Name::new("QuitText"),
@@ -59,7 +54,7 @@ fn main_menu_setup(
         TextLayout::new_with_justify(text_justification),
         Transform::from_xyz(0.0, -50.0, 100.0),
         TextColor(UNSELECTED_COLOR),
-        QuitMenuOption
+        MainMenuOption::QUIT,
     )).id();
     commands.insert_resource(MenuState {
         options: vec![play_option_id, quit_option_id],
@@ -70,11 +65,22 @@ fn main_menu_setup(
 fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     mut menu_state: ResMut<MenuState>,
+    app_exit_events: EventWriter<AppExit>,
 ) {
     if keyboard_input.just_pressed(KeyCode::ArrowUp) {
         menu_state.selected = if menu_state.selected == 0 { menu_state.options.len() - 1 } else { menu_state.selected - 1 };
     } else if keyboard_input.just_pressed(KeyCode::ArrowDown) {
         menu_state.selected = if menu_state.selected == menu_state.options.len() - 1 { 0 } else { menu_state.selected + 1 };
+    } else if keyboard_input.just_pressed(KeyCode::KeyZ) {
+        run_main_menu_action(menu_state.selected, app_exit_events);
+    }
+}
+
+fn run_main_menu_action(menu_selected: usize, mut app_exit_events: EventWriter<AppExit>) {
+    match menu_selected {
+        0 => println!("Run game"),
+        1 => { app_exit_events.send(AppExit::Success); },
+        _ => {}
     }
 }
 
