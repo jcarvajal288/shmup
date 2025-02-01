@@ -1,13 +1,34 @@
 use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Clone, Default)]
 pub struct AnimationIndices {
     first: usize,
     last: usize,
 }
 
-#[derive(Component, Deref, DerefMut)]
+#[derive(Component, Deref, DerefMut, Default, Clone)]
 pub struct AnimationTimer(Timer);
+
+#[derive(Component, Default)]
+pub struct AnimatedSprite {
+    pub sprite: Sprite,
+    pub animation_indices: AnimationIndices,
+    pub animation_timer: AnimationTimer,
+}
+
+#[derive(Resource)]
+pub struct Sprites {
+    pub remilia: AnimatedSprite,
+}
+
+impl Default for Sprites {
+    fn default() -> Self {
+        Self {
+            remilia: AnimatedSprite::default(),
+        }
+    }
+}
+
 
 pub fn animate_sprite(
     time: Res<Time>,
@@ -28,25 +49,23 @@ pub fn animate_sprite(
     }
 }
 
-pub fn animate_sprite_setup(
-    mut commands: Commands,
+pub fn load_sprites(
+    mut sprites: ResMut<Sprites>,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let texture = asset_server.load("images/remilia.png");
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(45), 4, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
-    // Use only the subset of sprites in the sheet that make up the run animation
+
     let animation_indices = AnimationIndices { first: 1, last: 3 };
-    commands.spawn((
-        Sprite::from_atlas_image(
-            texture,
-            TextureAtlas {
-                layout: texture_atlas_layout,
-                index: animation_indices.first,
-            },
-        ),
-        animation_indices,
-        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
-    ));
+    sprites.remilia.sprite = Sprite::from_atlas_image(
+        texture,
+        TextureAtlas {
+            layout: texture_atlas_layout,
+            index: animation_indices.first,
+        },
+    );
+    sprites.remilia.animation_indices = animation_indices;
+    sprites.remilia.animation_timer = AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating));
 }
