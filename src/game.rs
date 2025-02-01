@@ -1,12 +1,12 @@
-use bevy::prelude::*;
+use crate::player::{move_player, spawn_player};
+use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
-use crate::player::spawn_player;
-use crate::sprites::{animate_sprite, load_sprites, Sprites};
+use bevy::prelude::*;
 
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::GAME), game_setup)
-        .add_systems(Update, animate_sprite)
+        .add_systems(Update, (animate_sprite, move_player))
     ;
 
 }
