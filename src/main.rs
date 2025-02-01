@@ -1,8 +1,8 @@
 mod menu;
-mod level1;
+mod game;
 
 use bevy::prelude::*;
-use crate::level1::level1_plugin;
+use crate::game::game_plugin;
 use crate::menu::menu_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -17,7 +17,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .init_state::<GameState>()
         .add_systems(Startup, setup)
-        .add_plugins((menu_plugin, level1_plugin))
+        .add_plugins((menu_plugin, game_plugin))
         .run();
 }
 

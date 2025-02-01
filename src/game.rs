@@ -1,14 +1,14 @@
 use bevy::prelude::*;
 use crate::GameState;
 
-pub fn level1_plugin(app: &mut App) {
+pub fn game_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(GameState::GAME), level1_setup)
+        .add_systems(OnEnter(GameState::GAME), game_setup)
     ;
 
 }
 
-fn level1_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn game_setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("fonts/Super-Cartoon.ttf");
     let text_font = TextFont {
         font: font.clone(),
