@@ -1,5 +1,6 @@
 mod menu;
 mod game;
+mod sprite_animation;
 
 use bevy::prelude::*;
 use crate::game::game_plugin;
@@ -14,7 +15,7 @@ enum GameState {
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .init_state::<GameState>()
         .add_systems(Startup, setup)
         .add_plugins((menu_plugin, game_plugin))
