@@ -45,12 +45,14 @@ pub fn switch_player_sprite(
     mut player_query: Query<(&Player, &mut Sprite, &mut AnimationIndices)>,
     keyboard: Res<ButtonInput<KeyCode>>,
 ) {
+    let left_pressed = keyboard.pressed(KeyCode::ArrowLeft);
+    let right_pressed = keyboard.pressed(KeyCode::ArrowRight);
     for (_player, mut sprite, mut animation_indices) in &mut player_query {
-        if keyboard.pressed(KeyCode::ArrowLeft) {
+        if left_pressed && !right_pressed {
             animation_indices.first = 4;
             animation_indices.last = 7;
             sprite.flip_x = false;
-        } else if keyboard.pressed(KeyCode::ArrowRight) {
+        } else if right_pressed && !left_pressed {
             animation_indices.first = 4;
             animation_indices.last = 7;
             sprite.flip_x = true;
