@@ -13,16 +13,26 @@ pub fn game_plugin(app: &mut App) {
 }
 
 fn game_setup(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
-    draw_background(&mut commands, images);
+    draw_background(&mut commands, &images);
+    draw_frame(&mut commands, &images);
     spawn_player(commands, sprites);
 }
 
-fn draw_background(commands: &mut Commands, images: Res<Images>) {
+fn draw_background(commands: &mut Commands, images: &Res<Images>) {
     commands.spawn((
         Sprite {
             image: images.dark_background.clone(),
             ..Default::default()
         },
         Transform::from_xyz(200.0, 200.0, 0.0),
+    ));
+}
+
+fn draw_frame(commands: &mut Commands, images: &Res<Images>) {
+    commands.spawn((
+        Sprite {
+            image: images.frame.clone(),
+            ..Default::default()
+        },
     ));
 }
