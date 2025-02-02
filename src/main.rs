@@ -2,10 +2,12 @@ mod menu;
 mod game;
 mod sprites;
 mod player;
+mod images;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use crate::game::game_plugin;
+use crate::images::{load_images, Images};
 use crate::menu::menu_plugin;
 use crate::sprites::{load_sprites, Sprites};
 
@@ -38,7 +40,7 @@ fn main() {
             })
         )
         .init_state::<GameState>()
-        .add_systems(Startup, (setup, load_sprites).chain())
+        .add_systems(Startup, (setup, load_images, load_sprites).chain())
         .add_plugins((menu_plugin, game_plugin))
         .run();
 }
@@ -46,6 +48,7 @@ fn main() {
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
     commands.insert_resource(Sprites::default());
+    commands.insert_resource(Images::default());
 }
 
 fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands: Commands) {
