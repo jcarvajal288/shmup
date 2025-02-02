@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::player::PLAYER_SPRITE_SIZE;
 
 #[derive(Component, Clone, Default)]
 pub struct AnimationIndices {
@@ -64,7 +65,7 @@ fn load_sprite_sheet(
     texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>
 ) {
     let texture = asset_server.load(filepath);
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(45), 4, 2, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(PLAYER_SPRITE_SIZE), 4, 2, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
     let animation_indices = AnimationIndices { first: 0, last: 3 };

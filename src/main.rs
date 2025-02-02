@@ -19,9 +19,7 @@ enum GameState {
 }
 
 const DEFAULT_RESOLUTION: Vec2 = Vec2::new(800., 600.);
-const DEFAULT_SCALING_FACTOR: f32 = 1.0;
-
-const SCALING_MODIFIER: f32 = 2.0;
+const SCALING_FACTOR: f32 = 2.0;
 
 fn main() {
     App::new()
@@ -30,10 +28,10 @@ fn main() {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     resolution: WindowResolution::new(
-                            DEFAULT_RESOLUTION.x * SCALING_MODIFIER,
-                            DEFAULT_RESOLUTION.y * SCALING_MODIFIER
+                            DEFAULT_RESOLUTION.x * SCALING_FACTOR,
+                            DEFAULT_RESOLUTION.y * SCALING_FACTOR
                         )
-                        .with_scale_factor_override(DEFAULT_SCALING_FACTOR * SCALING_MODIFIER),
+                        .with_scale_factor_override(SCALING_FACTOR),
                     ..default()
                 }),
                 ..default()

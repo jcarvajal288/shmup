@@ -1,5 +1,8 @@
 use crate::sprites::{AnimationIndices, Sprites};
 use bevy::prelude::*;
+use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
+
+pub const PLAYER_SPRITE_SIZE: u32 = 45;
 
 #[derive(Component, Default)]
 #[require(Sprite)]
@@ -13,7 +16,7 @@ pub fn spawn_player(mut commands: Commands, sprites: Res<Sprites>) {
             movement_speed: 100.0,
             ..default()
         },
-        Transform::from_xyz(0.0, -150.0, 1.0),
+        Transform::from_xyz(-128.0, -150.0, 0.5),
         sprites.remilia.sprite.clone(),
         sprites.remilia.animation_indices.clone(),
         sprites.remilia.animation_timer.clone(),
@@ -26,16 +29,16 @@ pub fn move_player(
     keyboard: Res<ButtonInput<KeyCode>>,
 ) {
     for (player, mut transform) in &mut player_query {
-        if keyboard.pressed(KeyCode::ArrowUp) {
+        if keyboard.pressed(KeyCode::ArrowUp) && transform.translation.y < FRAME_BORDER_TOP {
             transform.translation.y += player.movement_speed * time.delta_secs();
         }
-        if keyboard.pressed(KeyCode::ArrowDown) {
+        if keyboard.pressed(KeyCode::ArrowDown) && transform.translation.y > FRAME_BORDER_BOTTOM {
             transform.translation.y -= player.movement_speed * time.delta_secs();
         }
-        if keyboard.pressed(KeyCode::ArrowLeft) {
+        if keyboard.pressed(KeyCode::ArrowLeft) && transform.translation.x > FRAME_BORDER_LEFT {
             transform.translation.x -= player.movement_speed * time.delta_secs();
         }
-        if keyboard.pressed(KeyCode::ArrowRight) {
+        if keyboard.pressed(KeyCode::ArrowRight) && transform.translation.x < FRAME_BORDER_RIGHT {
             transform.translation.x += player.movement_speed * time.delta_secs();
         }
     }

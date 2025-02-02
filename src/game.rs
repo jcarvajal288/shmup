@@ -1,8 +1,13 @@
-use crate::player::{move_player, spawn_player, switch_player_sprite};
+use crate::player::{move_player, spawn_player, switch_player_sprite, PLAYER_SPRITE_SIZE};
 use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
 use crate::images::Images;
+
+pub const FRAME_BORDER_LEFT: f32 = 32. - 400. + 15.;
+pub const FRAME_BORDER_TOP: f32 = 300. - 15. - 19.;
+pub const FRAME_BORDER_RIGHT: f32 = 480. - 400. + 17.;
+pub const FRAME_BORDER_BOTTOM: f32 = 300. - 560. + 2.;
 
 pub fn game_plugin(app: &mut App) {
     app
@@ -34,5 +39,6 @@ fn draw_frame(commands: &mut Commands, images: &Res<Images>) {
             image: images.frame.clone(),
             ..Default::default()
         },
+        Transform::from_xyz(0.0, 0.0, 1.0),
     ));
 }
