@@ -1,4 +1,4 @@
-use crate::sprites::Sprites;
+use crate::sprites::{AnimationIndices, Sprites};
 use bevy::prelude::*;
 
 #[derive(Component, Default)]
@@ -37,6 +37,27 @@ pub fn move_player(
         }
         if keyboard.pressed(KeyCode::ArrowRight) {
             transform.translation.x += player.movement_speed * time.delta_secs();
+        }
+    }
+}
+
+pub fn switch_player_sprite(
+    mut player_query: Query<(&Player, &mut Sprite, &mut AnimationIndices)>,
+    keyboard: Res<ButtonInput<KeyCode>>,
+) {
+    for (_player, mut sprite, mut animation_indices) in &mut player_query {
+        if keyboard.pressed(KeyCode::ArrowLeft) {
+            animation_indices.first = 4;
+            animation_indices.last = 7;
+            sprite.flip_x = false;
+        } else if keyboard.pressed(KeyCode::ArrowRight) {
+            animation_indices.first = 4;
+            animation_indices.last = 7;
+            sprite.flip_x = true;
+        } else {
+            animation_indices.first = 0;
+            animation_indices.last = 3;
+            sprite.flip_x = false;
         }
     }
 }
