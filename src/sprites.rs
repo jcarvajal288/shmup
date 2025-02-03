@@ -20,12 +20,20 @@ pub struct AnimatedSprite {
 #[derive(Resource)]
 pub struct Sprites {
     pub remilia: AnimatedSprite,
+    pub blue_fairy: AnimatedSprite,
+    pub red_fairy: AnimatedSprite,
+    pub green_fairy: AnimatedSprite,
+    pub yellow_fairy: AnimatedSprite,
 }
 
 impl Default for Sprites {
     fn default() -> Self {
         Self {
             remilia: AnimatedSprite::default(),
+            blue_fairy: AnimatedSprite::default(),
+            red_fairy: AnimatedSprite::default(),
+            green_fairy: AnimatedSprite::default(),
+            yellow_fairy: AnimatedSprite::default(),
         }
     }
 }
@@ -55,20 +63,28 @@ pub fn load_sprites(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    load_sprite_sheet("images/remilia.png", &mut sprites.remilia, &asset_server, &mut texture_atlas_layouts);
+    load_sprite_sheet("images/remilia.png", &mut sprites.remilia, &asset_server, &mut texture_atlas_layouts, 4, 2, 0, 3);
+    load_sprite_sheet("images/blue_fairies.png", &mut sprites.blue_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
+    load_sprite_sheet("images/red_fairies.png", &mut sprites.red_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
+    load_sprite_sheet("images/green_fairies.png", &mut sprites.green_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
+    load_sprite_sheet("images/yellow_fairies.png", &mut sprites.yellow_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
 }
 
 fn load_sprite_sheet(
     filepath: &str,
     animated_sprite: &mut AnimatedSprite,
     asset_server: &AssetServer,
-    texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>
+    texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>,
+    columns: u32,
+    rows: u32,
+    first_index: usize,
+    last_index: usize,
 ) {
     let texture = asset_server.load(filepath);
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(PLAYER_SPRITE_SIZE), 4, 2, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(PLAYER_SPRITE_SIZE), columns, rows, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
-    let animation_indices = AnimationIndices { first: 0, last: 3 };
+    let animation_indices = AnimationIndices { first: first_index, last: last_index };
     animated_sprite.sprite = Sprite::from_atlas_image(
         texture,
         TextureAtlas {
