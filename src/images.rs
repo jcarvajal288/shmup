@@ -4,6 +4,7 @@ use bevy::prelude::*;
 pub struct Images {
     pub dark_background: Handle<Image>,
     pub frame: Handle<Image>,
+    pub bullets: Handle<Image>,
 }
 
 impl Default for Images {
@@ -11,6 +12,7 @@ impl Default for Images {
         Self {
             dark_background: Handle::default(),
             frame: Handle::default(),
+            bullets: Handle::default(),
         }
     }
 }
@@ -18,4 +20,5 @@ impl Default for Images {
 pub fn load_images(mut images: ResMut<Images>, asset_server: Res<AssetServer>) {
     images.dark_background = asset_server.load("images/dark-background.png");
     images.frame = asset_server.load("images/frame.png");
+    images.bullets = asset_server.load("images/bullets.png");
 }
