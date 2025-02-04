@@ -1,7 +1,8 @@
-use bevy::math::Vec2;
-use bevy::prelude::{Commands, Quat, Rect, Res, Sprite, TextureSlice, TextureSlicer, Transform};
 use crate::images::Images;
 use crate::sprites::Sprites;
+use bevy::math::Vec2;
+use bevy::prelude::*;
+use crate::bullet::Bullet;
 
 pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
     commands.spawn((
@@ -21,5 +22,8 @@ pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>, images: Res<
         },
         Transform::from_xyz(-128.0, 0.0, 0.6)
             .with_rotation(Quat::from_rotation_z(-std::f32::consts::PI)),
+        Bullet {
+            speed: 200.0,
+        },
     ));
 }

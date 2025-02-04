@@ -4,6 +4,7 @@ mod sprites;
 mod player;
 mod images;
 mod level1;
+mod bullet;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
