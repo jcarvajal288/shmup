@@ -3,6 +3,7 @@ mod game;
 mod sprites;
 mod player;
 mod images;
+mod level1;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;

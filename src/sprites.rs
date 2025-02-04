@@ -1,5 +1,7 @@
 use bevy::prelude::*;
-use crate::player::PLAYER_SPRITE_SIZE;
+
+pub const PLAYER_SPRITE_SIZE: u32 = 45;
+pub const FAIRY_SPRITE_SIZE: u32 = 32;
 
 #[derive(Component, Clone, Default)]
 pub struct AnimationIndices {
@@ -63,11 +65,11 @@ pub fn load_sprites(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    load_sprite_sheet("images/remilia.png", &mut sprites.remilia, &asset_server, &mut texture_atlas_layouts, 4, 2, 0, 3);
-    load_sprite_sheet("images/blue_fairies.png", &mut sprites.blue_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
-    load_sprite_sheet("images/red_fairies.png", &mut sprites.red_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
-    load_sprite_sheet("images/green_fairies.png", &mut sprites.green_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
-    load_sprite_sheet("images/yellow_fairies.png", &mut sprites.yellow_fairy, &asset_server, &mut texture_atlas_layouts, 12, 1, 0, 4);
+    load_sprite_sheet("images/remilia.png", &mut sprites.remilia, &asset_server, &mut texture_atlas_layouts, PLAYER_SPRITE_SIZE, 4, 2, 0, 3);
+    load_sprite_sheet("images/blue_fairies.png", &mut sprites.blue_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
+    load_sprite_sheet("images/red_fairies.png", &mut sprites.red_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
+    load_sprite_sheet("images/green_fairies.png", &mut sprites.green_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
+    load_sprite_sheet("images/yellow_fairies.png", &mut sprites.yellow_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
 }
 
 fn load_sprite_sheet(
@@ -75,13 +77,14 @@ fn load_sprite_sheet(
     animated_sprite: &mut AnimatedSprite,
     asset_server: &AssetServer,
     texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>,
+    sprite_size: u32,
     columns: u32,
     rows: u32,
     first_index: usize,
     last_index: usize,
 ) {
     let texture = asset_server.load(filepath);
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(PLAYER_SPRITE_SIZE), columns, rows, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(sprite_size), columns, rows, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
     let animation_indices = AnimationIndices { first: first_index, last: last_index };

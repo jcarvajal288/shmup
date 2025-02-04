@@ -2,7 +2,6 @@ use crate::sprites::{AnimationIndices, Sprites};
 use bevy::prelude::*;
 use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 
-pub const PLAYER_SPRITE_SIZE: u32 = 45;
 
 #[derive(Component, Default)]
 #[require(Sprite)]
