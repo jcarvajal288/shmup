@@ -1,5 +1,7 @@
+use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use crate::sprites::{AnimationIndices, Sprites};
 use bevy::prelude::*;
+use crate::bullet::{props_for_bullet_type, Bullet};
 use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 
 
@@ -7,12 +9,14 @@ use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FR
 #[require(Sprite)]
 pub struct Player {
     pub movement_speed: f32,
+    pub hit_circle_radius: f32,
 }
 
 pub fn spawn_player(mut commands: Commands, sprites: Res<Sprites>) {
     commands.spawn((
         Player {
             movement_speed: 100.0,
+            hit_circle_radius: 2.5,
             ..default()
         },
         Transform::from_xyz(-128.0, -150.0, 0.5),
@@ -65,3 +69,22 @@ pub fn switch_player_sprite(
         }
     }
 }
+pub fn check_bullet_player_collision(
+    mut commands: Commands,
+    player_query: Query<(&Player, &Transform, Entity)>,
+    bullet_query: Query<(&Bullet, &Transform, Entity)>
+) {
+    for (player, player_transform, player_entity) in &mut player_query.iter() {
+        for (bullet, bullet_transform, bullet_entity) in bullet_query.iter() {
+            let bullet_props = props_for_bullet_type(&bullet.bullet_type);
+            let player_hit_circle = BoundingCircle::new(player_transform.translation.truncate(), player.hit_circle_radius);
+            let bullet_hit_circle = BoundingCircle::new(bullet_transform.translation.truncate(), bullet_props.hit_circle_radius);
+
+            if player_hit_circle.intersects(&bullet_hit_circle) {
+                commands.entity(player_entity).despawn();
+                commands.entity(bullet_entity).despawn();
+            }
+        }
+    }
+}
+

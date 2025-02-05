@@ -1,4 +1,4 @@
-use crate::player::{move_player, spawn_player, switch_player_sprite};
+use crate::player::{check_bullet_player_collision, move_player, spawn_player, switch_player_sprite, Player};
 use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
@@ -14,14 +14,14 @@ pub const FRAME_BORDER_BOTTOM: f32 = 300. - 560. + 2.;
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::GAME), (game_setup, level1_system))
-        .add_systems(Update, (animate_sprite, move_player, move_bullets, switch_player_sprite))
+        .add_systems(Update, (animate_sprite, move_player, move_bullets, switch_player_sprite, check_bullet_player_collision))
     ;
 
 }
 
 fn game_setup(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
     draw_background(&mut commands, &images);
-    draw_frame(&mut commands, &images);
+    draw_ui_frame(&mut commands, &images);
     spawn_player(commands, sprites);
 }
 
@@ -35,7 +35,7 @@ fn draw_background(commands: &mut Commands, images: &Res<Images>) {
     ));
 }
 
-fn draw_frame(commands: &mut Commands, images: &Res<Images>) {
+fn draw_ui_frame(commands: &mut Commands, images: &Res<Images>) {
     commands.spawn((
         Sprite {
             image: images.frame.clone(),
@@ -56,3 +56,4 @@ fn move_bullets(
         transform.translation += translation_delta;
     }
 }
+
