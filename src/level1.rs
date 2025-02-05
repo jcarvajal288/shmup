@@ -2,9 +2,10 @@ use crate::bullet::BulletType::*;
 use crate::enemy::EnemyType::*;
 use crate::enemy::{spawn_enemy, EnemySpawner};
 use crate::images::Images;
-use crate::movement_pattern::{BoxedMovementPattern, MoveStraight};
+use crate::movement_patterns::{BoxedMovementPattern};
 use crate::sprites::Sprites;
 use bevy::prelude::*;
+use crate::movement_patterns::move_straight::MoveStraight;
 
 pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
 

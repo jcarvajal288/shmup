@@ -1,11 +1,6 @@
-use bevy::prelude::{Component, Res, Time, Transform, Vec3};
-
-pub trait MovementPattern {
-    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> ();
-}
-
-#[derive(Component)]
-pub struct BoxedMovementPattern(pub Box<dyn MovementPattern + Send + Sync>);
+use bevy::math::Vec3;
+use bevy::prelude::{Res, Time, Transform};
+use crate::movement_patterns::MovementPattern;
 
 pub struct MoveStraight {
     pub angle: f32,

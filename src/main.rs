@@ -6,7 +6,7 @@ mod images;
 mod level1;
 mod bullet;
 mod enemy;
-mod movement_pattern;
+mod movement_patterns;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
