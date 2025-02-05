@@ -66,10 +66,10 @@ pub fn load_sprites(
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     load_sprite_sheet("images/remilia.png", &mut sprites.remilia, &asset_server, &mut texture_atlas_layouts, PLAYER_SPRITE_SIZE, 4, 2, 0, 3);
-    load_sprite_sheet("images/blue_fairies.png", &mut sprites.blue_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
-    load_sprite_sheet("images/red_fairies.png", &mut sprites.red_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
-    load_sprite_sheet("images/green_fairies.png", &mut sprites.green_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
-    load_sprite_sheet("images/yellow_fairies.png", &mut sprites.yellow_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 4);
+    load_sprite_sheet("images/blue_fairies.png", &mut sprites.blue_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
+    load_sprite_sheet("images/red_fairies.png", &mut sprites.red_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
+    load_sprite_sheet("images/green_fairies.png", &mut sprites.green_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
+    load_sprite_sheet("images/yellow_fairies.png", &mut sprites.yellow_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
 }
 
 fn load_sprite_sheet(
