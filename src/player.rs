@@ -1,8 +1,8 @@
-use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
-use crate::sprites::{AnimationIndices, Sprites};
-use bevy::prelude::*;
 use crate::bullet::{props_for_bullet_type, Bullet};
 use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
+use crate::sprites::{AnimationIndices, Sprites};
+use bevy::math::bounding::{BoundingCircle, IntersectsVolume};
+use bevy::prelude::*;
 
 
 #[derive(Component)]

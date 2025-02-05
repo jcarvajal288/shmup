@@ -1,8 +1,11 @@
-use bevy::prelude::{Res, Time, Transform};
+use bevy::prelude::{Component, Res, Time, Transform, Vec3};
 
 pub trait MovementPattern {
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> ();
 }
+
+#[derive(Component)]
+pub struct BoxedMovementPattern(pub Box<dyn MovementPattern + Send + Sync>);
 
 pub struct MoveStraight {
     pub angle: f32,
@@ -22,8 +25,9 @@ impl Default for MoveStraight {
 
 impl MovementPattern for MoveStraight {
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
+        let movement_direction = self.angle * Vec3::Y;
         let movement_distance = self.speed * time.delta_secs();
-        let translation_delta = self.angle * movement_distance;
+        let translation_delta = movement_direction * movement_distance;
         transform.translation += translation_delta;
         self.speed += self.acceleration;
     }

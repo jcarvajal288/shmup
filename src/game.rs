@@ -1,11 +1,11 @@
-use crate::player::{check_bullet_player_collision, move_player, spawn_player, switch_player_sprite, Player};
+use crate::bullet::Bullet;
+use crate::enemy::move_enemies;
+use crate::images::Images;
+use crate::level1::level1_system;
+use crate::player::{check_bullet_player_collision, move_player, spawn_player, switch_player_sprite};
 use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
-use crate::images::Images;
-use crate::level1::level1_system;
-use crate::bullet::Bullet;
-use crate::enemy::move_enemies;
 
 pub const FRAME_BORDER_LEFT: f32 = 32. - 400. + 15.;
 pub const FRAME_BORDER_TOP: f32 = 300. - 15. - 19.;
