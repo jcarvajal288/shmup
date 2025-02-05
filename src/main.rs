@@ -5,6 +5,8 @@ mod player;
 mod images;
 mod level1;
 mod bullet;
+mod enemy;
+mod movement_pattern;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;

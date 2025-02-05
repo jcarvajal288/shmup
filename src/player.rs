@@ -5,8 +5,7 @@ use crate::bullet::{props_for_bullet_type, Bullet};
 use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 
 
-#[derive(Component, Default)]
-#[require(Sprite)]
+#[derive(Component)]
 pub struct Player {
     pub movement_speed: f32,
     pub hit_circle_radius: f32,
@@ -17,7 +16,6 @@ pub fn spawn_player(mut commands: Commands, sprites: Res<Sprites>) {
         Player {
             movement_speed: 100.0,
             hit_circle_radius: 5.0,
-            ..default()
         },
         Transform::from_xyz(-128.0, -150.0, 0.5),
         sprites.remilia.sprite.clone(),

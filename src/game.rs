@@ -5,6 +5,7 @@ use bevy::prelude::*;
 use crate::images::Images;
 use crate::level1::level1_system;
 use crate::bullet::Bullet;
+use crate::enemy::move_enemies;
 
 pub const FRAME_BORDER_LEFT: f32 = 32. - 400. + 15.;
 pub const FRAME_BORDER_TOP: f32 = 300. - 15. - 19.;
@@ -14,8 +15,14 @@ pub const FRAME_BORDER_BOTTOM: f32 = 300. - 560. + 2.;
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::GAME), (game_setup, level1_system))
-        .add_systems(Update, (animate_sprite, move_player, move_bullets, switch_player_sprite, check_bullet_player_collision))
-    ;
+        .add_systems(Update, (
+            animate_sprite,
+            move_player,
+            move_bullets,
+            switch_player_sprite,
+            check_bullet_player_collision,
+            move_enemies
+        ));
 
 }
 
@@ -45,7 +52,7 @@ fn draw_ui_frame(commands: &mut Commands, images: &Res<Images>) {
     ));
 }
 
-fn move_bullets(
+fn move_bullets( // TODO: move this to bullet.rs
     time: Res<Time>,
     mut bullet_query: Query<(&Bullet, &mut Transform)>
 ) {

@@ -1,17 +1,23 @@
-use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
+use std::ptr::null;
+use crate::bullet::BulletType::*;
+use crate::bullet::{spawn_bullet, BulletSpawner};
+use crate::enemy::EnemyType::*;
+use crate::enemy::{spawn_enemy, Enemy, EnemySpawner};
 use crate::images::Images;
 use crate::sprites::Sprites;
 use bevy::prelude::*;
+use crate::movement_pattern::MoveStraight;
 
 pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
-    commands.spawn((
-        Transform::from_xyz(-128.0, 150.0, 0.6),
-        sprites.blue_fairy.sprite.clone(),
-        sprites.blue_fairy.animation_indices.clone(),
-        sprites.blue_fairy.animation_timer.clone(),
-    ));
+
+    spawn_enemy(&mut commands, &sprites, EnemySpawner {
+        enemy_type: BlueFairy,
+        starting_position: Vec2::new(-128.0, 150.0),
+        movement_pattern: Box::new(MoveStraight::default()),
+    });
+
     spawn_bullet(&mut commands, &images, BulletSpawner {
-        bullet_type: BulletType::WhiteArrow,
+        bullet_type: WhiteArrow,
         position: Vec2::new(-128.0, 0.0),
         angle: -std::f32::consts::PI,
         speed: 200.0,
