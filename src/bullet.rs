@@ -49,7 +49,7 @@ pub fn props_for_bullet_type(bullet_type: &BulletType) -> BulletProps {
     match bullet_type {
         BulletType::WhiteArrow => BulletProps {
             rect: Rect::new(0.0, 16.0, 16.0, 32.0),
-            hit_circle_radius: 8.0,
+            hit_circle_radius: 1.0,
         }
     }
 }

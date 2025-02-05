@@ -16,7 +16,7 @@ pub fn spawn_player(mut commands: Commands, sprites: Res<Sprites>) {
     commands.spawn((
         Player {
             movement_speed: 100.0,
-            hit_circle_radius: 2.5,
+            hit_circle_radius: 5.0,
             ..default()
         },
         Transform::from_xyz(-128.0, -150.0, 0.5),
