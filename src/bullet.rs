@@ -1,5 +1,5 @@
 use crate::images::Images;
-use crate::movement_patterns::{get_movement_pattern, BoxedMovementPattern, MovementPattern, MovementPatternType};
+use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
 use bevy::math::Rect;
 use bevy::prelude::{Commands, Component, Query, Res, Sprite, Time, Transform, Vec2};
 

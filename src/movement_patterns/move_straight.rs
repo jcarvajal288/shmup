@@ -23,7 +23,7 @@ impl Default for MoveStraight {
 
 impl MovementPattern for MoveStraight {
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
-        let movement_direction = self.angle * Vec3::Y;
+        let movement_direction = Vec3::new(self.angle.cos(), self.angle.sin(), 0.0);
         let movement_distance = self.speed * time.delta_secs();
         let translation_delta = movement_direction * movement_distance;
         transform.translation += translation_delta;

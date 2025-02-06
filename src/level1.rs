@@ -14,18 +14,34 @@ pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>) {
     spawn_enemy(&mut commands, &sprites, EnemySpawner {
         enemy_type: BlueFairy,
         starting_position: Vec2::new(-128.0, 150.0),
-        movement_pattern: BoxedMovementPattern(Box::new(MoveStraight::default())),
+        movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
+            angle: PI / 2.0,
+            speed: 5.0,
+            acceleration: 1.0,
+            face_travel_direction: false,
+        })),
         bullet_pattern: BoxedBulletPattern(Box::new(BulletStream {
             bullet_type: WhiteArrow,
             num_bullets: 1,
             num_iterations: 10,
             timer: Timer::from_seconds(0.5, TimerMode::Repeating),
-            movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
-                angle: PI,
-                speed: 10.0,
-                acceleration: 0.0,
-                face_travel_direction: true,
-            })),
+        })),
+    });
+
+    spawn_enemy(&mut commands, &sprites, EnemySpawner {
+        enemy_type: BlueFairy,
+        starting_position: Vec2::new(-168.0, 150.0),
+        movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
+            angle: PI / 2.0,
+            speed: 25.0,
+            acceleration: 0.0,
+            face_travel_direction: false,
+        })),
+        bullet_pattern: BoxedBulletPattern(Box::new(BulletStream {
+            bullet_type: WhiteArrow,
+            num_bullets: 1,
+            num_iterations: 10,
+            timer: Timer::from_seconds(0.5, TimerMode::Repeating),
         })),
     });
 
