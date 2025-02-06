@@ -6,6 +6,7 @@ pub struct MoveStraight {
     pub angle: f32,
     pub speed: f32,
     pub acceleration: f32,
+    pub face_travel_direction: bool,
 }
 
 impl Default for MoveStraight {
@@ -14,6 +15,7 @@ impl Default for MoveStraight {
             angle: -std::f32::consts::PI,
             speed: 1.0,
             acceleration: 0.0,
+            face_travel_direction: false,
         }
     }
 }

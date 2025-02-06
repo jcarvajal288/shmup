@@ -7,6 +7,7 @@ mod level1;
 mod bullet;
 mod enemy;
 mod movement_patterns;
+mod bullet_patterns;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;

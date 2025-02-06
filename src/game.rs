@@ -1,5 +1,5 @@
-use crate::bullet::Bullet;
-use crate::enemy::move_enemies;
+use crate::bullet::move_bullets;
+use crate::enemy::update_enemies;
 use crate::images::Images;
 use crate::level1::level1_system;
 use crate::player::{check_bullet_player_collision, move_player, spawn_player, switch_player_sprite};
@@ -21,7 +21,7 @@ pub fn game_plugin(app: &mut App) {
             move_bullets,
             switch_player_sprite,
             check_bullet_player_collision,
-            move_enemies
+            update_enemies,
         ));
 
 }
@@ -50,17 +50,5 @@ fn draw_ui_frame(commands: &mut Commands, images: &Res<Images>) {
         },
         Transform::from_xyz(0.0, 0.0, 1.0),
     ));
-}
-
-fn move_bullets( // TODO: move this to bullet.rs
-    time: Res<Time>,
-    mut bullet_query: Query<(&Bullet, &mut Transform)>
-) {
-    for (bullet, mut transform) in bullet_query.iter_mut() {
-        let movement_direction = transform.rotation * Vec3::Y;
-        let movement_distance = bullet.speed * time.delta_secs();
-        let translation_delta = movement_direction * movement_distance;
-        transform.translation += translation_delta;
-    }
 }
 
