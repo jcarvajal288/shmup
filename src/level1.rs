@@ -2,7 +2,6 @@ use std::f32::consts::PI;
 use crate::bullet::BulletType::*;
 use crate::enemy::EnemyType::*;
 use crate::enemy::{spawn_enemy, EnemySpawner};
-use crate::images::Images;
 use crate::movement_patterns::{BoxedMovementPattern};
 use crate::sprites::Sprites;
 use bevy::prelude::*;
@@ -10,7 +9,7 @@ use crate::bullet_patterns::BoxedBulletPattern;
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::movement_patterns::move_straight::MoveStraight;
 
-pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
+pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>) {
 
     spawn_enemy(&mut commands, &sprites, EnemySpawner {
         enemy_type: BlueFairy,

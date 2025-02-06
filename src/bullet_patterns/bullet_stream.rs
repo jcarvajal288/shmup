@@ -1,8 +1,8 @@
-use bevy::prelude::{Commands, Res, Time, Timer, Transform, Vec2};
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::BulletPattern;
 use crate::images::Images;
 use crate::movement_patterns::BoxedMovementPattern;
+use bevy::prelude::{Commands, Res, Time, Timer, Transform, Vec2};
 
 pub struct BulletStream {
     pub bullet_type: BulletType,
@@ -20,8 +20,8 @@ impl BulletPattern for BulletStream {
             spawn_bullet(commands, &images, BulletSpawner {
                 bullet_type: self.bullet_type,
                 position: Vec2::new(transform.translation.x, transform.translation.y),
-                speed: 200.0,
-            });
+                movement_pattern: self.movement_pattern,
+            })
         }
     }
 }

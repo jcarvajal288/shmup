@@ -1,12 +1,11 @@
-use bevy::math::{Rect, Vec3};
-use bevy::prelude::{Commands, Component, Quat, Query, Res, Sprite, Time, Transform, Vec2};
 use crate::images::Images;
-use crate::movement_patterns::BoxedMovementPattern;
+use crate::movement_patterns::{get_movement_pattern, BoxedMovementPattern, MovementPattern, MovementPatternType};
+use bevy::math::Rect;
+use bevy::prelude::{Commands, Component, Query, Res, Sprite, Time, Transform, Vec2};
 
 #[derive(Component)]
 pub struct Bullet {
     pub bullet_type: BulletType,
-    pub speed: f32,
 }
 
 pub struct BulletProps {
@@ -22,17 +21,17 @@ pub enum BulletType {
 pub struct BulletSpawner {
     pub bullet_type: BulletType,
     pub position: Vec2,
-    pub speed: f32,
+    pub movement_pattern: BoxedMovementPattern,
 }
 
 pub fn spawn_bullet(commands: &mut Commands, images: &Res<Images>, bullet_spawner: BulletSpawner) {
     commands.spawn((
         get_bullet_sprite(images, &bullet_spawner.bullet_type),
-        Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.6),
+        Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
         Bullet {
-            speed: bullet_spawner.speed,
             bullet_type: bullet_spawner.bullet_type,
         },
+        bullet_spawner.movement_pattern,
     ));
 }
 
@@ -59,11 +58,6 @@ pub fn move_bullets(
     mut bullet_query: Query<(&Bullet, &mut Transform, &mut BoxedMovementPattern)>
 ) {
     for (_bullet, mut transform, mut movement_pattern) in bullet_query.iter_mut() {
-        // let movement_direction = transform.rotation * Vec3::Y;
-        // let movement_distance = bullet.speed * time.delta_secs();
-        // let translation_delta = movement_direction * movement_distance;
-        // transform.translation += translation_delta;
         movement_pattern.0.do_move(&mut *transform, &time);
-
     }
 }

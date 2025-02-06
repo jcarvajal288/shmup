@@ -2,6 +2,7 @@ use bevy::math::Vec3;
 use bevy::prelude::{Res, Time, Transform};
 use crate::movement_patterns::MovementPattern;
 
+#[derive(Clone)]
 pub struct MoveStraight {
     pub angle: f32,
     pub speed: f32,

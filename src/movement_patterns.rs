@@ -8,3 +8,4 @@ pub trait MovementPattern {
 
 #[derive(Component)]
 pub struct BoxedMovementPattern(pub Box<dyn MovementPattern + Send + Sync>);
+
