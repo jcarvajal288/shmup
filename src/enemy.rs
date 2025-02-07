@@ -46,12 +46,6 @@ pub fn update_enemies(
     for (_enemy, mut transform, mut movement_pattern, mut bullet_pattern) in enemy_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);
 
-        let movement_pattern = BoxedMovementPattern(Box::new(MoveStraight {
-            angle: 0.0,
-            speed: 10.0,
-            acceleration: 0.1,
-            face_travel_direction: false,
-        }));
-        bullet_pattern.0.fire(&mut commands, &images, *transform, &time, movement_pattern);
+        bullet_pattern.0.fire(&mut commands, &images, *transform, &time);
     }
 }

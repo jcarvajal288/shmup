@@ -11,7 +11,6 @@ pub trait BulletPattern {
         images: &Res<Images>,
         transform: Transform,
         time: &Res<Time>,
-        movement_pattern: BoxedMovementPattern,
     ) -> ();
 }
 
