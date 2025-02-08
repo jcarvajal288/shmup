@@ -28,7 +28,7 @@ impl BulletPattern for BulletStream {
         player_transform: &Transform,
     ) {
         self.timer.tick(time.delta());
-        if self.timer.just_finished() {
+        if self.timer.just_finished() && self.num_iterations > 0 {
 
             let diff = player_transform.translation - transform.translation;
             let firing_angle = diff.y.atan2(diff.x);
@@ -42,7 +42,8 @@ impl BulletPattern for BulletStream {
                     acceleration: self.acceleration,
                     face_travel_direction: true,
                 }))
-            })
+            });
+            self.num_iterations -= 1;
         }
     }
 }
