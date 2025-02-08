@@ -1,9 +1,11 @@
 use std::f32::consts::PI;
+use bevy::math::Vec3;
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::{BulletPattern, BulletPatternAngle, BulletPatternTarget};
 use crate::images::Images;
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::{Commands, Component, Res, Time, Timer, Transform, Vec2};
+use crate::bullet_patterns::BulletPatternTarget::Player;
 use crate::movement_patterns::move_straight::MoveStraight;
 
 #[derive(Component)]
@@ -29,9 +31,8 @@ impl BulletPattern for BulletStream {
     ) {
         self.timer.tick(time.delta());
         if self.timer.just_finished() && self.num_iterations > 0 {
-
-            let diff = player_transform.translation - transform.translation;
-            let firing_angle = diff.y.atan2(diff.x);
+            let target = get_target_transform(&self.angle.target, &transform, player_transform);
+            let firing_angle = target.translation.y.atan2(target.translation.x);
 
             spawn_bullet(commands, &images, BulletSpawner {
                 bullet_type: self.bullet_type,
@@ -45,5 +46,13 @@ impl BulletPattern for BulletStream {
             });
             self.num_iterations -= 1;
         }
+    }
+}
+
+fn get_target_transform(target: &BulletPatternTarget, starting_transform: &Transform, player_transform: &Transform) -> Transform {
+    if *target == Player {
+        Transform::from_translation(player_transform.translation - starting_transform.translation)
+    } else {
+        Transform::from_translation(*starting_transform.down())
     }
 }

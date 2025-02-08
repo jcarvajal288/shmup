@@ -1,6 +1,6 @@
 use crate::bullet::BulletType::*;
 use crate::bullet_patterns::bullet_stream::BulletStream;
-use crate::bullet_patterns::BulletPatternTarget::Down;
+use crate::bullet_patterns::BulletPatternTarget::{Down, Player};
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::enemy::EnemyType::*;
 use crate::enemy::{spawn_enemy, EnemySpawner};
@@ -25,7 +25,7 @@ pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>) {
             num_bullets: 1,
             num_iterations: 10,
             angle: BulletPatternAngle {
-                target: Down,
+                target: Player,
                 offset: 0.0,
             },
             speed: 20.0,

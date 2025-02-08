@@ -18,6 +18,7 @@ pub trait BulletPattern {
 #[derive(Component)]
 pub struct BoxedBulletPattern(pub Box<dyn BulletPattern + Send + Sync>);
 
+#[derive(Eq, PartialEq)]
 pub enum BulletPatternTarget {
     Player,
     Down,
