@@ -14,7 +14,7 @@ pub struct MoveStraight {
 impl Default for MoveStraight {
     fn default() -> Self {
         Self {
-            angle: -std::f32::consts::PI,
+            angle: -PI,
             speed: 1.0,
             acceleration: 0.0,
             face_travel_direction: false,
