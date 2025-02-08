@@ -11,8 +11,19 @@ pub trait BulletPattern {
         images: &Res<Images>,
         transform: Transform,
         time: &Res<Time>,
+        player_transform: &Transform,
     ) -> ();
 }
 
 #[derive(Component)]
 pub struct BoxedBulletPattern(pub Box<dyn BulletPattern + Send + Sync>);
+
+pub enum BulletPatternTarget {
+    Player,
+    Down,
+}
+
+pub struct BulletPatternAngle {
+    pub target: BulletPatternTarget,
+    pub offset: f32,
+}

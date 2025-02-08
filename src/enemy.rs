@@ -6,6 +6,7 @@ use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
 use crate::images::Images;
 use crate::movement_patterns::move_straight::MoveStraight;
+use crate::player::Player;
 
 #[derive(Component)]
 pub struct Enemy {
@@ -42,10 +43,12 @@ pub fn update_enemies(
     mut commands: Commands,
     images: Res<Images>,
     mut enemy_query: Query<(&Enemy, &mut Transform, &mut BoxedMovementPattern, &mut BoxedBulletPattern)>,
+    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
     for (_enemy, mut transform, mut movement_pattern, mut bullet_pattern) in enemy_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);
-
-        bullet_pattern.0.fire(&mut commands, &images, *transform, &time);
+        for player_transform in player_query.iter() {
+            bullet_pattern.0.fire(&mut commands, &images, *transform, &time, player_transform);
+        }
     }
 }

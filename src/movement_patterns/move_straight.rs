@@ -1,5 +1,6 @@
+use std::f32::consts::PI;
 use bevy::math::Vec3;
-use bevy::prelude::{Res, Time, Transform};
+use bevy::prelude::{Quat, Res, Time, Transform};
 use crate::movement_patterns::MovementPattern;
 
 #[derive(Clone)]
@@ -27,6 +28,9 @@ impl MovementPattern for MoveStraight {
         let movement_distance = self.speed * time.delta_secs();
         let translation_delta = movement_direction * movement_distance;
         transform.translation += translation_delta;
+        if self.face_travel_direction {
+            transform.rotation = Quat::from_axis_angle(Vec3::Z, self.angle + (-PI / 2.0));
+        }
         self.speed += self.acceleration;
     }
 }
