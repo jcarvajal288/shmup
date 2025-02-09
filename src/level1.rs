@@ -1,3 +1,4 @@
+use std::f32::consts::PI;
 use crate::bullet::BulletType::*;
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::bullet_patterns::BulletPatternTarget::*;
@@ -16,21 +17,22 @@ pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>) {
         starting_position: Vec2::new(-248.0, 150.0),
         movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
             angle: 0.0,
-            speed: 10.0,
+            speed: 0.0,
             acceleration: 0.0,
             ..default()
         })),
         bullet_pattern: BoxedBulletPattern(Box::new(BulletStream {
             bullet_type: WhiteArrow,
-            bullets_per_wave: 1,
+            bullets_per_wave: 24,
             waves_per_iteration: 5,
-            num_iterations: 2,
+            num_iterations: 5,
             angle: BulletPatternAngle {
-                target: Player,
+                target: Down,
+                spread: PI * 2.0,
                 offset: 0.0,
             },
             speed: 20.0,
-            acceleration: 0.1,
+            acceleration: 0.3,
             startup_timer: Timer::from_seconds(1.0, TimerMode::Once),
             wave_timer: Timer::from_seconds(0.1, TimerMode::Once),
             iteration_timer: Timer::from_seconds(0.5, TimerMode::Once),
