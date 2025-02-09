@@ -1,6 +1,6 @@
 use crate::bullet::BulletType::*;
 use crate::bullet_patterns::bullet_stream::BulletStream;
-use crate::bullet_patterns::BulletPatternTarget::{Down, Player};
+use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::enemy::EnemyType::*;
 use crate::enemy::{spawn_enemy, EnemySpawner};
@@ -18,19 +18,23 @@ pub fn level1_system(mut commands: Commands, sprites: Res<Sprites>) {
             angle: 0.0,
             speed: 10.0,
             acceleration: 0.0,
-            face_travel_direction: false,
+            ..default()
         })),
         bullet_pattern: BoxedBulletPattern(Box::new(BulletStream {
             bullet_type: WhiteArrow,
-            num_bullets: 1,
-            num_iterations: 10,
+            bullets_per_wave: 1,
+            waves_per_iteration: 5,
+            num_iterations: 2,
             angle: BulletPatternAngle {
                 target: Player,
                 offset: 0.0,
             },
             speed: 20.0,
             acceleration: 0.1,
-            timer: Timer::from_seconds(0.5, TimerMode::Repeating),
+            startup_timer: Timer::from_seconds(1.0, TimerMode::Once),
+            wave_timer: Timer::from_seconds(0.1, TimerMode::Once),
+            iteration_timer: Timer::from_seconds(0.5, TimerMode::Once),
+            ..default()
         })),
     });
 }
