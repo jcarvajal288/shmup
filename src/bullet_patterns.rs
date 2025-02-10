@@ -1,8 +1,7 @@
 pub mod bullet_stream;
 
-use bevy::prelude::{Commands, Component, Res, Time, Transform};
 use crate::images::Images;
-use crate::movement_patterns::BoxedMovementPattern;
+use bevy::prelude::{Commands, Component, Res, Time, Transform};
 
 pub trait BulletPattern {
     fn fire(
@@ -27,5 +26,4 @@ pub enum BulletPatternTarget {
 pub struct BulletPatternAngle {
     pub target: BulletPatternTarget,
     pub spread: f32,
-    pub offset: f32,
 }

@@ -35,7 +35,7 @@ impl Default for BulletStream {
             bullets_per_wave: 0,
             waves_per_iteration: 0,
             num_iterations: 0,
-            angle: BulletPatternAngle { target: Player, spread: PI / 2.0, offset: 0.0 },
+            angle: BulletPatternAngle { target: Player, spread: PI / 2.0 },
             speed: 0.0,
             acceleration: 0.0,
             startup_timer: Default::default(),

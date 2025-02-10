@@ -4,6 +4,8 @@ use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
 use crate::sprites::Sprites;
 use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
+use crate::bullet_patterns::bullet_stream::BulletStream;
+use crate::enemy::EnemyType::BlueFairy;
 use crate::images::Images;
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::player::Player;
@@ -13,10 +15,12 @@ pub struct Enemy {
     pub enemy_type: EnemyType,
 }
 
+#[derive(Clone)]
 pub enum EnemyType {
     BlueFairy,
 }
 
+#[derive(Component)]
 pub struct EnemySpawner {
     pub enemy_type: EnemyType,
     pub starting_position: Vec2,
@@ -24,17 +28,29 @@ pub struct EnemySpawner {
     pub bullet_pattern: BoxedBulletPattern,
 }
 
-pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: EnemySpawner) {
+impl Default for EnemySpawner {
+    fn default() -> Self {
+        Self {
+            enemy_type: BlueFairy,
+            starting_position: Vec2::default(),
+            movement_pattern: BoxedMovementPattern(Box::new(MoveStraight::default())),
+            bullet_pattern: BoxedBulletPattern(Box::new(BulletStream::default())),
+        }
+    }
+}
+
+pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mut EnemySpawner) {
+    let enemy_spawner = std::mem::take(spawner);
     commands.spawn((
         Enemy {
-            enemy_type: spawner.enemy_type,
+            enemy_type: enemy_spawner.enemy_type.clone(),
         },
-        Transform::from_xyz(spawner.starting_position.x, spawner.starting_position.y, 0.6),
+        Transform::from_xyz(enemy_spawner.starting_position.x, enemy_spawner.starting_position.y, 0.6),
         sprites.blue_fairy.sprite.clone(),
         sprites.blue_fairy.animation_indices.clone(),
         sprites.blue_fairy.animation_timer.clone(),
-        spawner.movement_pattern,
-        spawner.bullet_pattern,
+        enemy_spawner.movement_pattern,
+        enemy_spawner.bullet_pattern,
     ));
 }
 
