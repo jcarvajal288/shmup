@@ -1,3 +1,4 @@
+use std::ptr::replace;
 use crate::bullet::move_bullets;
 use crate::enemy::{spawn_enemy, update_enemies, Enemy, EnemySpawner};
 use crate::images::Images;
@@ -15,6 +16,9 @@ pub const FRAME_BORDER_BOTTOM: f32 = 300. - 560. + 2.;
 #[derive(Component)]
 pub struct SpawnTimer(pub Timer);
 
+#[derive(Component)]
+pub struct PlayerRespawnTimer(pub Timer);
+
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::GAME), (game_setup, level1_setup))
@@ -26,6 +30,7 @@ pub fn game_plugin(app: &mut App) {
             check_bullet_player_collision,
             spawn_on_delay,
             update_enemies,
+            respawn_player,
         ));
 
 }
@@ -33,7 +38,7 @@ pub fn game_plugin(app: &mut App) {
 fn game_setup(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
     draw_background(&mut commands, &images);
     draw_ui_frame(&mut commands, &images);
-    spawn_player(commands, sprites);
+    spawn_player(&mut commands, &sprites);
 }
 
 fn draw_background(commands: &mut Commands, images: &Res<Images>) {
@@ -65,6 +70,18 @@ fn spawn_on_delay(
     for (mut enemy_spawner, mut timer) in &mut spawns {
         if timer.0.tick(time.delta()).just_finished() {
             spawn_enemy(&mut commands, &sprites, &mut enemy_spawner);
+        }
+    }
+}
+fn respawn_player(
+    mut commands: Commands,
+    sprites: Res<Sprites>,
+    time: Res<Time>,
+    mut timer_query: Query<&mut PlayerRespawnTimer>,
+) {
+    for mut timer in &mut timer_query {
+        if timer.0.tick(time.delta()).just_finished() {
+            spawn_player(&mut commands, &sprites);
         }
     }
 }

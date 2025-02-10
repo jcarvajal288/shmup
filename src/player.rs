@@ -1,5 +1,5 @@
 use crate::bullet::{props_for_bullet_type, Bullet};
-use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
+use crate::game::{PlayerRespawnTimer, SpawnTimer, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::sprites::{AnimationIndices, Sprites};
 use bevy::math::bounding::{BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
@@ -12,7 +12,7 @@ pub struct Player {
     pub hit_circle_radius: f32,
 }
 
-pub fn spawn_player(mut commands: Commands, sprites: Res<Sprites>) {
+pub fn spawn_player(commands: &mut Commands, sprites: &Res<Sprites>) {
     commands.spawn((
         Player {
             full_movement_speed: 200.0,
@@ -84,6 +84,7 @@ pub fn check_bullet_player_collision(
             if player_hit_circle.intersects(&bullet_hit_circle) {
                 commands.entity(player_entity).despawn();
                 commands.entity(bullet_entity).despawn();
+                commands.spawn(PlayerRespawnTimer(Timer::from_seconds(0.5, TimerMode::Once)));
             }
         }
     }

@@ -19,7 +19,7 @@ pub fn level1_setup(mut commands: Commands) {
             starting_position: Vec2::new(-248.0, 150.0),
             movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
                 angle: 0.0,
-                speed: 30.0,
+                speed: 0.0,
                 acceleration: 0.0,
                 ..default()
             })),
