@@ -2,12 +2,11 @@ use crate::bullet::BulletType::*;
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
-use crate::enemy::EnemyType::*;
 use crate::enemy::EnemySpawner;
+use crate::enemy::EnemyType::*;
 use crate::game::SpawnTimer;
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
-use crate::sprites::Sprites;
 use bevy::prelude::*;
 use std::f32::consts::PI;
 

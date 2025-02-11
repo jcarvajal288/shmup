@@ -1,7 +1,8 @@
 use crate::images::Images;
 use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
 use bevy::math::Rect;
-use bevy::prelude::{Commands, Component, Query, Res, Sprite, Time, Transform, Vec2};
+use bevy::prelude::{Commands, Component, Query, Res, ResMut, Sprite, Time, Transform, Vec2};
+use crate::sprites::Sprites;
 
 #[derive(Component)]
 pub struct Bullet {
@@ -9,7 +10,6 @@ pub struct Bullet {
 }
 
 pub struct BulletProps {
-    pub rect: Rect,
     pub hit_circle_radius: f32,
 }
 
@@ -24,9 +24,9 @@ pub struct BulletSpawner {
     pub movement_pattern: BoxedMovementPattern,
 }
 
-pub fn spawn_bullet(commands: &mut Commands, images: &Res<Images>, bullet_spawner: BulletSpawner) {
+pub fn spawn_bullet(commands: &mut Commands, sprites: &ResMut<Sprites>, bullet_spawner: BulletSpawner) {
     commands.spawn((
-        get_bullet_sprite(images, &bullet_spawner.bullet_type),
+        sprites.bullet_white_arrow.clone(),
         Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
         Bullet {
             bullet_type: bullet_spawner.bullet_type,
@@ -35,19 +35,9 @@ pub fn spawn_bullet(commands: &mut Commands, images: &Res<Images>, bullet_spawne
     ));
 }
 
-fn get_bullet_sprite(images: &Res<Images>, bullet_type: &BulletType) -> Sprite {
-    let props = props_for_bullet_type(bullet_type);
-    Sprite {
-        image: images.bullets.clone(),
-        rect: Option::from(props.rect),
-        ..Default::default()
-    }
-}
-
 pub fn props_for_bullet_type(bullet_type: &BulletType) -> BulletProps {
     match bullet_type {
         BulletType::WhiteArrow => BulletProps {
-            rect: Rect::new(0.0, 16.0, 16.0, 32.0),
             hit_circle_radius: 1.0,
         }
     }

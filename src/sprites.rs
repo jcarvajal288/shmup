@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use crate::images::Images;
 
 pub const PLAYER_SPRITE_SIZE: u32 = 45;
 pub const FAIRY_SPRITE_SIZE: u32 = 32;
@@ -21,21 +22,31 @@ pub struct AnimatedSprite {
 
 #[derive(Resource)]
 pub struct Sprites {
+    pub dark_background: Sprite,
+    pub frame: Sprite,
     pub remilia: AnimatedSprite,
     pub blue_fairy: AnimatedSprite,
     pub red_fairy: AnimatedSprite,
     pub green_fairy: AnimatedSprite,
     pub yellow_fairy: AnimatedSprite,
+    pub player_spell_text: Sprite,
+    pub life_counter: Sprite,
+    pub bullet_white_arrow: Sprite,
 }
 
 impl Default for Sprites {
     fn default() -> Self {
         Self {
+            dark_background: Sprite::default(),
+            frame: Sprite::default(),
             remilia: AnimatedSprite::default(),
             blue_fairy: AnimatedSprite::default(),
             red_fairy: AnimatedSprite::default(),
             green_fairy: AnimatedSprite::default(),
             yellow_fairy: AnimatedSprite::default(),
+            player_spell_text: Sprite::default(),
+            life_counter: Sprite::default(),
+            bullet_white_arrow: Sprite::default(),
         }
     }
 }
@@ -62,20 +73,44 @@ pub fn animate_sprite(
 
 pub fn load_sprites(
     mut sprites: ResMut<Sprites>,
-    asset_server: Res<AssetServer>,
+    mut images: ResMut<Images>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    load_sprite_sheet("images/remilia.png", &mut sprites.remilia, &asset_server, &mut texture_atlas_layouts, PLAYER_SPRITE_SIZE, 4, 2, 0, 3);
-    load_sprite_sheet("images/blue_fairies.png", &mut sprites.blue_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
-    load_sprite_sheet("images/red_fairies.png", &mut sprites.red_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
-    load_sprite_sheet("images/green_fairies.png", &mut sprites.green_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
-    load_sprite_sheet("images/yellow_fairies.png", &mut sprites.yellow_fairy, &asset_server, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
+    sprites.dark_background = Sprite {
+        image: images.dark_background.clone(),
+        ..Default::default()
+    };
+    sprites.frame = Sprite {
+        image: images.frame.clone(),
+        ..Default::default()
+    };
+
+    load_sprite_sheet(images.remilia.clone(), &mut sprites.remilia, &mut texture_atlas_layouts, PLAYER_SPRITE_SIZE, 4, 2, 0, 3);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.blue_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.red_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 12, 15);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.green_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 24, 27);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.yellow_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 36, 39);
+
+    sprites.player_spell_text = Sprite {
+        image: images.sidebar.clone(),
+        rect: Option::from(Rect::new(307.0, 130.0, 343.0, 162.0)),
+        ..Default::default()
+    };
+    sprites.life_counter = Sprite {
+        image: images.sidebar.clone(),
+        rect: Option::from(Rect::new(368.0, 98.0, 383.0, 113.0)),
+        ..Default::default()
+    };
+    sprites.bullet_white_arrow = Sprite {
+        image: images.bullets.clone(),
+        rect: Option::from(Rect::new(0.0, 16.0, 16.0, 32.0)),
+        ..Default::default()
+    };
 }
 
 fn load_sprite_sheet(
-    filepath: &str,
+    texture: Handle<Image>,
     animated_sprite: &mut AnimatedSprite,
-    asset_server: &AssetServer,
     texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>,
     sprite_size: u32,
     columns: u32,
@@ -83,7 +118,6 @@ fn load_sprite_sheet(
     first_index: usize,
     last_index: usize,
 ) {
-    let texture = asset_server.load(filepath);
     let layout = TextureAtlasLayout::from_grid(UVec2::splat(sprite_size), columns, rows, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 

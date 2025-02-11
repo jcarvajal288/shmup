@@ -1,13 +1,14 @@
 pub mod bullet_stream;
 
 use crate::images::Images;
-use bevy::prelude::{Commands, Component, Res, Time, Transform};
+use bevy::prelude::{Commands, Component, Res, ResMut, Time, Transform};
+use crate::sprites::Sprites;
 
 pub trait BulletPattern {
     fn fire(
         &mut self,
         commands: &mut Commands,
-        images: &Res<Images>,
+        sprites: &ResMut<Sprites>,
         transform: Transform,
         time: &Res<Time>,
         player_transform: &Transform,

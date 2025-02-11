@@ -14,7 +14,7 @@ pub struct Player {
     pub hit_circle_radius: f32,
 }
 
-pub fn spawn_player(commands: &mut Commands, sprites: &Res<Sprites>) {
+pub fn spawn_player(commands: &mut Commands, sprites: &ResMut<Sprites>) {
     commands.spawn((
         Player {
             full_movement_speed: 200.0,
@@ -96,7 +96,7 @@ pub fn check_bullet_player_collision(
 
 pub fn respawn_player(
     mut commands: Commands,
-    sprites: Res<Sprites>,
+    sprites: ResMut<Sprites>,
     time: Res<Time>,
     mut timer_query: Query<&mut PlayerRespawnTimer>,
 ) {

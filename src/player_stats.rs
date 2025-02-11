@@ -2,9 +2,10 @@ use bevy::math::{Rect, Vec3};
 use bevy::prelude::{Commands, Component, Entity, EventReader, Res, ResMut, Resource, Sprite, Transform};
 use crate::images::Images;
 use crate::player::PlayerDeathEvent;
+use crate::sprites::Sprites;
 
 #[derive(Component)]
-struct PlayerLife;
+struct PlayerLifeCounter;
 
 #[derive(Resource)]
 pub struct PlayerStats {
@@ -24,19 +25,15 @@ impl Default for PlayerStats {
 pub fn initialize_player_stats(
     mut commands: Commands,
     mut player_stats: ResMut<PlayerStats>,
-    images: Res<Images>,
+    sprites: ResMut<Sprites>,
 ) {
     let lives_left_bound = 206.0;
     for i in 0..player_stats.starting_life_count {
         player_stats.lives.push(commands.spawn((
-            Sprite {
-                image: images.sidebar.clone(),
-                rect: Option::from(Rect::new(368.0, 98.0, 383.0, 113.0)),
-                ..Default::default()
-            },
+            sprites.life_counter.clone(),
             Transform::from_xyz(lives_left_bound + (i as f32 * 22.0), 163.0, 1.1)
                 .with_scale(Vec3::splat(1.5)),
-            PlayerLife
+            PlayerLifeCounter
         )).id());
     }
 }
@@ -48,7 +45,7 @@ pub fn listen_for_player_death(
 ) {
     for _event in player_death_event_reader.read() {
         match player_stats.lives.pop() {
-            Some(entity) => commands.entity(entity).despawn(),
+            Some(life_counter) => commands.entity(life_counter).despawn(),
             None => (),
         }
     }
