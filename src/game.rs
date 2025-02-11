@@ -1,13 +1,12 @@
-use std::ptr::replace;
-use crate::bullet::{move_bullets, Bullet};
-use crate::enemy::{spawn_enemy, update_enemies, Enemy, EnemySpawner};
+use crate::bullet::move_bullets;
+use crate::enemy::{spawn_enemies, update_enemies};
 use crate::images::Images;
 use crate::level1::level1_setup;
-use crate::player::{check_bullet_player_collision, move_player, spawn_player, switch_player_sprite};
+use crate::player::{check_bullet_player_collision, move_player, respawn_player, spawn_player, switch_player_sprite, PlayerDeathEvent};
+use crate::player_stats::{initialize_player_stats, listen_for_player_death, PlayerStats};
 use crate::sprites::{animate_sprite, Sprites};
-use crate::{GameState, SCALING_FACTOR};
+use crate::{enemy, player, GameState};
 use bevy::prelude::*;
-use crate::player_stats::PlayerStats;
 
 pub const FRAME_BORDER_LEFT: f32 = 32. - 400. + 15.;
 pub const FRAME_BORDER_TOP: f32 = 300. - 15. - 19.;
@@ -22,7 +21,11 @@ pub struct PlayerRespawnTimer(pub Timer);
 
 pub fn game_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(GameState::GAME), (game_setup, level1_setup))
+        .add_systems(OnEnter(GameState::GAME), (
+            game_setup,
+            level1_setup,
+            initialize_player_stats,
+        ))
         .add_systems(Update, (
             animate_sprite,
             move_player,
@@ -32,7 +35,10 @@ pub fn game_plugin(app: &mut App) {
             check_bullet_player_collision,
             spawn_enemies,
             update_enemies,
-        ));
+            listen_for_player_death,
+        ))
+        .add_event::<PlayerDeathEvent>()
+    ;
 
 }
 
@@ -73,41 +79,5 @@ fn draw_ui_frame(commands: &mut Commands, images: &Res<Images>, player_stats: &R
             .with_scale(Vec3::splat(1.5)),
     ));
 
-    let life_counter_left_bound = player_spell_translation.x + player_spell_rect.max.x - player_spell_rect.min.x + 8.0;
-    for i in 0..player_stats.lives {
-        commands.spawn((
-             Sprite {
-                 image: images.sidebar.clone(),
-                 rect: Option::from(Rect::new(368.0, 98.0, 383.0, 113.0)),
-                 ..Default::default()
-             },
-             Transform::from_xyz(life_counter_left_bound + (i as f32 * 22.0), 163.0, 1.1)
-                 .with_scale(Vec3::splat(1.5)),
-        ));
-    }
 }
 
-fn spawn_enemies(
-    mut commands: Commands,
-    sprites: Res<Sprites>,
-    time: Res<Time>,
-    mut spawns: Query<(&mut EnemySpawner, &mut SpawnTimer)>,
-) {
-    for (mut enemy_spawner, mut timer) in &mut spawns {
-        if timer.0.tick(time.delta()).just_finished() {
-            spawn_enemy(&mut commands, &sprites, &mut enemy_spawner);
-        }
-    }
-}
-fn respawn_player(
-    mut commands: Commands,
-    sprites: Res<Sprites>,
-    time: Res<Time>,
-    mut timer_query: Query<&mut PlayerRespawnTimer>,
-) {
-    for mut timer in &mut timer_query {
-        if timer.0.tick(time.delta()).just_finished() {
-            spawn_player(&mut commands, &sprites);
-        }
-    }
-}

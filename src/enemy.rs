@@ -1,11 +1,10 @@
-use std::f32::consts::PI;
-use std::ops::Deref;
 use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
 use crate::sprites::Sprites;
 use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::enemy::EnemyType::BlueFairy;
+use crate::game::SpawnTimer;
 use crate::images::Images;
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::player::Player;
@@ -65,6 +64,19 @@ pub fn update_enemies(
         movement_pattern.0.do_move(&mut *transform, &time);
         for player_transform in player_query.iter() {
             bullet_pattern.0.fire(&mut commands, &images, *transform, &time, player_transform);
+        }
+    }
+}
+
+pub fn spawn_enemies(
+    mut commands: Commands,
+    sprites: Res<Sprites>,
+    time: Res<Time>,
+    mut spawns: Query<(&mut EnemySpawner, &mut SpawnTimer)>,
+) {
+    for (mut enemy_spawner, mut timer) in &mut spawns {
+        if timer.0.tick(time.delta()).just_finished() {
+            spawn_enemy(&mut commands, &sprites, &mut enemy_spawner);
         }
     }
 }

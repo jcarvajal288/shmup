@@ -15,6 +15,7 @@ use bevy::window::WindowResolution;
 use crate::game::game_plugin;
 use crate::images::{load_images, Images};
 use crate::menu::menu_plugin;
+use crate::player::PlayerDeathEvent;
 use crate::player_stats::PlayerStats;
 use crate::sprites::{load_sprites, Sprites};
 

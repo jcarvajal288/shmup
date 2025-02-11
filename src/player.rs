@@ -1,9 +1,11 @@
 use crate::bullet::{props_for_bullet_type, Bullet};
-use crate::game::{PlayerRespawnTimer, SpawnTimer, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
+use crate::game::{PlayerRespawnTimer, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::sprites::{AnimationIndices, Sprites};
 use bevy::math::bounding::{BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
 
+#[derive(Event)]
+pub struct PlayerDeathEvent;
 
 #[derive(Component)]
 pub struct Player {
@@ -73,7 +75,8 @@ pub fn switch_player_sprite(
 pub fn check_bullet_player_collision(
     mut commands: Commands,
     player_query: Query<(&Player, &Transform, Entity)>,
-    bullet_query: Query<(&Bullet, &Transform, Entity)>
+    bullet_query: Query<(&Bullet, &Transform, Entity)>,
+    mut player_death_event_writer:  EventWriter<PlayerDeathEvent>,
 ) {
     for (player, player_transform, player_entity) in &mut player_query.iter() {
         for (bullet, bullet_transform, bullet_entity) in bullet_query.iter() {
@@ -85,8 +88,21 @@ pub fn check_bullet_player_collision(
                 commands.entity(player_entity).despawn();
                 commands.entity(bullet_entity).despawn();
                 commands.spawn(PlayerRespawnTimer(Timer::from_seconds(0.5, TimerMode::Once)));
+                player_death_event_writer.send(PlayerDeathEvent);
             }
         }
     }
 }
 
+pub fn respawn_player(
+    mut commands: Commands,
+    sprites: Res<Sprites>,
+    time: Res<Time>,
+    mut timer_query: Query<&mut PlayerRespawnTimer>,
+) {
+    for mut timer in &mut timer_query {
+        if timer.0.tick(time.delta()).just_finished() {
+            spawn_player(&mut commands, &sprites);
+        }
+    }
+}
