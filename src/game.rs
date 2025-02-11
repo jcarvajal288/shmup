@@ -1,11 +1,11 @@
 use std::ptr::replace;
-use crate::bullet::move_bullets;
+use crate::bullet::{move_bullets, Bullet};
 use crate::enemy::{spawn_enemy, update_enemies, Enemy, EnemySpawner};
 use crate::images::Images;
 use crate::level1::level1_setup;
 use crate::player::{check_bullet_player_collision, move_player, spawn_player, switch_player_sprite};
 use crate::sprites::{animate_sprite, Sprites};
-use crate::GameState;
+use crate::{GameState, SCALING_FACTOR};
 use bevy::prelude::*;
 
 pub const FRAME_BORDER_LEFT: f32 = 32. - 400. + 15.;
@@ -25,12 +25,12 @@ pub fn game_plugin(app: &mut App) {
         .add_systems(Update, (
             animate_sprite,
             move_player,
+            respawn_player,
             move_bullets,
             switch_player_sprite,
             check_bullet_player_collision,
-            spawn_on_delay,
+            spawn_enemies,
             update_enemies,
-            respawn_player,
         ));
 
 }
@@ -59,9 +59,18 @@ fn draw_ui_frame(commands: &mut Commands, images: &Res<Images>) {
         },
         Transform::from_xyz(0.0, 0.0, 1.0),
     ));
+    commands.spawn((
+        Sprite {
+            image: images.sidebar.clone(),
+            rect: Option::from(Rect::new(307.0, 130.0, 343.0, 162.0)),
+            ..Default::default()
+        },
+        Transform::from_xyz(162.0, 150.0, 1.1)
+            .with_scale(Vec3::splat(1.5)),
+    ));
 }
 
-fn spawn_on_delay(
+fn spawn_enemies(
     mut commands: Commands,
     sprites: Res<Sprites>,
     time: Res<Time>,
