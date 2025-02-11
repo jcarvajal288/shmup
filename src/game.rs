@@ -7,6 +7,7 @@ use crate::player::{check_bullet_player_collision, move_player, spawn_player, sw
 use crate::sprites::{animate_sprite, Sprites};
 use crate::{GameState, SCALING_FACTOR};
 use bevy::prelude::*;
+use crate::player_stats::PlayerStats;
 
 pub const FRAME_BORDER_LEFT: f32 = 32. - 400. + 15.;
 pub const FRAME_BORDER_TOP: f32 = 300. - 15. - 19.;
@@ -35,9 +36,9 @@ pub fn game_plugin(app: &mut App) {
 
 }
 
-fn game_setup(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>) {
+fn game_setup(mut commands: Commands, sprites: Res<Sprites>, images: Res<Images>, player_stats: Res<PlayerStats>) {
     draw_background(&mut commands, &images);
-    draw_ui_frame(&mut commands, &images);
+    draw_ui_frame(&mut commands, &images, &player_stats);
     spawn_player(&mut commands, &sprites);
 }
 
@@ -51,23 +52,39 @@ fn draw_background(commands: &mut Commands, images: &Res<Images>) {
     ));
 }
 
-fn draw_ui_frame(commands: &mut Commands, images: &Res<Images>) {
-    commands.spawn((
+fn draw_ui_frame(commands: &mut Commands, images: &Res<Images>, player_stats: &Res<PlayerStats>) {
+    let player_spell_rect = Rect::new(307.0, 130.0, 343.0, 162.0);
+    let player_spell_translation = Vec3::new(162.0, 150.0, 1.1);
+
+    commands.spawn(( // frame background
         Sprite {
             image: images.frame.clone(),
             ..Default::default()
         },
         Transform::from_xyz(0.0, 0.0, 1.0),
     ));
-    commands.spawn((
+    commands.spawn(( // Player and Spell text
         Sprite {
             image: images.sidebar.clone(),
-            rect: Option::from(Rect::new(307.0, 130.0, 343.0, 162.0)),
+            rect: Option::from(player_spell_rect),
             ..Default::default()
         },
-        Transform::from_xyz(162.0, 150.0, 1.1)
+        Transform::from_translation(player_spell_translation)
             .with_scale(Vec3::splat(1.5)),
     ));
+
+    let life_counter_left_bound = player_spell_translation.x + player_spell_rect.max.x - player_spell_rect.min.x + 8.0;
+    for i in 0..player_stats.lives {
+        commands.spawn((
+             Sprite {
+                 image: images.sidebar.clone(),
+                 rect: Option::from(Rect::new(368.0, 98.0, 383.0, 113.0)),
+                 ..Default::default()
+             },
+             Transform::from_xyz(life_counter_left_bound + (i as f32 * 22.0), 163.0, 1.1)
+                 .with_scale(Vec3::splat(1.5)),
+        ));
+    }
 }
 
 fn spawn_enemies(

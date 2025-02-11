@@ -8,12 +8,14 @@ mod bullet;
 mod enemy;
 mod movement_patterns;
 mod bullet_patterns;
+mod player_stats;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use crate::game::game_plugin;
 use crate::images::{load_images, Images};
 use crate::menu::menu_plugin;
+use crate::player_stats::PlayerStats;
 use crate::sprites::{load_sprites, Sprites};
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -52,6 +54,7 @@ fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
     commands.insert_resource(Sprites::default());
     commands.insert_resource(Images::default());
+    commands.insert_resource(PlayerStats::default());
 }
 
 fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands: Commands) {
