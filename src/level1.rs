@@ -12,63 +12,39 @@ use std::f32::consts::PI;
 
 pub fn level1_setup(mut commands: Commands) {
 
-    commands.spawn((
-        EnemySpawner {
-            enemy_type: BlueFairy,
-            starting_position: Vec2::new(-248.0, 150.0),
-            movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
-                angle: 0.0,
-                speed: 0.0,
-                acceleration: 0.0,
-                ..default()
-            })),
-            bullet_pattern: BoxedBulletPattern(Box::new(BulletStream {
-                bullet_type: WhiteArrow,
-                bullets_per_wave: 24,
-                waves_per_iteration: 3,
-                num_iterations: 99,
-                angle: BulletPatternAngle {
-                    target: Player,
-                    spread: PI * 2.0,
-                },
-                speed: 20.0,
-                acceleration: 0.3,
-                startup_timer: Timer::from_seconds(1.0, TimerMode::Once),
-                wave_timer: Timer::from_seconds(0.3, TimerMode::Once),
-                iteration_timer: Timer::from_seconds(0.5, TimerMode::Once),
-                ..default()
-            })),
+    let bullet_stream = BulletStream {
+        bullet_type: WhiteArrow,
+        bullets_per_wave: 1,
+        waves_per_iteration: 1,
+        num_iterations: 99,
+        angle: BulletPatternAngle {
+            target: Player,
+            spread: PI * 2.0,
         },
-        SpawnTimer(Timer::from_seconds(1.0, TimerMode::Once)),
-    ));
+        speed: 20.0,
+        acceleration: 0.3,
+        startup_timer: Timer::from_seconds(1.0, TimerMode::Once),
+        wave_timer: Timer::from_seconds(0.3, TimerMode::Once),
+        iteration_timer: Timer::from_seconds(0.5, TimerMode::Once),
+        ..default()
+    };
 
-    commands.spawn((
-        EnemySpawner {
-            enemy_type: BlueFairy,
-            starting_position: Vec2::new(0.0, 150.0),
-            movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
-                angle: PI,
-                speed: 30.0,
-                acceleration: 0.0,
-                ..default()
-            })),
-            bullet_pattern: BoxedBulletPattern(Box::new(BulletStream {
-                bullet_type: WhiteArrow,
-                bullets_per_wave: 24,
-                waves_per_iteration: 3,
-                num_iterations: 99,
-                angle: BulletPatternAngle {
-                    target: Player,
-                    spread: PI * 2.0,
-                },
-                speed: 20.0,
-                acceleration: 0.3,
-                startup_timer: Timer::from_seconds(1.0, TimerMode::Once),
-                wave_timer: Timer::from_seconds(0.3, TimerMode::Once),
-                iteration_timer: Timer::from_seconds(0.5, TimerMode::Once),
-                ..default()
-            })),
-        },
-        SpawnTimer(Timer::from_seconds(5.0, TimerMode::Once)),
-   ));
+    for i in 0..5 {
+        let initial_delay = 2.0;
+        let iter_delay = 1.0;
+        let full_delay = initial_delay + (iter_delay * i as f32);
+        commands.spawn((
+            EnemySpawner {
+                enemy_type: BlueFairy,
+                starting_position: Vec2::new(-400.0, 150.0),
+                movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
+                    angle: 0.0,
+                    speed: 40.0,
+                    ..default()
+                })),
+                bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
+            },
+            SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
+        ));
+    }
 }

@@ -7,10 +7,10 @@ use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
 
-pub const FRAME_BORDER_LEFT: f32 = 32. - 400. + 15.;
-pub const FRAME_BORDER_TOP: f32 = 300. - 15. - 19.;
-pub const FRAME_BORDER_RIGHT: f32 = 480. - 400. + 17.;
-pub const FRAME_BORDER_BOTTOM: f32 = 300. - 560. + 2.;
+pub const FRAME_BORDER_LEFT: f32 = -353.0;
+pub const FRAME_BORDER_TOP: f32 = 266.0;
+pub const FRAME_BORDER_RIGHT: f32 = 97.0;
+pub const FRAME_BORDER_BOTTOM: f32 = -258.0;
 
 #[derive(Component)]
 pub struct SpawnTimer(pub Timer);

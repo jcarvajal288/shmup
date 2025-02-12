@@ -18,12 +18,13 @@ pub trait BulletPattern {
 #[derive(Component)]
 pub struct BoxedBulletPattern(pub Box<dyn BulletPattern + Send + Sync>);
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Clone, Copy)]
 pub enum BulletPatternTarget {
     Player,
     Down,
 }
 
+#[derive(Clone, Copy)]
 pub struct BulletPatternAngle {
     pub target: BulletPatternTarget,
     pub spread: f32,
