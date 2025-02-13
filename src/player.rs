@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+use std::time::Duration;
 use crate::bullet::{props_for_bullet_type, Bullet};
 use crate::game::{PlayerRespawnTimer, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::sprites::{AnimationIndices, Sprites};
@@ -8,10 +10,20 @@ use bevy::prelude::*;
 pub struct PlayerDeathEvent;
 
 #[derive(Component)]
+pub struct PlayerShotTimer(Timer);
+
+#[derive(Component)]
 pub struct Player {
     pub full_movement_speed: f32,
     pub focused_speed: f32,
     pub hit_circle_radius: f32,
+}
+
+#[derive(Component)]
+pub struct PlayerShot {
+    pub speed: f32,
+    pub angle: f32,
+    pub damage: i32,
 }
 
 pub fn spawn_player(commands: &mut Commands, sprites: &ResMut<Sprites>) {
@@ -25,6 +37,7 @@ pub fn spawn_player(commands: &mut Commands, sprites: &ResMut<Sprites>) {
         sprites.remilia.sprite.clone(),
         sprites.remilia.animation_indices.clone(),
         sprites.remilia.animation_timer.clone(),
+        PlayerShotTimer(Timer::new(Duration::from_millis(100), TimerMode::Once))
     ));
 }
 
@@ -104,5 +117,42 @@ pub fn respawn_player(
         if timer.0.tick(time.delta()).just_finished() {
             spawn_player(&mut commands, &sprites);
         }
+    }
+}
+
+pub fn fire_shot(
+    mut commands: Commands,
+    sprites: Res<Sprites>,
+    time: Res<Time>,
+    mut player_query: Query<(&mut Player, &mut Transform, &mut PlayerShotTimer)>,
+    keyboard: Res<ButtonInput<KeyCode>>,
+) {
+    for (_player, mut transform, mut shot_timer) in &mut player_query.iter_mut() {
+        if shot_timer.0.tick(time.delta()).finished() && keyboard.pressed(KeyCode::KeyZ) {
+            let shot_angle = PI / 2.0;
+            commands.spawn((
+                PlayerShot {
+                    speed: 1000.0,
+                    angle: shot_angle,
+                    damage: 1,
+                },
+                sprites.blue_fang_shot.clone(),
+                Transform::from_xyz(transform.translation.x, transform.translation.y, 0.4)
+                    .with_rotation(Quat::from_rotation_z(shot_angle)),
+            ));
+            shot_timer.0.reset();
+        }
+    }
+}
+
+pub fn move_shot(
+    time: Res<Time>,
+    mut shot_query: Query<(&mut PlayerShot, &mut Transform)>,
+) {
+    for (mut player_shot, mut transform) in &mut shot_query.iter_mut() {
+        let movement_direction = Vec3::new(player_shot.angle.cos(), player_shot.angle.sin(), 0.0);
+        let movement_distance = player_shot.speed * time.delta_secs();
+        let translation_delta = movement_direction * movement_distance;
+        transform.translation += translation_delta;
     }
 }

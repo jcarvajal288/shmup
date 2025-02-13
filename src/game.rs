@@ -1,7 +1,7 @@
 use crate::bullet::move_bullets;
 use crate::enemy::{spawn_enemies, update_enemies};
 use crate::level1::level1_setup;
-use crate::player::{check_bullet_player_collision, move_player, respawn_player, spawn_player, switch_player_sprite, PlayerDeathEvent};
+use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, PlayerDeathEvent};
 use crate::player_stats::{initialize_player_stats, listen_for_player_death};
 use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
@@ -35,6 +35,8 @@ pub fn game_plugin(app: &mut App) {
             spawn_enemies,
             update_enemies,
             listen_for_player_death,
+            fire_shot,
+            move_shot,
         ))
         .add_event::<PlayerDeathEvent>()
     ;

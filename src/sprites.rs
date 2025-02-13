@@ -32,6 +32,7 @@ pub struct Sprites {
     pub player_spell_text: Sprite,
     pub life_counter: Sprite,
     pub bullet_white_arrow: Sprite,
+    pub blue_fang_shot: Sprite,
 }
 
 impl Default for Sprites {
@@ -47,6 +48,7 @@ impl Default for Sprites {
             player_spell_text: Sprite::default(),
             life_counter: Sprite::default(),
             bullet_white_arrow: Sprite::default(),
+            blue_fang_shot: Sprite::default(),
         }
     }
 }
@@ -104,6 +106,12 @@ pub fn load_sprites(
     sprites.bullet_white_arrow = Sprite {
         image: images.bullets.clone(),
         rect: Option::from(Rect::new(0.0, 16.0, 16.0, 32.0)),
+        ..Default::default()
+    };
+    sprites.blue_fang_shot = Sprite {
+        image: images.player_accessories.clone(),
+        color: Color::srgba(0.8, 0.8, 1.0, 0.5),
+        rect: Option::from(Rect::new(62.0, 36.0, 109.0, 42.0)),
         ..Default::default()
     };
 }
