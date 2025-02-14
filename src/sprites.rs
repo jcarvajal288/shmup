@@ -13,9 +13,10 @@ pub struct AnimationIndices {
 #[derive(Component, Deref, DerefMut, Default, Clone)]
 pub struct AnimationTimer(Timer);
 
-#[derive(Component, Default)]
+#[derive(Component, Clone, Default)]
 pub struct AnimatedSprite {
     pub sprite: Sprite,
+    pub sprite_size: u32,
     pub animation_indices: AnimationIndices,
     pub animation_timer: AnimationTimer,
 }
@@ -56,13 +57,14 @@ impl Default for Sprites {
 
 pub fn animate_sprite(
     time: Res<Time>,
-    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
+    mut query: Query<&mut AnimatedSprite>,
 ) {
-    for (indices, mut timer, mut sprite) in &mut query {
-        timer.tick(time.delta());
+    for mut sprite in &mut query {
+        sprite.animation_timer.tick(time.delta());
 
-        if timer.just_finished() {
-            if let Some(atlas) = &mut sprite.texture_atlas {
+        if sprite.animation_timer.just_finished() {
+            let indices = sprite.animation_indices.clone();
+            if let Some(atlas) = &mut sprite.sprite.texture_atlas {
                 atlas.index = if atlas.index >= indices.last {
                     indices.first
                 } else {
@@ -75,7 +77,7 @@ pub fn animate_sprite(
 
 pub fn load_sprites(
     mut sprites: ResMut<Sprites>,
-    mut images: ResMut<Images>,
+    images: ResMut<Images>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     sprites.dark_background = Sprite {
@@ -137,6 +139,7 @@ fn load_sprite_sheet(
             index: animation_indices.first,
         },
     );
+    animated_sprite.sprite_size = sprite_size;
     animated_sprite.animation_indices = animation_indices;
     animated_sprite.animation_timer = AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating));
 }

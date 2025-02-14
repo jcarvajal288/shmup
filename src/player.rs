@@ -34,9 +34,8 @@ pub fn spawn_player(commands: &mut Commands, sprites: &ResMut<Sprites>) {
             hit_circle_radius: 5.0,
         },
         Transform::from_xyz(-128.0, -150.0, 0.5),
+        sprites.remilia.clone(),
         sprites.remilia.sprite.clone(),
-        sprites.remilia.animation_indices.clone(),
-        sprites.remilia.animation_timer.clone(),
         PlayerShotTimer(Timer::new(Duration::from_millis(100), TimerMode::Once))
     ));
 }

@@ -12,6 +12,7 @@ mod player_stats;
 
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use crate::game::game_plugin;
 use crate::images::{load_images, Images};
 use crate::menu::menu_plugin;
@@ -48,6 +49,7 @@ fn main() {
         .init_state::<GameState>()
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
         .add_plugins((menu_plugin, game_plugin))
+        //.add_plugins(WorldInspectorPlugin::new())
         .run();
 }
 
