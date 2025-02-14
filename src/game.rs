@@ -1,7 +1,7 @@
-use crate::bullet::move_bullets;
-use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enemies, update_enemies};
+use crate::bullet::{move_bullets, Bullet};
+use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enemies, update_enemies, Enemy};
 use crate::level1::level1_setup;
-use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, PlayerDeathEvent};
+use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, PlayerDeathEvent, PlayerShot};
 use crate::player_stats::{initialize_player_stats, listen_for_player_death};
 use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
@@ -39,6 +39,7 @@ pub fn game_plugin(app: &mut App) {
             move_shot,
             check_shot_enemy_collision,
             check_for_enemy_death,
+            out_of_bounds_cleanup,
         ))
         .add_event::<PlayerDeathEvent>()
     ;
@@ -71,3 +72,31 @@ fn draw_ui_frame(commands: &mut Commands, sprites: &ResMut<Sprites>) {
 
 }
 
+fn out_of_bounds_cleanup(
+    mut commands: Commands,
+    bullet_query: Query<(Entity, &Transform), With<Bullet>>,
+    enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    shot_query: Query<(Entity, &Transform), With<PlayerShot>>,
+) {
+    let boundary_distance: f32 = 100.0;
+    let in_bounds_rect = Rect::from_corners(
+        Vec2::new(FRAME_BORDER_LEFT - boundary_distance, FRAME_BORDER_TOP + boundary_distance),
+        Vec2::new(FRAME_BORDER_RIGHT + boundary_distance, FRAME_BORDER_BOTTOM - boundary_distance),
+    );
+
+    fn despawn_if_out_of_bounds(commands: &mut Commands, in_bounds_rect: Rect, entity: Entity, transform: &Transform) {
+        if !in_bounds_rect.contains(transform.translation.truncate()) {
+            commands.entity(entity).despawn();
+        }
+    }
+
+    for (entity, transform) in bullet_query.iter() {
+        despawn_if_out_of_bounds(&mut commands, in_bounds_rect, entity, transform);
+    }
+    for (entity, transform) in enemy_query.iter() {
+        despawn_if_out_of_bounds(&mut commands, in_bounds_rect, entity, transform);
+    }
+    for (entity, transform) in shot_query.iter() {
+        despawn_if_out_of_bounds(&mut commands, in_bounds_rect, entity, transform);
+    }
+}

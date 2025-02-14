@@ -28,6 +28,7 @@ pub struct PlayerShot {
 
 pub fn spawn_player(commands: &mut Commands, sprites: &ResMut<Sprites>) {
     commands.spawn((
+        Name::new("Player"),
         Player {
             full_movement_speed: 200.0,
             focused_speed: 60.0,
@@ -130,6 +131,7 @@ pub fn fire_shot(
         if shot_timer.0.tick(time.delta()).finished() && keyboard.pressed(KeyCode::KeyZ) {
             let shot_angle = PI / 2.0;
             commands.spawn((
+                Name::new("PlayerShot"),
                 PlayerShot {
                     speed: 1000.0,
                     angle: shot_angle,

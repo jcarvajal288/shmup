@@ -1,7 +1,7 @@
 use crate::images::Images;
 use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
 use bevy::math::Rect;
-use bevy::prelude::{Commands, Component, Query, Res, ResMut, Sprite, Time, Transform, Vec2};
+use bevy::prelude::{Commands, Component, Name, Query, Res, ResMut, Sprite, Time, Transform, Vec2};
 use crate::sprites::Sprites;
 
 #[derive(Component)]
@@ -26,6 +26,7 @@ pub struct BulletSpawner {
 
 pub fn spawn_bullet(commands: &mut Commands, sprites: &ResMut<Sprites>, bullet_spawner: BulletSpawner) {
     commands.spawn((
+        Name::new("Bullet"),
         sprites.bullet_white_arrow.clone(),
         Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
         Bullet {

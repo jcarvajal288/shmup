@@ -10,15 +10,14 @@ mod movement_patterns;
 mod bullet_patterns;
 mod player_stats;
 
-use bevy::prelude::*;
-use bevy::window::WindowResolution;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use crate::game::game_plugin;
 use crate::images::{load_images, Images};
 use crate::menu::menu_plugin;
-use crate::player::PlayerDeathEvent;
 use crate::player_stats::PlayerStats;
 use crate::sprites::{load_sprites, Sprites};
+use bevy::prelude::*;
+use bevy::window::WindowResolution;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
@@ -49,7 +48,7 @@ fn main() {
         .init_state::<GameState>()
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
         .add_plugins((menu_plugin, game_plugin))
-        //.add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(WorldInspectorPlugin::new())
         .run();
 }
 

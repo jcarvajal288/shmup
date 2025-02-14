@@ -42,6 +42,7 @@ impl Default for EnemySpawner {
 pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mut EnemySpawner) {
     let enemy_spawner = std::mem::take(spawner);
     commands.spawn((
+        Name::new("Enemy"),
         Enemy {
             enemy_type: enemy_spawner.enemy_type.clone(),
             hit_points: 5,
