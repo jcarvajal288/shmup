@@ -113,11 +113,12 @@ pub fn respawn_player(
     mut commands: Commands,
     sprites: ResMut<Sprites>,
     time: Res<Time>,
-    mut timer_query: Query<&mut PlayerRespawnTimer>,
+    mut timer_query: Query<(&mut PlayerRespawnTimer, Entity)>,
 ) {
-    for mut timer in &mut timer_query {
-        if timer.0.tick(time.delta()).just_finished() {
+    for (mut respawn_timer, player_respawn) in timer_query.iter_mut() {
+        if respawn_timer.0.tick(time.delta()).just_finished() {
             spawn_player(&mut commands, &sprites);
+            commands.entity(player_respawn).despawn();
         }
     }
 }

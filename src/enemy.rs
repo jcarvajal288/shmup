@@ -76,11 +76,12 @@ pub fn spawn_enemies(
     mut commands: Commands,
     sprites: Res<Sprites>,
     time: Res<Time>,
-    mut spawns: Query<(&mut EnemySpawner, &mut SpawnTimer)>,
+    mut spawns: Query<(&mut EnemySpawner, &mut SpawnTimer, Entity)>,
 ) {
-    for (mut enemy_spawner, mut timer) in &mut spawns {
+    for (mut enemy_spawner, mut timer, entity) in &mut spawns {
         if timer.0.tick(time.delta()).just_finished() {
             spawn_enemy(&mut commands, &sprites, &mut enemy_spawner);
+            commands.entity(entity).despawn_recursive();
         }
     }
 }

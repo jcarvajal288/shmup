@@ -54,6 +54,7 @@ fn game_setup(mut commands: Commands, sprites: ResMut<Sprites>) {
 
 fn draw_background(commands: &mut Commands, sprites: &ResMut<Sprites>) {
     commands.spawn((
+        Name::new("Background"),
         sprites.dark_background.clone(),
         Transform::from_xyz(200.0, 200.0, 0.0),
     ));
@@ -61,10 +62,12 @@ fn draw_background(commands: &mut Commands, sprites: &ResMut<Sprites>) {
 
 fn draw_ui_frame(commands: &mut Commands, sprites: &ResMut<Sprites>) {
     commands.spawn((
+        Name::new("UI Frame"),
         sprites.frame.clone(),
         Transform::from_xyz(0.0, 0.0, 1.0),
     ));
     commands.spawn((
+        Name::new("PlayerSpellUIText"),
         sprites.player_spell_text.clone(),
         Transform::from_xyz(162.0, 150.0, 1.1)
             .with_scale(Vec3::splat(1.5)),

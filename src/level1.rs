@@ -34,6 +34,7 @@ pub fn level1_setup(mut commands: Commands) {
         let iter_delay = 1.0;
         let full_delay = initial_delay + (iter_delay * i as f32);
         commands.spawn((
+            Name::new("EnemySpawner"),
             EnemySpawner {
                 enemy_type: BlueFairy,
                 starting_position: Vec2::new(-400.0, 150.0),
