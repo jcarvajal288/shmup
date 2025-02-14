@@ -50,6 +50,8 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
         Transform::from_xyz(enemy_spawner.starting_position.x, enemy_spawner.starting_position.y, 0.6),
         sprites.blue_fairy.clone(),
         sprites.blue_fairy.sprite.clone(),
+        sprites.blue_fairy.animation_indices.clone(),
+        sprites.blue_fairy.animation_timer.clone(),
         enemy_spawner.movement_pattern,
         enemy_spawner.bullet_pattern,
     ));

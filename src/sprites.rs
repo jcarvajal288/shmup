@@ -57,14 +57,13 @@ impl Default for Sprites {
 
 pub fn animate_sprite(
     time: Res<Time>,
-    mut query: Query<&mut AnimatedSprite>,
+    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
 ) {
-    for mut sprite in &mut query {
-        sprite.animation_timer.tick(time.delta());
+    for (indices, mut timer, mut sprite) in &mut query {
+        timer.tick(time.delta());
 
-        if sprite.animation_timer.just_finished() {
-            let indices = sprite.animation_indices.clone();
-            if let Some(atlas) = &mut sprite.sprite.texture_atlas {
+        if timer.just_finished() {
+            if let Some(atlas) = &mut sprite.texture_atlas {
                 atlas.index = if atlas.index >= indices.last {
                     indices.first
                 } else {
