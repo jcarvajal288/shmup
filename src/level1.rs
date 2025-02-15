@@ -30,7 +30,7 @@ pub fn level1_setup(mut commands: Commands) {
     };
 
     for i in 0..5 {
-        let initial_delay = 2.0;
+        let initial_delay = 0.0;
         let iter_delay = 1.0;
         let full_delay = initial_delay + (iter_delay * i as f32);
         commands.spawn((
