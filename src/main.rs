@@ -22,8 +22,9 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
     #[default]
-    MENU,
-    GAME,
+    Menu,
+    PlayingGame,
+    GameOver,
 }
 
 const DEFAULT_RESOLUTION: Vec2 = Vec2::new(800., 600.);

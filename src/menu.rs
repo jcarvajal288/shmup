@@ -16,9 +16,9 @@ const UNSELECTED_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 
 pub fn menu_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(GameState::MENU), main_menu_setup)
-        .add_systems(Update, (handle_input, draw).run_if(in_state(GameState::MENU)))
-        .add_systems(OnExit(GameState::MENU), despawn_screen::<OnMainMenuScreen>)
+        .add_systems(OnEnter(GameState::Menu), main_menu_setup)
+        .add_systems(Update, (handle_input, draw).run_if(in_state(GameState::Menu)))
+        .add_systems(OnExit(GameState::Menu), despawn_screen::<OnMainMenuScreen>)
     ;
 }
 
@@ -36,7 +36,7 @@ fn main_menu_setup(
 
     let play_option_id = commands.spawn((
         Name::new("PlayText"),
-        StateScoped(GameState::MENU),
+        StateScoped(GameState::Menu),
         Text2d::new("Play"),
         text_font.clone(),
         TextLayout::new_with_justify(text_justification),
@@ -45,7 +45,7 @@ fn main_menu_setup(
     )).id();
     let quit_option_id = commands.spawn((
         Name::new("QuitText"),
-        StateScoped(GameState::MENU),
+        StateScoped(GameState::Menu),
         Text2d::new("Quit"),
         text_font.clone(),
         TextLayout::new_with_justify(text_justification),
@@ -80,7 +80,7 @@ fn run_main_menu_action(
     mut game_state: ResMut<NextState<GameState>>,
 ) {
     match menu_selected {
-        0 => game_state.set(GameState::GAME),
+        0 => game_state.set(GameState::PlayingGame),
         1 => { app_exit_events.send(AppExit::Success); },
         _ => {}
     }

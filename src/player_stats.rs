@@ -1,5 +1,6 @@
 use bevy::math::{Rect, Vec3};
-use bevy::prelude::{Commands, Component, Entity, EventReader, Res, ResMut, Resource, Sprite, Transform};
+use bevy::prelude::{Commands, Component, Entity, EventReader, NextState, Res, ResMut, Resource, Sprite, Transform};
+use crate::GameState;
 use crate::images::Images;
 use crate::player::PlayerDeathEvent;
 use crate::sprites::Sprites;
@@ -41,12 +42,13 @@ pub fn initialize_player_stats(
 pub fn listen_for_player_death(
     mut commands: Commands,
     mut player_stats: ResMut<PlayerStats>,
-    mut player_death_event_reader: EventReader<PlayerDeathEvent>
+    mut player_death_event_reader: EventReader<PlayerDeathEvent>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     for _event in player_death_event_reader.read() {
         match player_stats.lives.pop() {
             Some(life_counter) => commands.entity(life_counter).despawn(),
-            None => (),
+            None => game_state.set(GameState::GameOver),
         }
     }
 }

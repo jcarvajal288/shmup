@@ -20,7 +20,7 @@ pub struct PlayerRespawnTimer(pub Timer);
 
 pub fn game_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(GameState::GAME), (
+        .add_systems(OnEnter(GameState::PlayingGame), (
             game_setup,
             level1_setup,
             initialize_player_stats,
@@ -44,7 +44,7 @@ pub fn game_plugin(app: &mut App) {
             animate_sprite,
             move_bullets,
             out_of_bounds_cleanup,
-        ))
+        ).run_if(in_state(GameState::PlayingGame)))
         .add_event::<PlayerDeathEvent>()
     ;
 
