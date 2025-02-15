@@ -26,6 +26,9 @@ pub struct PlayerShot {
     pub damage: i32,
 }
 
+#[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct PlayerSystemSet;
+
 pub fn spawn_player(commands: &mut Commands, sprites: &ResMut<Sprites>) {
     commands.spawn((
         Name::new("Player"),

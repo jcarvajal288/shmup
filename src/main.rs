@@ -48,7 +48,7 @@ fn main() {
         .init_state::<GameState>()
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
         .add_plugins((menu_plugin, game_plugin))
-        .add_plugins(WorldInspectorPlugin::new())
+        //.add_plugins(WorldInspectorPlugin::new())
         .run();
 }
 

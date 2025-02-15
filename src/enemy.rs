@@ -39,6 +39,9 @@ impl Default for EnemySpawner {
     }
 }
 
+#[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct EnemySystemSet;
+
 pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mut EnemySpawner) {
     let enemy_spawner = std::mem::take(spawner);
     commands.spawn((
@@ -103,7 +106,7 @@ pub fn check_shot_enemy_collision(
             );
             if enemy_hit_circle.intersects(&shot_hit_box) {
                 enemy.hit_points -= shot.damage;
-                commands.entity(shot_entity).despawn();
+                commands.entity(shot_entity).try_despawn();
             }
         }
     }

@@ -1,7 +1,7 @@
 use crate::bullet::{move_bullets, Bullet};
-use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enemies, update_enemies, Enemy};
+use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enemies, update_enemies, Enemy, EnemySystemSet};
 use crate::level1::level1_setup;
-use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, PlayerDeathEvent, PlayerShot};
+use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, PlayerDeathEvent, PlayerShot, PlayerSystemSet};
 use crate::player_stats::{initialize_player_stats, listen_for_player_death};
 use crate::sprites::{animate_sprite, Sprites};
 use crate::GameState;
@@ -26,19 +26,23 @@ pub fn game_plugin(app: &mut App) {
             initialize_player_stats,
         ))
         .add_systems(Update, (
+            (
+                move_player,
+                respawn_player,
+                switch_player_sprite,
+                check_bullet_player_collision,
+                listen_for_player_death,
+                fire_shot,
+                move_shot,
+            ).in_set(PlayerSystemSet),
+            (
+                spawn_enemies,
+                update_enemies,
+                check_shot_enemy_collision,
+                check_for_enemy_death,
+            ).in_set(EnemySystemSet),
             animate_sprite,
-            move_player,
-            respawn_player,
             move_bullets,
-            switch_player_sprite,
-            check_bullet_player_collision,
-            spawn_enemies,
-            update_enemies,
-            listen_for_player_death,
-            fire_shot,
-            move_shot,
-            check_shot_enemy_collision,
-            check_for_enemy_death,
             out_of_bounds_cleanup,
         ))
         .add_event::<PlayerDeathEvent>()
