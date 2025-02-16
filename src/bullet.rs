@@ -1,8 +1,6 @@
-use crate::images::Images;
 use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
-use bevy::math::Rect;
-use bevy::prelude::{Commands, Component, Name, Query, Res, ResMut, Sprite, Time, Transform, Vec2};
 use crate::sprites::Sprites;
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct Bullet {
