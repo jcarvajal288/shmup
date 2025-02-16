@@ -64,7 +64,7 @@ impl BulletPattern for BulletStream {
             self.fire_wave(commands, &sprites, &transform, player_transform);
             self.waves_left -= 1;
 
-            if  self.waves_left == 0 && self.iterations_left > 0 {
+            if self.waves_left == 0 && self.iterations_left > 0 {
                 self.iterations_left -= 1;
                 self.iteration_timer.reset();
             } else {
