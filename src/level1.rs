@@ -9,7 +9,6 @@ use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
 use std::f32::consts::PI;
-use crate::GameState;
 
 pub fn level1_setup(mut commands: Commands) {
 
