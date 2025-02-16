@@ -4,7 +4,7 @@ use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::enemy::EnemySpawner;
 use crate::enemy::EnemyType::*;
-use crate::game::SpawnTimer;
+use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
@@ -46,6 +46,7 @@ pub fn level1_setup(mut commands: Commands) {
                 bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
             },
             SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
+            GameObject,
         ));
     }
 }

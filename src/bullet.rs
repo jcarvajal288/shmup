@@ -1,6 +1,7 @@
 use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
 use crate::sprites::Sprites;
 use bevy::prelude::*;
+use crate::game::GameObject;
 
 #[derive(Component)]
 pub struct Bullet {
@@ -31,6 +32,7 @@ pub fn spawn_bullet(commands: &mut Commands, sprites: &ResMut<Sprites>, bullet_s
             bullet_type: bullet_spawner.bullet_type,
         },
         bullet_spawner.movement_pattern,
+        GameObject,
     ));
 }
 

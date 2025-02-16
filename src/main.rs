@@ -10,7 +10,7 @@ mod bullet_patterns;
 mod player_stats;
 mod menus;
 
-use crate::game::game_plugin;
+use crate::game::{game_plugin, GameObject};
 use crate::images::{load_images, Images};
 use crate::menus::main_menu::main_menu_plugin;
 use crate::player_stats::PlayerStats;
@@ -23,7 +23,7 @@ use crate::menus::game_over_menu::game_over_menu_plugin;
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
     #[default]
-    Menu,
+    MainMenu,
     StartingGame,
     PlayingGame,
     GameOver,
@@ -49,6 +49,7 @@ fn main() {
             })
         )
         .init_state::<GameState>()
+        .add_systems(OnEnter(GameState::MainMenu), despawn_screen::<GameObject>)
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
         .add_plugins((main_menu_plugin, game_plugin, game_over_menu_plugin))
         //.add_plugins(WorldInspectorPlugin::new())

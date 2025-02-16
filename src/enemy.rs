@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::enemy::EnemyType::BlueFairy;
-use crate::game::SpawnTimer;
+use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::player::{Player, PlayerShot};
 
@@ -57,6 +57,7 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
         sprites.blue_fairy.animation_timer.clone(),
         enemy_spawner.movement_pattern,
         enemy_spawner.bullet_pattern,
+        GameObject,
     ));
 }
 

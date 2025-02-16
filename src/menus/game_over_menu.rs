@@ -1,9 +1,16 @@
 use bevy::prelude::*;
+use bevy_inspector_egui::egui::menu::MenuState;
 use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
-use crate::GameState;
+use crate::{despawn_screen, GameState};
+
+#[derive(Resource)]
+struct GameOverMenuState {
+    options: Vec<Entity>,
+    selected: usize,
+}
 
 #[derive(Component)]
-struct MenuShadow;
+struct OnGameOverScreen;
 
 const SELECTED_COLOR: Color = Color::srgb(0.9, 0.0, 0.9);
 const UNSELECTED_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
@@ -11,7 +18,8 @@ const UNSELECTED_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 pub fn game_over_menu_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::GameOver), game_over_menu_setup)
-        .add_systems(Update, (handle_input).run_if(in_state(GameState::GameOver)))
+        .add_systems(Update, (handle_input, draw).run_if(in_state(GameState::GameOver)))
+        .add_systems(OnExit(GameState::GameOver), despawn_screen::<OnGameOverScreen>)
     ;
 }
 
@@ -30,7 +38,7 @@ fn game_over_menu_setup(
         Mesh2d(shadow),
         MeshMaterial2d(materials.add(Color::srgba(0.0, 0.0, 0.0, 0.75))),
         Transform::from_xyz(frame_center.x, frame_center.y, 0.98),
-        MenuShadow,
+        OnGameOverScreen,
     ));
 
     let font = asset_server.load("fonts/Super-Cartoon.ttf");
@@ -40,34 +48,65 @@ fn game_over_menu_setup(
         ..default()
     };
 
-    commands.spawn((
+    let continue_option_id = commands.spawn((
         Name::new("ContinueMenuOption"),
         Text2d::new("Continue"),
         text_font.clone(),
         Transform::from_xyz(FRAME_BORDER_LEFT + 100.0, 0.0, 0.99),
         TextLayout::new_with_justify(JustifyText::Left),
         TextColor(SELECTED_COLOR),
-    ));
-    commands.spawn((
+        OnGameOverScreen,
+    )).id();
+    let quit_option_id = commands.spawn((
         Name::new("QuitMenuOption"),
         Text2d::new("Quit to Menu"),
         text_font.clone(),
         Transform::from_xyz(FRAME_BORDER_LEFT + 125.0, -30.0, 0.99),
         TextLayout::new_with_justify(JustifyText::Left),
         TextColor(UNSELECTED_COLOR),
-    ));
+        OnGameOverScreen,
+    )).id();
+    commands.insert_resource(GameOverMenuState {
+        options: vec![continue_option_id, quit_option_id],
+        selected: 0
+    })
 }
 
 fn handle_input(
-    mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut game_state: ResMut<NextState<GameState>>,
-    shadow_query: Query<(Entity, &MenuShadow)>,
+    game_state: ResMut<NextState<GameState>>,
+    mut menu_state: ResMut<GameOverMenuState>,
 ) {
-    if keyboard_input.pressed(KeyCode::KeyZ) {
-        game_state.set(GameState::PlayingGame);
-        for (entity, _shadow) in shadow_query.iter() {
-            commands.entity(entity).despawn();
+    if keyboard_input.just_pressed(KeyCode::ArrowUp) {
+        menu_state.selected = if menu_state.selected == 0 { menu_state.options.len() - 1 } else { menu_state.selected - 1 };
+    } else if keyboard_input.just_pressed(KeyCode::ArrowDown) {
+        menu_state.selected = if menu_state.selected == menu_state.options.len() - 1 { 0 } else { menu_state.selected + 1 };
+    } else if keyboard_input.pressed(KeyCode::KeyZ) {
+        run_menu_action(menu_state.selected, game_state);
+    }
+}
+
+fn run_menu_action(
+    menu_selected: usize,
+    mut game_state: ResMut<NextState<GameState>>,
+) {
+    match menu_selected {
+        0 => game_state.set(GameState::PlayingGame),
+        1 => game_state.set(GameState::MainMenu),
+        _ => {}
+    }
+}
+fn draw(
+    menu_state: Res<GameOverMenuState>,
+    mut text2d_query: Query<(Entity, &mut TextColor)>,
+) {
+    for text_option in text2d_query.iter_mut() {
+        let text2d = text_option.0;
+        let mut text_color = text_option.1;
+        if text2d == menu_state.options[menu_state.selected] {
+            text_color.0 = SELECTED_COLOR;
+        } else {
+            text_color.0 = UNSELECTED_COLOR;
         }
     }
 }
