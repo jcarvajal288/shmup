@@ -25,6 +25,7 @@ use crate::game_over_menu::game_over_menu_plugin;
 enum GameState {
     #[default]
     Menu,
+    StartingGame,
     PlayingGame,
     GameOver,
 }

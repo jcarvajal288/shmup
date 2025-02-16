@@ -80,7 +80,7 @@ fn run_main_menu_action(
     mut game_state: ResMut<NextState<GameState>>,
 ) {
     match menu_selected {
-        0 => game_state.set(GameState::PlayingGame),
+        0 => game_state.set(GameState::StartingGame),
         1 => { app_exit_events.send(AppExit::Success); },
         _ => {}
     }

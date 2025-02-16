@@ -20,10 +20,10 @@ pub struct PlayerRespawnTimer(pub Timer);
 
 pub fn game_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(GameState::PlayingGame), (
+        .add_systems(OnEnter(GameState::StartingGame), (
             game_setup,
-            level1_setup,
             initialize_player_stats,
+            level1_setup,
         ))
         .add_systems(Update, (
             (
@@ -50,10 +50,15 @@ pub fn game_plugin(app: &mut App) {
 
 }
 
-fn game_setup(mut commands: Commands, sprites: ResMut<Sprites>) {
+fn game_setup(
+    mut commands: Commands,
+    sprites: ResMut<Sprites>,
+    mut game_state: ResMut<NextState<GameState>>
+) {
     draw_background(&mut commands, &sprites);
     draw_ui_frame(&mut commands, &sprites);
     spawn_player(&mut commands, &sprites);
+    game_state.set(GameState::PlayingGame);
 }
 
 fn draw_background(commands: &mut Commands, sprites: &ResMut<Sprites>) {
