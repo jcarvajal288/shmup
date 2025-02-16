@@ -3,7 +3,7 @@ use crate::{despawn_screen, GameState};
 
 // implement menu as a vector of MainMenuStates
 #[derive(Resource)]
-struct MenuState {
+struct MainMenuState {
     options: Vec<Entity>,
     selected: usize,
 }
@@ -14,7 +14,7 @@ struct OnMainMenuScreen;
 const SELECTED_COLOR: Color = Color::srgb(0.9, 0.0, 0.9);
 const UNSELECTED_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 
-pub fn menu_plugin(app: &mut App) {
+pub fn main_menu_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::Menu), main_menu_setup)
         .add_systems(Update, (handle_input, draw).run_if(in_state(GameState::Menu)))
@@ -53,7 +53,7 @@ fn main_menu_setup(
         TextColor(UNSELECTED_COLOR),
         OnMainMenuScreen,
     )).id();
-    commands.insert_resource(MenuState {
+    commands.insert_resource(MainMenuState {
         options: vec![play_option_id, quit_option_id],
         selected: 0
     });
@@ -61,7 +61,7 @@ fn main_menu_setup(
 
 fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut menu_state: ResMut<MenuState>,
+    mut menu_state: ResMut<MainMenuState>,
     app_exit_events: EventWriter<AppExit>,
     game_state: ResMut<NextState<GameState>>,
 ) {
@@ -87,7 +87,7 @@ fn run_main_menu_action(
 }
 
 fn draw(
-    menu_state: Res<MenuState>,
+    menu_state: Res<MainMenuState>,
     mut text2d_query: Query<(Entity, &mut TextColor)>,
 ) {
     for text_option in text2d_query.iter_mut() {
