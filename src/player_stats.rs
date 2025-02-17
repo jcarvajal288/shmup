@@ -1,9 +1,8 @@
-use bevy::math::{Rect, Vec3};
-use bevy::prelude::{Commands, Component, Entity, EventReader, NextState, Res, ResMut, Resource, Sprite, Transform};
-use crate::GameState;
-use crate::images::Images;
 use crate::player::PlayerDeathEvent;
-use crate::sprites::Sprites;
+use crate::resources::sprites::Sprites;
+use crate::GameState;
+use bevy::math::Vec3;
+use bevy::prelude::{Commands, Component, Entity, EventReader, NextState, ResMut, Resource, Transform};
 
 #[derive(Component)]
 struct PlayerLifeCounter;

@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 use std::time::Duration;
 use crate::bullet::{props_for_bullet_type, Bullet};
 use crate::game::{GameObject, PlayerRespawnTimer, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
-use crate::sprites::{AnimationIndices, Sprites};
+use crate::resources::sprites::{AnimationIndices, Sprites};
 use bevy::math::bounding::{BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
 
@@ -106,7 +106,10 @@ pub fn check_bullet_player_collision(
             if player_hit_circle.intersects(&bullet_hit_circle) {
                 commands.entity(player_entity).despawn();
                 commands.entity(bullet_entity).try_despawn();
-                commands.spawn(PlayerRespawnTimer(Timer::from_seconds(0.5, TimerMode::Once)));
+                commands.spawn((
+                    PlayerRespawnTimer(Timer::from_seconds(0.5, TimerMode::Once)),
+                    GameObject
+                ));
                 player_death_event_writer.send(PlayerDeathEvent);
             }
         }

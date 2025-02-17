@@ -1,6 +1,6 @@
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
-use crate::sprites::{AnimatedSprite, Sprites};
+use crate::resources::sprites::{AnimatedSprite, Sprites};
 use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
 use crate::bullet_patterns::bullet_stream::BulletStream;

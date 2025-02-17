@@ -1,7 +1,5 @@
 mod game;
-mod sprites;
 mod player;
-mod images;
 mod level1;
 mod bullet;
 mod enemy;
@@ -9,15 +7,15 @@ mod movement_patterns;
 mod bullet_patterns;
 mod player_stats;
 mod menus;
+mod resources;
 
 use crate::game::{game_plugin, GameObject};
-use crate::images::{load_images, Images};
+use resources::images::{load_images, Images};
 use crate::menus::main_menu::main_menu_plugin;
 use crate::player_stats::PlayerStats;
-use crate::sprites::{load_sprites, Sprites};
+use resources::sprites::{load_sprites, Sprites};
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use crate::menus::game_over_menu::game_over_menu_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]

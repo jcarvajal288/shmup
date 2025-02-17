@@ -1,8 +1,8 @@
 pub mod bullet_stream;
 
-use crate::images::Images;
+use crate::resources::images::Images;
 use bevy::prelude::{Commands, Component, Res, ResMut, Time, Transform};
-use crate::sprites::Sprites;
+use crate::resources::sprites::Sprites;
 
 pub trait BulletPattern {
     fn fire(

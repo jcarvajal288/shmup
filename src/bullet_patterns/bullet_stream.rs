@@ -3,7 +3,7 @@ use crate::bullet_patterns::BulletPatternTarget::Player;
 use crate::bullet_patterns::{BulletPattern, BulletPatternAngle, BulletPatternTarget};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
-use crate::sprites::Sprites;
+use crate::resources::sprites::Sprites;
 use bevy::prelude::{Commands, Component, Res, ResMut, Time, Timer, Transform, Vec2};
 use std::f32::consts::PI;
 

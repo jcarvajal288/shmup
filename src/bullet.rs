@@ -1,5 +1,5 @@
 use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
-use crate::sprites::Sprites;
+use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
 use crate::game::GameObject;
 
