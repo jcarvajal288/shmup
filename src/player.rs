@@ -1,7 +1,7 @@
 use std::f32::consts::PI;
 use std::time::Duration;
 use crate::bullet::{props_for_bullet_type, Bullet};
-use crate::game::{GameObject, PlayerRespawnTimer, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
+use crate::game::{GameObject, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::resources::sprites::{AnimationIndices, Sprites};
 use bevy::math::bounding::{BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
@@ -11,6 +11,12 @@ pub struct PlayerDeathEvent;
 
 #[derive(Component)]
 pub struct PlayerShotTimer(Timer);
+
+#[derive(Component)]
+pub struct PlayerRespawnTimer(pub Timer);
+
+#[derive(Component)]
+pub struct PlayerInvincibilityTimer(Timer);
 
 #[derive(Component)]
 pub struct Player {
@@ -96,7 +102,10 @@ pub fn check_bullet_player_collision(
     player_query: Query<(&Player, &Transform, Entity)>,
     bullet_query: Query<(&Bullet, &Transform, Entity)>,
     mut player_death_event_writer:  EventWriter<PlayerDeathEvent>,
+    invincibility_timer_query: Query<&PlayerInvincibilityTimer>,
 ) {
+    if invincibility_timer_query.iter().count() > 0 { return }
+
     for (player, player_transform, player_entity) in &mut player_query.iter() {
         for (bullet, bullet_transform, bullet_entity) in bullet_query.iter() {
             let bullet_props = props_for_bullet_type(&bullet.bullet_type);
@@ -126,6 +135,25 @@ pub fn respawn_player(
         if respawn_timer.0.tick(time.delta()).just_finished() {
             spawn_player(&mut commands, &sprites);
             commands.entity(player_respawn).despawn();
+            commands.spawn(PlayerInvincibilityTimer(Timer::from_seconds(2.0, TimerMode::Once)));
+        }
+    }
+}
+
+pub fn respawn_invincibility(
+    mut commands: Commands,
+    mut timer_query: Query<(&mut PlayerInvincibilityTimer, Entity)>,
+    time: Res<Time>,
+    mut player_sprite_query: Query<(&mut Sprite, &Player)>,
+) {
+    for (mut sprite, _player) in player_sprite_query.iter_mut() {
+        for (mut timer, entity) in timer_query.iter_mut() {
+            if timer.0.tick(time.delta()).just_finished() {
+                commands.entity(entity).despawn();
+                sprite.color.set_alpha(1.0);
+            } else {
+                sprite.color.set_alpha(0.4);
+            }
         }
     }
 }
