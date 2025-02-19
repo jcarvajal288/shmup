@@ -8,7 +8,6 @@ mod bullet_patterns;
 mod player_stats;
 mod menus;
 mod resources;
-mod spellcards;
 mod bosses;
 
 use crate::game::{game_plugin, GameObject};
@@ -18,6 +17,7 @@ use crate::player_stats::PlayerStats;
 use resources::sprites::{load_sprites, Sprites};
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use crate::menus::game_over_menu::game_over_menu_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]

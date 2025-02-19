@@ -9,6 +9,9 @@ use bevy::prelude::*;
 #[derive(Event)]
 pub struct PlayerDeathEvent;
 
+#[derive(Event)]
+pub struct PlayerContinueEvent;
+
 #[derive(Component)]
 pub struct PlayerShotTimer(Timer);
 
@@ -165,7 +168,7 @@ pub fn fire_shot(
     mut player_query: Query<(&mut Player, &mut Transform, &mut PlayerShotTimer)>,
     keyboard: Res<ButtonInput<KeyCode>>,
 ) {
-    for (_player, mut transform, mut shot_timer) in &mut player_query.iter_mut() {
+    for (_player, transform, mut shot_timer) in &mut player_query.iter_mut() {
         if shot_timer.0.tick(time.delta()).finished() && keyboard.pressed(KeyCode::KeyZ) {
             let shot_angle = PI / 2.0;
             commands.spawn((
@@ -188,7 +191,7 @@ pub fn move_shot(
     time: Res<Time>,
     mut shot_query: Query<(&mut PlayerShot, &mut Transform)>,
 ) {
-    for (mut player_shot, mut transform) in &mut shot_query.iter_mut() {
+    for (player_shot, mut transform) in &mut shot_query.iter_mut() {
         let movement_direction = Vec3::new(player_shot.angle.cos(), player_shot.angle.sin(), 0.0);
         let movement_distance = player_shot.speed * time.delta_secs();
         let translation_delta = movement_direction * movement_distance;

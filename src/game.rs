@@ -1,8 +1,8 @@
 use crate::bullet::{move_bullets, Bullet};
 use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enemies, update_enemies, Enemy, EnemySystemSet};
 use crate::level1::level1_setup;
-use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, respawn_invincibility, PlayerDeathEvent, PlayerShot, PlayerSystemSet};
-use crate::player_stats::{initialize_player_stats, listen_for_player_death};
+use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, respawn_invincibility, PlayerDeathEvent, PlayerShot, PlayerSystemSet, PlayerContinueEvent};
+use crate::player_stats::{initialize_player_stats, listen_for_player_continue, listen_for_player_death};
 use crate::resources::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
@@ -36,6 +36,7 @@ pub fn game_plugin(app: &mut App) {
                 switch_player_sprite,
                 check_bullet_player_collision,
                 listen_for_player_death,
+                listen_for_player_continue,
                 fire_shot,
                 move_shot,
             ).in_set(PlayerSystemSet),
@@ -50,6 +51,7 @@ pub fn game_plugin(app: &mut App) {
             out_of_bounds_cleanup,
         ).run_if(in_state(GameState::PlayingGame)))
         .add_event::<PlayerDeathEvent>()
+        .add_event::<PlayerContinueEvent>()
     ;
 
 }

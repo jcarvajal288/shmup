@@ -1,4 +1,4 @@
-use crate::movement_patterns::{BoxedMovementPattern, MovementPattern};
+use crate::movement_patterns::{BoxedMovementPattern};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
 use crate::game::GameObject;

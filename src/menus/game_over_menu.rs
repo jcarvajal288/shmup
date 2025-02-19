@@ -1,7 +1,7 @@
 use bevy::prelude::*;
-use bevy_inspector_egui::egui::menu::MenuState;
 use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::{despawn_screen, GameState};
+use crate::player::PlayerContinueEvent;
 
 #[derive(Resource)]
 struct GameOverMenuState {
@@ -76,22 +76,27 @@ fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     game_state: ResMut<NextState<GameState>>,
     mut menu_state: ResMut<GameOverMenuState>,
+    player_continue_event_writer: EventWriter<PlayerContinueEvent>,
 ) {
     if keyboard_input.just_pressed(KeyCode::ArrowUp) {
         menu_state.selected = if menu_state.selected == 0 { menu_state.options.len() - 1 } else { menu_state.selected - 1 };
     } else if keyboard_input.just_pressed(KeyCode::ArrowDown) {
         menu_state.selected = if menu_state.selected == menu_state.options.len() - 1 { 0 } else { menu_state.selected + 1 };
     } else if keyboard_input.pressed(KeyCode::KeyZ) {
-        run_menu_action(menu_state.selected, game_state);
+        run_menu_action(menu_state.selected, game_state, player_continue_event_writer);
     }
 }
 
 fn run_menu_action(
     menu_selected: usize,
     mut game_state: ResMut<NextState<GameState>>,
+    mut player_continue_event_writer: EventWriter<PlayerContinueEvent>,
 ) {
     match menu_selected {
-        0 => game_state.set(GameState::PlayingGame),
+        0 => {
+            game_state.set(GameState::PlayingGame);
+            player_continue_event_writer.send(PlayerContinueEvent);
+        },
         1 => game_state.set(GameState::MainMenu),
         _ => {}
     }

@@ -1,6 +1,5 @@
 pub mod bullet_stream;
 
-use crate::resources::images::Images;
 use bevy::prelude::{Commands, Component, Res, ResMut, Time, Transform};
 use crate::resources::sprites::Sprites;
 
