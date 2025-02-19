@@ -4,7 +4,7 @@ use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::enemy::EnemySpawner;
 use crate::enemy::EnemyType::*;
-use crate::game::{GameObject, SpawnTimer};
+use crate::game::{GameObject, SpawnTimer, SPAWN_LEFT, SPAWN_RIGHT};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
@@ -37,9 +37,30 @@ pub fn level1_setup(mut commands: Commands) {
             Name::new("EnemySpawner"),
             EnemySpawner {
                 enemy_type: BlueFairy,
-                starting_position: Vec2::new(-400.0, 150.0),
+                starting_position: Vec2::new(SPAWN_LEFT, 150.0),
                 movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
                     angle: 0.0,
+                    speed: 40.0,
+                    ..default()
+                })),
+                bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
+            },
+            SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
+            GameObject,
+        ));
+    }
+
+    for i in 0..5 {
+        let initial_delay = 5.0;
+        let iter_delay = 1.0;
+        let full_delay = initial_delay + (iter_delay * i as f32);
+        commands.spawn((
+            Name::new("EnemySpawner"),
+            EnemySpawner {
+                enemy_type: BlueFairy,
+                starting_position: Vec2::new(SPAWN_RIGHT, 150.0),
+                movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
+                    angle: -PI,
                     speed: 40.0,
                     ..default()
                 })),

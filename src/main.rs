@@ -8,6 +8,8 @@ mod bullet_patterns;
 mod player_stats;
 mod menus;
 mod resources;
+mod spellcards;
+mod bosses;
 
 use crate::game::{game_plugin, GameObject};
 use resources::images::{load_images, Images};
