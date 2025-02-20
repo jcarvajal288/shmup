@@ -16,7 +16,7 @@ pub struct AnimationTimer(Timer);
 #[derive(Component, Clone, Default)]
 pub struct AnimatedSprite {
     pub sprite: Sprite,
-    pub sprite_size: u32,
+    pub sprite_size: UVec2,
     pub animation_indices: AnimationIndices,
     pub animation_timer: AnimationTimer,
 }
@@ -25,15 +25,18 @@ pub struct AnimatedSprite {
 pub struct Sprites {
     pub dark_background: Sprite,
     pub frame: Sprite,
+    pub player_spell_text: Sprite,
+    pub life_counter: Sprite,
+    pub bullet_white_arrow: Sprite,
+    pub blue_fang_shot: Sprite,
+
     pub remilia: AnimatedSprite,
     pub blue_fairy: AnimatedSprite,
     pub red_fairy: AnimatedSprite,
     pub green_fairy: AnimatedSprite,
     pub yellow_fairy: AnimatedSprite,
-    pub player_spell_text: Sprite,
-    pub life_counter: Sprite,
-    pub bullet_white_arrow: Sprite,
-    pub blue_fang_shot: Sprite,
+
+    pub rumia: AnimatedSprite,
 }
 
 impl Default for Sprites {
@@ -50,6 +53,7 @@ impl Default for Sprites {
             life_counter: Sprite::default(),
             bullet_white_arrow: Sprite::default(),
             blue_fang_shot: Sprite::default(),
+            rumia: AnimatedSprite::default(),
         }
     }
 }
@@ -88,11 +92,12 @@ pub fn load_sprites(
         ..Default::default()
     };
 
-    load_sprite_sheet(images.remilia.clone(), &mut sprites.remilia, &mut texture_atlas_layouts, PLAYER_SPRITE_SIZE, 4, 2, 0, 3);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.blue_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 0, 3);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.red_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 12, 15);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.green_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 24, 27);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.yellow_fairy, &mut texture_atlas_layouts, FAIRY_SPRITE_SIZE, 12, 1, 36, 39);
+    load_sprite_sheet(images.remilia.clone(), &mut sprites.remilia, &mut texture_atlas_layouts, 45, 45, 4, 2, 0, 3);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.blue_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 0, 3);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.red_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 12, 15);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.green_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 24, 27);
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.yellow_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 36, 39);
+    load_sprite_sheet(images.rumia.clone(), &mut sprites.rumia, &mut texture_atlas_layouts, 32, 48, 5, 2, 0, 0);
 
     sprites.player_spell_text = Sprite {
         image: images.sidebar.clone(),
@@ -121,13 +126,15 @@ fn load_sprite_sheet(
     texture: Handle<Image>,
     animated_sprite: &mut AnimatedSprite,
     texture_atlas_layouts: &mut ResMut<Assets<TextureAtlasLayout>>,
-    sprite_size: u32,
+    sprite_size_x: u32,
+    sprite_size_y: u32,
     columns: u32,
     rows: u32,
     first_index: usize,
     last_index: usize,
 ) {
-    let layout = TextureAtlasLayout::from_grid(UVec2::splat(sprite_size), columns, rows, None, None);
+    let sprite_size = UVec2::new(sprite_size_x, sprite_size_y);
+    let layout = TextureAtlasLayout::from_grid(sprite_size, columns, rows, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
     let animation_indices = AnimationIndices { first: first_index, last: last_index };

@@ -36,6 +36,7 @@ pub fn level1_setup(mut commands: Commands) {
         commands.spawn((
             Name::new("EnemySpawner"),
             EnemySpawner {
+                name: "Blue Fairy",
                 enemy_type: BlueFairy,
                 starting_position: Vec2::new(SPAWN_LEFT, 150.0),
                 movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
@@ -57,6 +58,7 @@ pub fn level1_setup(mut commands: Commands) {
         commands.spawn((
             Name::new("EnemySpawner"),
             EnemySpawner {
+                name: "Blue Fairy",
                 enemy_type: BlueFairy,
                 starting_position: Vec2::new(SPAWN_RIGHT, 150.0),
                 movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {

@@ -1,6 +1,7 @@
 use crate::bullet::{move_bullets, Bullet};
 use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enemies, update_enemies, Enemy, EnemySystemSet};
 use crate::level1::level1_setup;
+use crate::bosses::rumia::rumia_setup;
 use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, respawn_invincibility, PlayerDeathEvent, PlayerShot, PlayerSystemSet, PlayerContinueEvent};
 use crate::player_stats::{initialize_player_stats, listen_for_player_continue, listen_for_player_death};
 use crate::resources::sprites::{animate_sprite, Sprites};
@@ -14,6 +15,7 @@ pub const FRAME_BORDER_BOTTOM: f32 = -258.0;
 
 pub const SPAWN_LEFT: f32 = FRAME_BORDER_LEFT - 50.0;
 pub const SPAWN_RIGHT: f32 = FRAME_BORDER_RIGHT + 50.0;
+pub const SPAWN_CENTER: f32 =  -128.0;
 
 #[derive(Component)]
 pub struct GameObject;
@@ -26,7 +28,7 @@ pub fn game_plugin(app: &mut App) {
         .add_systems(OnEnter(GameState::StartingGame), (
             game_setup,
             initialize_player_stats,
-            level1_setup,
+            rumia_setup,
         ))
         .add_systems(Update, (
             (

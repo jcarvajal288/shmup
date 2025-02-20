@@ -9,6 +9,7 @@ pub struct Images {
     pub remilia: Handle<Image>,
     pub fairies: Handle<Image>,
     pub player_accessories: Handle<Image>,
+    pub rumia: Handle<Image>,
 }
 
 impl Default for Images {
@@ -21,6 +22,7 @@ impl Default for Images {
             remilia: Handle::default(),
             fairies: Handle::default(),
             player_accessories: Handle::default(),
+            rumia: Handle::default(),
         }
     }
 }
@@ -33,4 +35,5 @@ pub fn load_images(mut images: ResMut<Images>, asset_server: Res<AssetServer>) {
     images.remilia = asset_server.load("images/remilia.png");
     images.fairies = asset_server.load("images/fairies1.png");
     images.player_accessories = asset_server.load("images/player-accessories.png");
+    images.rumia = asset_server.load("images/rumia.png");
 }

@@ -4,7 +4,7 @@ use crate::resources::sprites::{AnimatedSprite, Sprites};
 use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
 use crate::bullet_patterns::bullet_stream::BulletStream;
-use crate::enemy::EnemyType::BlueFairy;
+use crate::enemy::EnemyType::*;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::player::{Player, PlayerShot};
@@ -18,6 +18,7 @@ pub struct Enemy {
 #[derive(Clone)]
 pub enum EnemyType {
     BlueFairy,
+    Rumia,
 }
 
 #[derive(Component)]
@@ -26,11 +27,13 @@ pub struct EnemySpawner {
     pub starting_position: Vec2,
     pub movement_pattern: BoxedMovementPattern,
     pub bullet_pattern: BoxedBulletPattern,
+    pub name: &'static str,
 }
 
 impl Default for EnemySpawner {
     fn default() -> Self {
         Self {
+            name: "Enemy",
             enemy_type: BlueFairy,
             starting_position: Vec2::default(),
             movement_pattern: BoxedMovementPattern(Box::new(MoveStraight::default())),
@@ -44,21 +47,29 @@ pub struct EnemySystemSet;
 
 pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mut EnemySpawner) {
     let enemy_spawner = std::mem::take(spawner);
+    let animated_sprite = get_sprite_for_enemy_type(sprites, &enemy_spawner.enemy_type);
     commands.spawn((
-        Name::new("Enemy"),
+        Name::new(enemy_spawner.name),
         Enemy {
             enemy_type: enemy_spawner.enemy_type.clone(),
             hit_points: 5,
         },
         Transform::from_xyz(enemy_spawner.starting_position.x, enemy_spawner.starting_position.y, 0.6),
-        sprites.blue_fairy.clone(),
-        sprites.blue_fairy.sprite.clone(),
-        sprites.blue_fairy.animation_indices.clone(),
-        sprites.blue_fairy.animation_timer.clone(),
+        animated_sprite.clone(),
+        animated_sprite.sprite.clone(),
+        animated_sprite.animation_indices.clone(),
+        animated_sprite.animation_timer.clone(),
         enemy_spawner.movement_pattern,
         enemy_spawner.bullet_pattern,
         GameObject,
     ));
+}
+
+fn get_sprite_for_enemy_type(sprites: &Res<Sprites>, enemy_type: &EnemyType) -> AnimatedSprite {
+    match enemy_type {
+        BlueFairy => sprites.blue_fairy.clone(),
+        Rumia => sprites.rumia.clone(),
+    }
 }
 
 pub fn update_enemies(
@@ -97,9 +108,10 @@ pub fn check_shot_enemy_collision(
 ) {
     for (mut enemy, enemy_sprite, enemy_transform) in enemy_query.iter_mut() {
         for (shot, shot_transform, shot_sprite, shot_entity) in shot_query.iter() {
+            // TODO: turn this into a box to account for different x and y
             let enemy_hit_circle = BoundingCircle::new(
                 enemy_transform.translation.truncate(),
-                enemy_sprite.sprite_size as f32 / 2.0
+                enemy_sprite.sprite_size.x as f32 / 2.0
             );
             let shot_hit_box = Aabb2d::new(
                 shot_transform.translation.truncate(),
