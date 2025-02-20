@@ -1,4 +1,5 @@
 pub mod move_straight;
+pub mod move_to;
 
 use bevy::prelude::{Component, Res, Time, Transform};
 
