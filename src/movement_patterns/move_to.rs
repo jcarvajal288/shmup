@@ -1,47 +1,64 @@
-use std::f32::consts::PI;
-use bevy::math::{Quat, Vec2, Vec3};
-use bevy::prelude::{Res, Time, Transform};
 use crate::movement_patterns::MovementPattern;
+use bevy::math::Vec2;
+use bevy::prelude::{Res, Time, Transform, Vec3};
 
 #[derive(Clone)]
 pub struct MoveTo {
-    pub destination: Vec2,
-    pub speed: f32,
+    pub direction: Vec3,
+    pub velocity: f32,
     pub acceleration: f32,
-    pub face_travel_direction: bool,
+    pub duration: f32,
+    pub elapsed_time: f32,
 }
 
 impl Default for MoveTo {
     fn default() -> Self {
         Self {
-            destination: Vec2::ZERO,
-            speed: 0.0,
+            direction: Vec3::ZERO,
+            velocity: 0.0,
             acceleration: 0.0,
-            face_travel_direction: false,
+            duration: 0.0,
+            elapsed_time: 0.0,
         }
     }
 }
 
 impl MovementPattern for MoveTo {
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> () {
-        let diff = self.destination - transform.translation.truncate();
-        let angle = diff.y.atan2(diff.x);
-        let movement_direction = Vec3::new(angle.cos(), angle.sin(), 0.0);
-        let movement_distance = self.speed * time.delta_secs();
-        let translation_delta = movement_direction * movement_distance;
-        transform.translation += translation_delta;
-        if self.face_travel_direction {
-            transform.rotation = Quat::from_axis_angle(Vec3::Z, angle + (-PI / 2.0));
+        let delta_time = time.delta_secs();
+        if self.elapsed_time > self.duration {
+            return;
         }
-        self.speed += self.acceleration;
-        if transform.translation.truncate().abs_diff_eq(self.destination, 1.0) {
-            self.speed = 0.0;
-        }
+        self.velocity += self.acceleration * delta_time;
+        transform.translation += self.direction * self.velocity * delta_time;
+        self.elapsed_time += delta_time;
     }
 }
 
-impl MoveTo {
-    pub fn move_finished(&self, transform: &mut Transform) -> bool {
-        transform.translation.truncate() == self.destination
+pub struct MoveToBuilder {
+    pub start: Vec2,
+    pub destination: Vec2,
+    pub time: f32,
+}
+
+pub fn build_move_to(builder: MoveToBuilder) -> MoveTo {
+    let displacement = builder.destination - builder.start;
+    let distance = displacement.length();
+    let direction = displacement.normalize().extend(0.0);
+    let velocity = distance * 2.0 / builder.time;
+    let duration = builder.time;
+    MoveTo {
+        direction,
+        velocity,
+        acceleration: -velocity / builder.time,
+        duration,
+        elapsed_time: 0.0,
     }
+}
+
+fn find_accel_to_stop_at_destination(start: Vec2, dest: Vec2, speed: f32, time: f32) -> Vec2 {
+    let displacement = dest - start;
+    let velocity = displacement.normalize() * speed;
+    let acceleration = (2.0 * (displacement - (velocity * time))) / (time * time);
+    acceleration
 }
