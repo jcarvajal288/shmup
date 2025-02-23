@@ -33,6 +33,10 @@ impl MovementPattern for MoveTo {
         transform.translation += self.direction * self.velocity * delta_time;
         self.elapsed_time += delta_time;
     }
+
+    fn lateral_movement(&mut self) -> f32 {
+        self.direction.x * self.velocity
+    }
 }
 
 pub struct MoveToBuilder {

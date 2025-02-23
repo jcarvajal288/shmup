@@ -33,4 +33,9 @@ impl MovementPattern for MoveStraight {
         }
         self.speed += self.acceleration;
     }
+
+    fn lateral_movement(&mut self) -> f32 {
+        // TODO: this is incorrect, but putting this here to let it compile
+        self.angle
+    }
 }

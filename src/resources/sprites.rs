@@ -68,7 +68,7 @@ pub fn animate_sprite(
 
         if timer.just_finished() {
             if let Some(atlas) = &mut sprite.texture_atlas {
-                atlas.index = if atlas.index >= indices.last {
+                atlas.index = if !(indices.first..indices.last).contains(&atlas.index) {
                     indices.first
                 } else {
                     atlas.index + 1

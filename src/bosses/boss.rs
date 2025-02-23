@@ -3,7 +3,7 @@ use crate::enemy::{EnemySpawner, EnemyType};
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::BoxedMovementPattern;
 use crate::movement_patterns::move_straight::MoveStraight;
-use crate::resources::sprites::Sprites;
+use crate::resources::sprites::{AnimatedSprite, AnimationIndices, Sprites};
 use crate::sprites::get_sprite_for_enemy_type;
 
 #[derive(Component)]
@@ -47,10 +47,19 @@ pub fn spawn_boss(commands: &mut Commands, sprites: &Res<Sprites>, boss_spawner:
 pub fn update_bosses(
     time: Res<Time>,
     mut commands: Commands,
-    mut boss_query: Query<(&Boss, &mut Transform, &mut BoxedMovementPattern)>,
+    mut boss_query: Query<(&Boss, &mut Transform, &mut BoxedMovementPattern, &mut AnimatedSprite, &mut AnimationIndices)>,
 ) {
-    for (boss, mut transform, mut movement_pattern) in boss_query.iter_mut() {
+    for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);
+        let lateral_movement = movement_pattern.0.lateral_movement();
+        if !(-1.0..1.0).contains(&lateral_movement) {
+            indices.first = 6;
+            indices.last = 6;
+        } else {
+            indices.first = 0;
+            indices.last = 0;
+        }
+        sprite.sprite.flip_x = lateral_movement < 0.0;
     }
 }
 
