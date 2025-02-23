@@ -1,5 +1,6 @@
 use bevy::{prelude::*};
 use crate::{despawn_screen, GameState};
+use crate::game::LevelState;
 
 // implement menu as a vector of MainMenuStates
 #[derive(Resource)]
@@ -64,13 +65,14 @@ fn handle_input(
     mut menu_state: ResMut<MainMenuState>,
     app_exit_events: EventWriter<AppExit>,
     game_state: ResMut<NextState<GameState>>,
+    level_state: ResMut<NextState<LevelState>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::ArrowUp) {
         menu_state.selected = if menu_state.selected == 0 { menu_state.options.len() - 1 } else { menu_state.selected - 1 };
     } else if keyboard_input.just_pressed(KeyCode::ArrowDown) {
         menu_state.selected = if menu_state.selected == menu_state.options.len() - 1 { 0 } else { menu_state.selected + 1 };
     } else if keyboard_input.just_pressed(KeyCode::KeyZ) {
-        run_main_menu_action(menu_state.selected, app_exit_events, game_state);
+        run_main_menu_action(menu_state.selected, app_exit_events, game_state, level_state);
     }
 }
 
@@ -78,9 +80,13 @@ fn run_main_menu_action(
     menu_selected: usize,
     mut app_exit_events: EventWriter<AppExit>,
     mut game_state: ResMut<NextState<GameState>>,
+    mut level_state: ResMut<NextState<LevelState>>,
 ) {
     match menu_selected {
-        0 => game_state.set(GameState::StartingGame),
+        0 => {
+            game_state.set(GameState::StartingGame);
+            level_state.set(LevelState::Level1);
+        },
         1 => { app_exit_events.send(AppExit::Success); },
         _ => {}
     }

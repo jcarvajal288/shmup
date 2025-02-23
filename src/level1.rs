@@ -2,15 +2,32 @@ use crate::bullet::BulletType::*;
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
-use crate::enemy::EnemySpawner;
+use crate::enemy::{Enemy, EnemySpawner};
 use crate::enemy::EnemyType::*;
-use crate::game::{GameObject, SpawnTimer, SPAWN_LEFT, SPAWN_RIGHT};
+use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_LEFT, SPAWN_RIGHT};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
 use std::f32::consts::PI;
 
-pub fn level1_setup(mut commands: Commands) {
+
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub enum Level1State {
+    #[default]
+    Setup,
+    PreRumia,
+    Rumia,
+}
+
+pub fn level1_plugin(app: &mut App) {
+    app
+        .add_systems(OnEnter(LevelState::Level1), level1_setup)
+        .add_systems(Update, listen_for_rumia_entrance)
+        .init_state::<Level1State>()
+    ;
+}
+
+fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<Level1State>>) {
 
     let bullet_stream = BulletStream {
         bullet_type: WhiteArrow,
@@ -29,7 +46,7 @@ pub fn level1_setup(mut commands: Commands) {
         ..default()
     };
 
-    for i in 0..5 {
+    for i in 0..1 {
         let initial_delay = 0.0;
         let iter_delay = 1.0;
         let full_delay = initial_delay + (iter_delay * i as f32);
@@ -51,7 +68,7 @@ pub fn level1_setup(mut commands: Commands) {
         ));
     }
 
-    for i in 0..5 {
+    for i in 0..1 {
         let initial_delay = 5.0;
         let iter_delay = 1.0;
         let full_delay = initial_delay + (iter_delay * i as f32);
@@ -71,5 +88,17 @@ pub fn level1_setup(mut commands: Commands) {
             SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
             GameObject,
         ));
+    }
+    next_state.set(Level1State::PreRumia);
+}
+
+fn listen_for_rumia_entrance(
+    spawns: Query<&EnemySpawner>,
+    enemies: Query<&Enemy>,
+    state: Res<State<Level1State>>,
+    mut next_state: ResMut<NextState<Level1State>>,
+) {
+    if *state.get() == Level1State::PreRumia && spawns.is_empty() && enemies.is_empty() {
+        next_state.set(Level1State::Rumia);
     }
 }

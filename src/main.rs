@@ -19,6 +19,8 @@ use resources::sprites::{load_sprites, Sprites};
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use crate::bosses::rumia::rumia_plugin;
+use crate::level1::level1_plugin;
 use crate::menus::game_over_menu::game_over_menu_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -52,7 +54,13 @@ fn main() {
         .init_state::<GameState>()
         .add_systems(OnEnter(GameState::MainMenu), despawn_screen::<GameObject>)
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
-        .add_plugins((main_menu_plugin, game_plugin, game_over_menu_plugin))
+        .add_plugins((
+            main_menu_plugin,
+            game_plugin,
+            game_over_menu_plugin,
+            level1_plugin,
+            rumia_plugin,
+        ))
         //.add_plugins(WorldInspectorPlugin::new())
         .run();
 }

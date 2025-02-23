@@ -1,7 +1,5 @@
 use crate::bullet::{move_bullets, Bullet};
 use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enemies, update_enemies, Enemy, EnemySystemSet};
-use crate::level1::level1_setup;
-use crate::bosses::rumia::rumia_setup;
 use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, respawn_invincibility, PlayerDeathEvent, PlayerShot, PlayerSystemSet, PlayerContinueEvent};
 use crate::player_stats::{initialize_player_stats, listen_for_player_continue, listen_for_player_death};
 use crate::resources::sprites::{animate_sprite, Sprites};
@@ -25,12 +23,18 @@ pub struct GameObject;
 #[derive(Component)]
 pub struct SpawnTimer(pub Timer);
 
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+pub enum LevelState {
+    #[default]
+    None,
+    Level1,
+}
+
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::StartingGame), (
             game_setup,
             initialize_player_stats,
-            rumia_setup,
         ))
         .add_systems(Update, (
             (
@@ -56,6 +60,7 @@ pub fn game_plugin(app: &mut App) {
             move_bullets,
             out_of_bounds_cleanup,
         ).run_if(in_state(GameState::PlayingGame)))
+        .init_state::<LevelState>()
         .add_event::<PlayerDeathEvent>()
         .add_event::<PlayerContinueEvent>()
     ;
