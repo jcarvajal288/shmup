@@ -35,12 +35,22 @@ fn main_menu_setup(
     };
     let text_justification = JustifyText::Center;
 
+    let test_option_id = commands.spawn((
+        Name::new("TestText"),
+        StateScoped(GameState::MainMenu),
+        Text2d::new("Test"),
+        text_font.clone(),
+        TextLayout::new_with_justify(text_justification),
+        TextColor(SELECTED_COLOR),
+        OnMainMenuScreen,
+    )).id();
     let play_option_id = commands.spawn((
         Name::new("PlayText"),
         StateScoped(GameState::MainMenu),
         Text2d::new("Play"),
         text_font.clone(),
         TextLayout::new_with_justify(text_justification),
+        Transform::from_xyz(0.0, -50.0, 100.0),
         TextColor(SELECTED_COLOR),
         OnMainMenuScreen,
     )).id();
@@ -50,12 +60,12 @@ fn main_menu_setup(
         Text2d::new("Quit"),
         text_font.clone(),
         TextLayout::new_with_justify(text_justification),
-        Transform::from_xyz(0.0, -50.0, 100.0),
+        Transform::from_xyz(0.0, -100.0, 100.0),
         TextColor(UNSELECTED_COLOR),
         OnMainMenuScreen,
     )).id();
     commands.insert_resource(MainMenuState {
-        options: vec![play_option_id, quit_option_id],
+        options: vec![test_option_id, play_option_id, quit_option_id],
         selected: 0
     });
 }
@@ -85,9 +95,13 @@ fn run_main_menu_action(
     match menu_selected {
         0 => {
             game_state.set(GameState::StartingGame);
+            level_state.set(LevelState::TestBed);
+        },
+        1 => {
+            game_state.set(GameState::StartingGame);
             level_state.set(LevelState::Level1);
         },
-        1 => { app_exit_events.send(AppExit::Success); },
+        2 => { app_exit_events.send(AppExit::Success); },
         _ => {}
     }
 }

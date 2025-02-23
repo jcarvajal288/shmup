@@ -10,6 +10,7 @@ mod menus;
 mod resources;
 mod bosses;
 mod sprites;
+mod testbed;
 
 use crate::game::{game_plugin, GameObject};
 use resources::images::{load_images, Images};
@@ -22,6 +23,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use crate::bosses::rumia::rumia_plugin;
 use crate::level1::level1_plugin;
 use crate::menus::game_over_menu::game_over_menu_plugin;
+use crate::testbed::testbed_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
@@ -58,6 +60,7 @@ fn main() {
             main_menu_plugin,
             game_plugin,
             game_over_menu_plugin,
+            testbed_plugin,
             level1_plugin,
             rumia_plugin,
         ))

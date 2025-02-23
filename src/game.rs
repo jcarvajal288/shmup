@@ -27,6 +27,7 @@ pub struct SpawnTimer(pub Timer);
 pub enum LevelState {
     #[default]
     None,
+    TestBed,
     Level1,
 }
 
