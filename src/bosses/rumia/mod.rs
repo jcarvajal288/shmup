@@ -6,14 +6,15 @@ use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP, SPAWN_CENTER, SPAWN_
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
+use crate::bosses::boss::BossSpawner;
 
 pub fn rumia_setup(mut commands: Commands) {
     let start = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
-    let destination = Vec2::new(SPAWN_CENTER, FRAME_BORDER_TOP - 100.0);
+    let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
     let time = 1.5;
     commands.spawn((
         Name::new("RumiaSpawner"),
-        EnemySpawner {
+        BossSpawner {
             name: "Rumia",
             enemy_type: Rumia,
             starting_position: start,
@@ -22,7 +23,6 @@ pub fn rumia_setup(mut commands: Commands) {
                 destination,
                 time,
             }))),
-            bullet_pattern: BoxedBulletPattern(Box::new(BulletStream::default())),
         },
         SpawnTimer(Timer::from_seconds(0.0, TimerMode::Once)),
         GameObject,

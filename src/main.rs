@@ -9,6 +9,7 @@ mod player_stats;
 mod menus;
 mod resources;
 mod bosses;
+mod sprites;
 
 use crate::game::{game_plugin, GameObject};
 use resources::images::{load_images, Images};

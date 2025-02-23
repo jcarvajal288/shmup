@@ -7,6 +7,7 @@ use crate::player_stats::{initialize_player_stats, listen_for_player_continue, l
 use crate::resources::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
+use crate::bosses::boss::{spawn_bosses, update_bosses};
 
 pub const FRAME_BORDER_LEFT: f32 = -353.0;
 pub const FRAME_BORDER_TOP: f32 = 266.0;
@@ -45,7 +46,9 @@ pub fn game_plugin(app: &mut App) {
             ).in_set(PlayerSystemSet),
             (
                 spawn_enemies,
+                spawn_bosses,
                 update_enemies,
+                update_bosses,
                 check_shot_enemy_collision,
                 check_for_enemy_death,
             ).in_set(EnemySystemSet),

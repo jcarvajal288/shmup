@@ -1,5 +1,5 @@
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
-use crate::movement_patterns::{BoxedMovementPattern};
+use crate::movement_patterns::BoxedMovementPattern;
 use crate::resources::sprites::{AnimatedSprite, Sprites};
 use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
@@ -8,6 +8,7 @@ use crate::enemy::EnemyType::*;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::player::{Player, PlayerShot};
+use crate::sprites;
 
 #[derive(Component)]
 pub struct Enemy {
@@ -47,7 +48,7 @@ pub struct EnemySystemSet;
 
 pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mut EnemySpawner) {
     let enemy_spawner = std::mem::take(spawner);
-    let animated_sprite = get_sprite_for_enemy_type(sprites, &enemy_spawner.enemy_type);
+    let animated_sprite = sprites::get_sprite_for_enemy_type(sprites, &enemy_spawner.enemy_type);
     commands.spawn((
         Name::new(enemy_spawner.name),
         Enemy {
@@ -63,13 +64,6 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
         enemy_spawner.bullet_pattern,
         GameObject,
     ));
-}
-
-fn get_sprite_for_enemy_type(sprites: &Res<Sprites>, enemy_type: &EnemyType) -> AnimatedSprite {
-    match enemy_type {
-        BlueFairy => sprites.blue_fairy.clone(),
-        Rumia => sprites.rumia.clone(),
-    }
 }
 
 pub fn update_enemies(
