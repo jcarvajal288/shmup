@@ -8,6 +8,8 @@ pub const FAIRY_SPRITE_SIZE: u32 = 32;
 pub struct AnimationIndices {
     pub first: usize,
     pub last: usize,
+    pub next_first: usize,
+    pub next_last: usize,
 }
 
 #[derive(Component, Deref, DerefMut, Default, Clone)]
@@ -61,13 +63,14 @@ impl Default for Sprites {
 
 pub fn animate_sprite(
     time: Res<Time>,
-    mut query: Query<(&AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
+    mut query: Query<(&mut AnimationIndices, &mut AnimationTimer, &mut Sprite)>,
 ) {
-    for (indices, mut timer, mut sprite) in &mut query {
-        timer.tick(time.delta());
-
-        if timer.just_finished() {
+    for (mut indices, mut timer, mut sprite) in &mut query {
+        if timer.tick(time.delta()).just_finished() {
             if let Some(atlas) = &mut sprite.texture_atlas {
+                if atlas.index == indices.last {
+                    next_animation(&mut indices);
+                }
                 atlas.index = if !(indices.first..indices.last).contains(&atlas.index) {
                     indices.first
                 } else {
@@ -122,6 +125,30 @@ pub fn load_sprites(
     };
 }
 
+pub fn set_animation_frames(indices: &mut AnimationIndices, new_first: usize, new_last: usize) {
+    indices.first = new_first;
+    indices.last = new_last;
+    indices.next_first = new_first;
+    indices.next_last = new_last;
+}
+
+pub fn set_next_animation(indices: &mut AnimationIndices, new_first: usize, new_last: usize) {
+    indices.next_first = new_first;
+    indices.next_last = new_last;
+}
+
+pub fn set_one_off_animation(indices: &mut AnimationIndices, new_first: usize, new_last: usize) {
+    indices.next_first = indices.first;
+    indices.next_last = indices.last;
+    indices.first = new_first;
+    indices.last = new_last;
+}
+
+fn next_animation(indices: &mut AnimationIndices) {
+    indices.first = indices.next_first;
+    indices.last = indices.next_last;
+}
+
 fn load_sprite_sheet(
     texture: Handle<Image>,
     animated_sprite: &mut AnimatedSprite,
@@ -137,7 +164,12 @@ fn load_sprite_sheet(
     let layout = TextureAtlasLayout::from_grid(sprite_size, columns, rows, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
-    let animation_indices = AnimationIndices { first: first_index, last: last_index };
+    let animation_indices = AnimationIndices {
+        first: first_index,
+        last: last_index,
+        next_first: first_index,
+        next_last: last_index,
+    };
     animated_sprite.sprite = Sprite::from_atlas_image(
         texture,
         TextureAtlas {

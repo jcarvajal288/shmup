@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 use std::time::Duration;
 use crate::bullet::{props_for_bullet_type, Bullet};
 use crate::game::{GameObject, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
-use crate::resources::sprites::{AnimationIndices, Sprites};
+use crate::resources::sprites::{set_animation_frames, AnimationIndices, Sprites};
 use bevy::math::bounding::{BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
 
@@ -86,16 +86,13 @@ pub fn switch_player_sprite(
     let right_pressed = keyboard.pressed(KeyCode::ArrowRight);
     for (_player, mut sprite, mut animation_indices) in &mut player_query {
         if left_pressed && !right_pressed {
-            animation_indices.first = 4;
-            animation_indices.last = 7;
+            set_animation_frames(&mut animation_indices, 4, 7);
             sprite.flip_x = false;
         } else if right_pressed && !left_pressed {
-            animation_indices.first = 4;
-            animation_indices.last = 7;
+            set_animation_frames(&mut animation_indices, 4, 7);
             sprite.flip_x = true;
         } else {
-            animation_indices.first = 0;
-            animation_indices.last = 3;
+            set_animation_frames(&mut animation_indices, 0, 3);
             sprite.flip_x = false;
         }
     }

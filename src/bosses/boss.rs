@@ -2,7 +2,7 @@ use crate::enemy::EnemyType;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
-use crate::resources::sprites::{AnimatedSprite, AnimationIndices, Sprites};
+use crate::resources::sprites::{set_next_animation, AnimatedSprite, AnimationIndices, Sprites};
 use crate::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
 
@@ -52,11 +52,9 @@ pub fn update_bosses(
         movement_pattern.0.do_move(&mut *transform, &time);
         let lateral_movement = movement_pattern.0.lateral_movement();
         if !(-1.0..1.0).contains(&lateral_movement) {
-            indices.first = 6;
-            indices.last = 6;
+            set_next_animation(&mut indices, 5, 5);
         } else {
-            indices.first = 0;
-            indices.last = 0;
+            set_next_animation(&mut indices, 4, 4);
         }
         sprite.sprite.flip_x = lateral_movement < 0.0;
     }
