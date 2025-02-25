@@ -1,17 +1,27 @@
-use crate::bullet_patterns::bullet_stream::BulletStream;
-use crate::bullet_patterns::BoxedBulletPattern;
-use crate::enemy::EnemySpawner;
+mod spell1;
+
+use crate::bosses::boss::{Boss, BossSpawner};
 use crate::enemy::EnemyType::Rumia;
-use crate::game::{GameObject, LevelState, SpawnTimer, FRAME_BORDER_TOP, SPAWN_CENTER, SPAWN_TOP};
+use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP, SPAWN_CENTER, SPAWN_TOP};
+use crate::level1::Level1State;
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
-use crate::bosses::boss::BossSpawner;
-use crate::level1::Level1State;
+use crate::bosses::rumia::spell1::spell1_plugin;
+
+#[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
+enum RumiaState {
+    #[default]
+    Setup,
+    Spell1,
+}
 
 pub fn rumia_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(Level1State::Rumia), rumia_setup)
+        .add_systems(Update, rumia_orchestrator)
+        .add_plugins(spell1_plugin)
+        .init_state::<RumiaState>()
     ;
 }
 
@@ -34,4 +44,16 @@ pub fn rumia_setup(mut commands: Commands) {
         SpawnTimer(Timer::from_seconds(1.0, TimerMode::Once)),
         GameObject,
     ));
+}
+
+pub fn rumia_orchestrator(
+    boss_query: Query<(&Boss, &BoxedMovementPattern)>,
+    rumia_state: Res<State<RumiaState>>,
+    mut rumia_next_state: ResMut<NextState<RumiaState>>,
+) {
+    for (_boss, movement_pattern) in boss_query.iter() {
+        if *rumia_state.get() == RumiaState::Setup && movement_pattern.0.is_finished() {
+            rumia_next_state.set(RumiaState::Spell1);
+        }
+    }
 }

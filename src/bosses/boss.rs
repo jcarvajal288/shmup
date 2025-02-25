@@ -1,10 +1,10 @@
-use bevy::prelude::*;
-use crate::enemy::{EnemySpawner, EnemyType};
+use crate::enemy::EnemyType;
 use crate::game::{GameObject, SpawnTimer};
-use crate::movement_patterns::BoxedMovementPattern;
 use crate::movement_patterns::move_straight::MoveStraight;
+use crate::movement_patterns::BoxedMovementPattern;
 use crate::resources::sprites::{AnimatedSprite, AnimationIndices, Sprites};
 use crate::sprites::get_sprite_for_enemy_type;
+use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct Boss;
@@ -46,7 +46,6 @@ pub fn spawn_boss(commands: &mut Commands, sprites: &Res<Sprites>, boss_spawner:
 
 pub fn update_bosses(
     time: Res<Time>,
-    mut commands: Commands,
     mut boss_query: Query<(&Boss, &mut Transform, &mut BoxedMovementPattern, &mut AnimatedSprite, &mut AnimationIndices)>,
 ) {
     for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {

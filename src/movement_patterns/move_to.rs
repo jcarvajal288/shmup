@@ -37,6 +37,10 @@ impl MovementPattern for MoveTo {
     fn lateral_movement(&mut self) -> f32 {
         self.direction.x * self.velocity
     }
+
+    fn is_finished(&self) -> bool {
+         self.elapsed_time > self.duration
+    }
 }
 
 pub struct MoveToBuilder {

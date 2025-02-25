@@ -6,6 +6,8 @@ use crate::resources::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
 use crate::bosses::boss::{spawn_bosses, update_bosses};
+use crate::level1::level1_plugin;
+use crate::testbed::testbed_plugin;
 
 pub const FRAME_BORDER_LEFT: f32 = -353.0;
 pub const FRAME_BORDER_TOP: f32 = 266.0;
@@ -61,6 +63,10 @@ pub fn game_plugin(app: &mut App) {
             move_bullets,
             out_of_bounds_cleanup,
         ).run_if(in_state(GameState::PlayingGame)))
+        .add_plugins((
+            testbed_plugin,
+            level1_plugin,
+        ))
         .init_state::<LevelState>()
         .add_event::<PlayerDeathEvent>()
         .add_event::<PlayerContinueEvent>()

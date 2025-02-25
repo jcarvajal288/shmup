@@ -7,6 +7,8 @@ pub trait MovementPattern {
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> ();
 
     fn lateral_movement(&mut self) -> f32;
+
+    fn is_finished(&self) -> bool;
 }
 
 #[derive(Component)]

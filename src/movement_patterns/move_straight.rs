@@ -38,4 +38,8 @@ impl MovementPattern for MoveStraight {
         // TODO: this is incorrect, but putting this here to let it compile
         self.angle
     }
+
+    fn is_finished(&self) -> bool {
+        false
+    }
 }

@@ -60,9 +60,6 @@ fn main() {
             main_menu_plugin,
             game_plugin,
             game_over_menu_plugin,
-            testbed_plugin,
-            level1_plugin,
-            rumia_plugin,
         ))
         //.add_plugins(WorldInspectorPlugin::new())
         .run();

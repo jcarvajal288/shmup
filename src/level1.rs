@@ -9,7 +9,7 @@ use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
 use std::f32::consts::PI;
-
+use crate::bosses::rumia::rumia_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum Level1State {
@@ -23,6 +23,7 @@ pub fn level1_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(LevelState::Level1), level1_setup)
         .add_systems(Update, listen_for_rumia_entrance)
+        .add_plugins(rumia_plugin)
         .init_state::<Level1State>()
     ;
 }
