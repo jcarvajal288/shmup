@@ -30,6 +30,7 @@ pub struct Sprites {
     pub player_spell_text: Sprite,
     pub life_counter: Sprite,
     pub bullet_white_arrow: Sprite,
+    pub bullet_blue_rimmed_circle: Sprite,
     pub blue_fang_shot: Sprite,
 
     pub remilia: AnimatedSprite,
@@ -54,6 +55,7 @@ impl Default for Sprites {
             player_spell_text: Sprite::default(),
             life_counter: Sprite::default(),
             bullet_white_arrow: Sprite::default(),
+            bullet_blue_rimmed_circle: Sprite::default(),
             blue_fang_shot: Sprite::default(),
             rumia: AnimatedSprite::default(),
         }
@@ -112,17 +114,24 @@ pub fn load_sprites(
         rect: Option::from(Rect::new(368.0, 98.0, 383.0, 113.0)),
         ..Default::default()
     };
-    sprites.bullet_white_arrow = Sprite {
-        image: images.bullets.clone(),
-        rect: Option::from(Rect::new(0.0, 16.0, 16.0, 32.0)),
-        ..Default::default()
-    };
+    sprites.bullet_white_arrow = get_bullet_sprite(&images, 0, 1);
+    sprites.bullet_blue_rimmed_circle = get_bullet_sprite(&images, 5, 2);
     sprites.blue_fang_shot = Sprite {
         image: images.player_accessories.clone(),
         color: Color::srgba(0.8, 0.8, 1.0, 0.5),
         rect: Option::from(Rect::new(62.0, 36.0, 109.0, 42.0)),
         ..Default::default()
     };
+}
+
+fn get_bullet_sprite(images: &ResMut<Images>, x_coord: usize, y_coord: usize) -> Sprite {
+    let x = x_coord as f32 * 16.0;
+    let y = y_coord as f32 * 16.0;
+    Sprite {
+        image: images.bullets.clone(),
+        rect: Option::from(Rect::new(x, y, x + 16.0, y + 16.0)),
+        ..Default::default()
+    }
 }
 
 pub fn set_animation_frames(indices: &mut AnimationIndices, new_first: usize, new_last: usize) {

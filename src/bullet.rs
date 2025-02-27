@@ -15,6 +15,7 @@ pub struct BulletProps {
 #[derive(Clone, Copy)]
 pub enum BulletType {
     WhiteArrow,
+    BlueRimmedCircle,
 }
 
 pub struct BulletSpawner {
@@ -26,7 +27,7 @@ pub struct BulletSpawner {
 pub fn spawn_bullet(commands: &mut Commands, sprites: &ResMut<Sprites>, bullet_spawner: BulletSpawner) {
     commands.spawn((
         Name::new("Bullet"),
-        sprites.bullet_white_arrow.clone(),
+        sprite_for_bullet_type(&bullet_spawner.bullet_type, &sprites),
         Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
         Bullet {
             bullet_type: bullet_spawner.bullet_type,
@@ -36,11 +37,9 @@ pub fn spawn_bullet(commands: &mut Commands, sprites: &ResMut<Sprites>, bullet_s
     ));
 }
 
-pub fn props_for_bullet_type(bullet_type: &BulletType) -> BulletProps {
-    match bullet_type {
-        BulletType::WhiteArrow => BulletProps {
-            hit_circle_radius: 1.0,
-        }
+pub fn props_for_bullet_type(_bullet_type: &BulletType) -> BulletProps {
+    BulletProps {
+        hit_circle_radius: 1.0,
     }
 }
 
@@ -50,5 +49,12 @@ pub fn move_bullets(
 ) {
     for (_bullet, mut transform, mut movement_pattern) in bullet_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);
+    }
+}
+
+fn sprite_for_bullet_type(bullet_type: &BulletType, sprites: &Sprites) -> Sprite {
+    match bullet_type {
+        BulletType::WhiteArrow => sprites.bullet_white_arrow.clone(),
+        BulletType::BlueRimmedCircle => sprites.bullet_blue_rimmed_circle.clone(),
     }
 }

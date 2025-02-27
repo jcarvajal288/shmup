@@ -34,9 +34,9 @@ fn spell1_setup(
         commands.spawn((
             Name::new("spell1"),
             BoxedBulletPattern(Box::new(BulletStream {
-                bullet_type: BulletType::WhiteArrow,
+                bullet_type: BulletType::BlueRimmedCircle,
                 bullets_per_wave: 11,
-                waves_per_iteration: 5,
+                waves_per_iteration: 7,
                 num_iterations: 1,
                 angle: BulletPatternAngle {
                     target: Player,
