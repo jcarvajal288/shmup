@@ -32,7 +32,8 @@ pub fn spell1_plugin(app: &mut App) {
         .add_systems(Update, wait_for_move_to_phase2
             .run_if(in_state(Spell1State::MoveToPhase2)))
         .add_systems(OnEnter(Spell1State::Phase2), phase2_setup)
-        .add_systems(Update, (update_spellcard).run_if(in_state(RumiaState::Spell1)))
+        .add_systems(Update, (update_spellcard)
+            .run_if(in_state(RumiaState::Spell1)))
         .init_state::<Spell1State>()
     ;
 }

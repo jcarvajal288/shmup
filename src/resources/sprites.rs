@@ -29,8 +29,6 @@ pub struct Sprites {
     pub frame: Sprite,
     pub player_spell_text: Sprite,
     pub life_counter: Sprite,
-    pub bullet_white_arrow: Sprite,
-    pub bullet_blue_rimmed_circle: Sprite,
     pub blue_fang_shot: Sprite,
 
     pub remilia: AnimatedSprite,
@@ -40,6 +38,14 @@ pub struct Sprites {
     pub yellow_fairy: AnimatedSprite,
 
     pub rumia: AnimatedSprite,
+
+    pub bullet_white_arrow: Sprite,
+    pub bullet_blue_rimmed_circle: Sprite,
+    pub bullet_small_red_circle: Sprite,
+    pub bullet_small_yellow_circle: Sprite,
+    pub bullet_small_green_circle: Sprite,
+    pub bullet_small_purple_circle: Sprite,
+    pub bullet_small_blue_circle: Sprite,
 }
 
 impl Default for Sprites {
@@ -54,10 +60,16 @@ impl Default for Sprites {
             yellow_fairy: AnimatedSprite::default(),
             player_spell_text: Sprite::default(),
             life_counter: Sprite::default(),
-            bullet_white_arrow: Sprite::default(),
-            bullet_blue_rimmed_circle: Sprite::default(),
             blue_fang_shot: Sprite::default(),
             rumia: AnimatedSprite::default(),
+
+            bullet_white_arrow: Sprite::default(),
+            bullet_blue_rimmed_circle: Sprite::default(),
+            bullet_small_red_circle: Sprite::default(),
+            bullet_small_yellow_circle: Sprite::default(),
+            bullet_small_green_circle: Sprite::default(),
+            bullet_small_purple_circle: Sprite::default(),
+            bullet_small_blue_circle: Sprite::default(),
         }
     }
 }
@@ -114,22 +126,29 @@ pub fn load_sprites(
         rect: Option::from(Rect::new(368.0, 98.0, 383.0, 113.0)),
         ..Default::default()
     };
-    sprites.bullet_white_arrow = get_bullet_sprite(&images, 0, 1);
-    sprites.bullet_blue_rimmed_circle = get_bullet_sprite(&images, 5, 2);
     sprites.blue_fang_shot = Sprite {
         image: images.player_accessories.clone(),
         color: Color::srgba(0.8, 0.8, 1.0, 0.5),
         rect: Option::from(Rect::new(62.0, 36.0, 109.0, 42.0)),
         ..Default::default()
     };
+
+    sprites.bullet_white_arrow = get_bullet_sprite(&images, 0, 0, 0, 1, 16);
+    sprites.bullet_blue_rimmed_circle = get_bullet_sprite(&images, 0, 0, 5, 2, 16);
+    sprites.bullet_small_red_circle = get_bullet_sprite(&images, 0, 192, 1, 0, 8);
+    sprites.bullet_small_yellow_circle = get_bullet_sprite(&images, 0, 192, 4, 1, 8);
+    sprites.bullet_small_green_circle = get_bullet_sprite(&images, 0, 192, 2, 1, 8);
+    sprites.bullet_small_purple_circle = get_bullet_sprite(&images, 0, 192, 3, 0, 8);
+    sprites.bullet_small_blue_circle = get_bullet_sprite(&images, 0, 192, 0, 1, 8);
 }
 
-fn get_bullet_sprite(images: &ResMut<Images>, x_coord: usize, y_coord: usize) -> Sprite {
-    let x = x_coord as f32 * 16.0;
-    let y = y_coord as f32 * 16.0;
+fn get_bullet_sprite(images: &ResMut<Images>, origin_x: usize, origin_y: usize, x_coord: usize, y_coord: usize, size: usize) -> Sprite {
+    let x = (origin_x + x_coord * size) as f32;
+    let y = (origin_y + y_coord * size) as f32;
+    let size_f32 = size as f32;
     Sprite {
         image: images.bullets.clone(),
-        rect: Option::from(Rect::new(x, y, x + 16.0, y + 16.0)),
+        rect: Option::from(Rect::new(x, y, x + size_f32, y + size_f32)),
         ..Default::default()
     }
 }
