@@ -5,7 +5,7 @@ use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::bullet_patterns::bullet_stream::BulletStream;
-use crate::bullet_patterns::BulletPatternTarget::Player;
+use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::enemy::Enemy;
 use crate::game::{SPAWN_LEFT, SPAWN_TOP};
 use crate::movement_patterns::BoxedMovementPattern;
@@ -54,6 +54,7 @@ fn phase1_setup(
                 angle: BulletPatternAngle {
                     target: Player,
                     spread: PI * 2.0,
+                    offset: 0.0,
                 },
                 speed: 50.0,
                 acceleration: 1.0,
@@ -110,8 +111,43 @@ fn wait_for_move_to_phase2(
     }
 }
 
-fn phase2_setup() {
-    println!("phase2");
+fn phase2_setup(
+    mut commands: Commands,
+    mut rumia_query: Query<(&Boss, &Transform)>,
+) {
+    for (_boss, transform) in rumia_query.iter_mut() {
+        let waves = [
+            (BulletType::SmallRedCircle, 0.0),
+            (BulletType::SmallYellowCircle, 1.0),
+            (BulletType::SmallGreenCircle, 2.0),
+            (BulletType::SmallPurpleCircle, 3.0),
+            (BulletType::SmallBlueCircle, 4.0)
+        ];
+        for (bullet_type, index) in waves.iter() {
+            commands.spawn((
+                Name::new("spell1"),
+                BoxedBulletPattern(Box::new(BulletStream {
+                    bullet_type: bullet_type.clone(),
+                    bullets_per_wave: 64,
+                    waves_per_iteration: 1,
+                    num_iterations: 1,
+                    angle: BulletPatternAngle {
+                        target: Down,
+                        spread: PI * 2.0,
+                        offset: index * 64.0,
+                    },
+                    speed: 0.0,
+                    acceleration: 0.5,
+                    startup_timer: Timer::from_seconds(0.2 * (index + 1.0), TimerMode::Once),
+                    wave_timer: Timer::from_seconds(0.05, TimerMode::Once),
+                    iteration_timer: Default::default(),
+                    waves_left: 0,
+                    iterations_left: 0,
+                })),
+                transform.clone(),
+            ));
+        }
+    }
 }
 
 fn update_spellcard(

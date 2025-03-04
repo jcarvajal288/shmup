@@ -38,6 +38,7 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<Level1S
         angle: BulletPatternAngle {
             target: Player,
             spread: PI * 2.0,
+            offset: 0.0,
         },
         speed: 20.0,
         acceleration: 0.3,

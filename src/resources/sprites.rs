@@ -135,11 +135,11 @@ pub fn load_sprites(
 
     sprites.bullet_white_arrow = get_bullet_sprite(&images, 0, 0, 0, 1, 16);
     sprites.bullet_blue_rimmed_circle = get_bullet_sprite(&images, 0, 0, 5, 2, 16);
-    sprites.bullet_small_red_circle = get_bullet_sprite(&images, 0, 192, 1, 0, 8);
-    sprites.bullet_small_yellow_circle = get_bullet_sprite(&images, 0, 192, 4, 1, 8);
-    sprites.bullet_small_green_circle = get_bullet_sprite(&images, 0, 192, 2, 1, 8);
-    sprites.bullet_small_purple_circle = get_bullet_sprite(&images, 0, 192, 3, 0, 8);
-    sprites.bullet_small_blue_circle = get_bullet_sprite(&images, 0, 192, 0, 1, 8);
+    sprites.bullet_small_red_circle = get_bullet_sprite(&images, 0, 240, 1, 0, 8);
+    sprites.bullet_small_yellow_circle = get_bullet_sprite(&images, 0, 240, 4, 1, 8);
+    sprites.bullet_small_green_circle = get_bullet_sprite(&images, 0, 240, 2, 1, 8);
+    sprites.bullet_small_purple_circle = get_bullet_sprite(&images, 0, 240, 3, 0, 8);
+    sprites.bullet_small_blue_circle = get_bullet_sprite(&images, 0, 240, 0, 1, 8);
 }
 
 fn get_bullet_sprite(images: &ResMut<Images>, origin_x: usize, origin_y: usize, x_coord: usize, y_coord: usize, size: usize) -> Sprite {

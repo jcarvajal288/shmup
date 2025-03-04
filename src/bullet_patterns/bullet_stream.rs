@@ -29,10 +29,14 @@ impl Default for BulletStream {
     fn default() -> Self {
         Self {
             bullet_type: BulletType::WhiteArrow,
-            bullets_per_wave: 0,
-            waves_per_iteration: 0,
-            num_iterations: 0,
-            angle: BulletPatternAngle { target: Player, spread: PI / 2.0 },
+            bullets_per_wave: 1,
+            waves_per_iteration: 1,
+            num_iterations: 1,
+            angle: BulletPatternAngle {
+                target: Player,
+                spread: PI / 2.0,
+                offset: 0.0,
+            },
             speed: 0.0,
             acceleration: 0.0,
             startup_timer: Default::default(),
@@ -103,7 +107,7 @@ impl BulletStream {
         } else {
             let step_size = self.angle.spread / (self.bullets_per_wave as f32 - 1.0);
             let angles = (0..self.bullets_per_wave as i32).map(|i: i32| {
-                return firing_angle - (self.angle.spread / 2.0) + (i as f32 * step_size);
+                return firing_angle - (self.angle.spread / 2.0) + (i as f32 * step_size) + self.angle.offset;
             }).collect::<Vec<_>>();
 
             for angle in angles {
