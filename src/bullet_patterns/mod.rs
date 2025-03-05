@@ -1,13 +1,16 @@
 pub mod bullet_stream;
+pub mod circle_spawn;
 
-use bevy::prelude::{Commands, Component, Res, ResMut, Time, Transform};
+use crate::bullet_patterns::BulletPatternTarget::Player;
+use crate::movement_patterns::MovementPattern;
 use crate::resources::sprites::Sprites;
+use bevy::prelude::{Commands, Component, Res, Time, Transform};
 
 pub trait BulletPattern {
     fn fire(
         &mut self,
         commands: &mut Commands,
-        sprites: &ResMut<Sprites>,
+        sprites: &Res<Sprites>,
         transform: Transform,
         time: &Res<Time>,
         player_transform: &Transform,
@@ -29,3 +32,12 @@ pub struct BulletPatternAngle {
     pub spread: f32,
     pub offset: f32,
 }
+
+fn get_target_transform(target: &BulletPatternTarget, starting_transform: &Transform, player_transform: &Transform) -> Transform {
+    if *target == Player {
+        Transform::from_translation(player_transform.translation - starting_transform.translation)
+    } else {
+        Transform::from_translation(*starting_transform.down())
+    }
+}
+

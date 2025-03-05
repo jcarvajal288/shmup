@@ -29,7 +29,7 @@ pub struct BulletSpawner {
     pub movement_pattern: BoxedMovementPattern,
 }
 
-pub fn spawn_bullet(commands: &mut Commands, sprites: &ResMut<Sprites>, bullet_spawner: BulletSpawner) {
+pub fn spawn_bullet(commands: &mut Commands, sprites: &Res<Sprites>, bullet_spawner: BulletSpawner) {
     commands.spawn((
         Name::new("Bullet"),
         sprite_for_bullet_type(&bullet_spawner.bullet_type, &sprites),

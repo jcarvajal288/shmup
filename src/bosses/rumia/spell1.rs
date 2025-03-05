@@ -6,8 +6,9 @@ use crate::bullet::BulletType;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::bullet_patterns::BulletPatternTarget::*;
+use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::enemy::Enemy;
-use crate::game::{SPAWN_LEFT, SPAWN_TOP};
+use crate::game::{SPAWN_CENTER, SPAWN_LEFT, SPAWN_TOP};
 use crate::movement_patterns::BoxedMovementPattern;
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices, Sprites};
@@ -48,7 +49,7 @@ fn phase1_setup(
             Name::new("spell1"),
             BoxedBulletPattern(Box::new(BulletStream {
                 bullet_type: BulletType::BlueRimmedCircle,
-                bullets_per_wave: 11,
+                bullets_per_wave: 16,
                 waves_per_iteration: 7,
                 num_iterations: 1,
                 angle: BulletPatternAngle {
@@ -56,8 +57,8 @@ fn phase1_setup(
                     spread: PI * 2.0,
                     offset: 0.0,
                 },
-                speed: 50.0,
-                acceleration: 1.0,
+                speed: 200.0,
+                acceleration: -1.0,
                 startup_timer: Default::default(),
                 wave_timer: Timer::from_seconds(0.05, TimerMode::Once),
                 iteration_timer: Default::default(),
@@ -90,7 +91,7 @@ fn move_to_phase2_setup(
 ) {
     for (_boss, transform, mut boxed_movement_pattern) in rumia_query.iter_mut() {
         let start = transform.translation.xy();
-        let destination = Vec2::new(SPAWN_LEFT + 100.0, SPAWN_TOP - 100.0);
+        let destination = Vec2::new(SPAWN_CENTER, SPAWN_TOP - 100.0);
         let time = 1.5;
         boxed_movement_pattern.0 = Box::new(build_move_to(MoveToBuilder {
             start,
@@ -126,23 +127,19 @@ fn phase2_setup(
         for (bullet_type, index) in waves.iter() {
             commands.spawn((
                 Name::new("spell1"),
-                BoxedBulletPattern(Box::new(BulletStream {
+                BoxedBulletPattern(Box::new(CircleSpawn {
                     bullet_type: bullet_type.clone(),
-                    bullets_per_wave: 64,
-                    waves_per_iteration: 1,
-                    num_iterations: 1,
+                    bullets_in_circle: 64,
+                    bullets_in_lines: 1,
                     angle: BulletPatternAngle {
                         target: Down,
-                        spread: PI * 2.0,
-                        offset: index * 64.0,
+                        spread: 2.0 * PI,
+                        offset: 0.0,
                     },
-                    speed: 0.0,
-                    acceleration: 0.5,
-                    startup_timer: Timer::from_seconds(0.2 * (index + 1.0), TimerMode::Once),
-                    wave_timer: Timer::from_seconds(0.05, TimerMode::Once),
-                    iteration_timer: Default::default(),
-                    waves_left: 0,
-                    iterations_left: 0,
+                    spawn_circle_radius: 100.0,
+                    starting_speed: 0.0,
+                    final_speed: 0.0,
+                    time_to_final_speed: 0.0,
                 })),
                 transform.clone(),
             ));
@@ -153,7 +150,7 @@ fn phase2_setup(
 fn update_spellcard(
     time: Res<Time>,
     mut commands: Commands,
-    sprites: ResMut<Sprites>,
+    sprites: Res<Sprites>,
     mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &Transform)>,
     player_query: Query<&Transform, (With<crate::player::Player>, Without<Enemy>)>,
 ) {

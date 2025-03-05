@@ -1,11 +1,12 @@
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::BulletPatternTarget::Player;
-use crate::bullet_patterns::{BulletPattern, BulletPatternAngle, BulletPatternTarget};
+use crate::bullet_patterns::{get_target_transform, BulletPattern, BulletPatternAngle};
 use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::BoxedMovementPattern;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::{Commands, Component, Res, ResMut, Time, Timer, Transform, Vec2};
 use std::f32::consts::PI;
+use crate::bullet_patterns;
 
 #[derive(Component, Clone)]
 pub struct BulletStream {
@@ -53,7 +54,7 @@ impl BulletPattern for BulletStream {
     fn fire(
         &mut self,
         commands: &mut Commands,
-        sprites: &ResMut<Sprites>,
+        sprites: &Res<Sprites>,
         transform: Transform,
         time: &Res<Time>,
         player_transform: &Transform,
@@ -84,7 +85,7 @@ impl BulletPattern for BulletStream {
 
 impl BulletStream {
 
-    fn fire_bullet(&mut self, commands: &mut Commands, sprites: &ResMut<Sprites>, transform: &Transform, firing_angle: f32) {
+    fn fire_bullet(&mut self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, firing_angle: f32) {
 
         spawn_bullet(commands, &sprites, BulletSpawner {
             bullet_type: self.bullet_type,
@@ -98,7 +99,7 @@ impl BulletStream {
         });
     }
 
-    fn fire_wave(&mut self, commands: &mut Commands, sprites: &ResMut<Sprites>, transform: &Transform, player_transform: &Transform) {
+    fn fire_wave(&mut self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, player_transform: &Transform) {
         let target = get_target_transform(&self.angle.target, &transform, player_transform);
         let firing_angle = target.translation.y.atan2(target.translation.x);
 
@@ -118,10 +119,3 @@ impl BulletStream {
     }
 }
 
-fn get_target_transform(target: &BulletPatternTarget, starting_transform: &Transform, player_transform: &Transform) -> Transform {
-    if *target == Player {
-        Transform::from_translation(player_transform.translation - starting_transform.translation)
-    } else {
-        Transform::from_translation(*starting_transform.down())
-    }
-}

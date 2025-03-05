@@ -69,7 +69,7 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
 pub fn update_enemies(
     time: Res<Time>,
     mut commands: Commands,
-    sprites: ResMut<Sprites>,
+    sprites: Res<Sprites>,
     mut enemy_query: Query<(&Enemy, &mut Transform, &mut BoxedMovementPattern, &mut BoxedBulletPattern)>,
     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
