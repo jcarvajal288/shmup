@@ -51,11 +51,12 @@ pub fn listen_for_player_death(
     mut player_death_event_reader: EventReader<PlayerDeathEvent>,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
-    for _event in player_death_event_reader.read() {
+    if !player_death_event_reader.is_empty() {
         match player_stats.lives.pop() {
             Some(life_counter) => commands.entity(life_counter).despawn(),
             None => game_state.set(GameState::GameOver),
         }
+        player_death_event_reader.clear();
     }
 }
 

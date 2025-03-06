@@ -113,7 +113,7 @@ pub fn check_bullet_player_collision(
             let bullet_hit_circle = BoundingCircle::new(bullet_transform.translation.truncate(), bullet_props.hit_circle_radius);
 
             if player_hit_circle.intersects(&bullet_hit_circle) {
-                commands.entity(player_entity).despawn();
+                commands.entity(player_entity).try_despawn();
                 commands.entity(bullet_entity).try_despawn();
                 commands.spawn((
                     PlayerRespawnTimer(Timer::from_seconds(0.5, TimerMode::Once)),
