@@ -1,17 +1,18 @@
-use std::f32::consts::PI;
-use bevy::prelude::*;
 use crate::bosses::boss::Boss;
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType;
-use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::bullet_patterns::bullet_stream::BulletStream;
-use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::circle_spawn::CircleSpawn;
+use crate::bullet_patterns::BulletPatternTarget::*;
+use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::enemy::Enemy;
-use crate::game::{SPAWN_CENTER, SPAWN_LEFT, SPAWN_TOP};
-use crate::movement_patterns::BoxedMovementPattern;
+use crate::player::Player;
+use crate::game::{SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
+use crate::movement_patterns::BoxedMovementPattern;
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices, Sprites};
+use bevy::prelude::*;
+use std::f32::consts::PI;
 
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -66,6 +67,7 @@ fn phase1_setup(
                 iterations_left: 0,
             })),
             transform.clone(),
+            SpawnTimer(Timer::from_seconds(0.0, TimerMode::Once)),
         ));
     }
     commands.spawn((
@@ -126,7 +128,7 @@ fn phase2_setup(
         ];
         for (bullet_type, index) in waves.iter() {
             commands.spawn((
-                Name::new("spell1"),
+                Name::new("spell2"),
                 BoxedBulletPattern(Box::new(CircleSpawn {
                     bullet_type: bullet_type.clone(),
                     bullets_in_circle: 64,
@@ -134,14 +136,15 @@ fn phase2_setup(
                     angle: BulletPatternAngle {
                         target: Down,
                         spread: 2.0 * PI,
-                        offset: 0.0,
+                        offset: 0.0 + (2.0 * PI / 64.0 * index),
                     },
-                    spawn_circle_radius: 100.0,
+                    spawn_circle_radius: 50.0,
                     starting_speed: 0.0,
                     final_speed: 0.0,
                     time_to_final_speed: 0.0,
                 })),
                 transform.clone(),
+                SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
             ));
         }
     }
@@ -151,12 +154,14 @@ fn update_spellcard(
     time: Res<Time>,
     mut commands: Commands,
     sprites: Res<Sprites>,
-    mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &Transform)>,
-    player_query: Query<&Transform, (With<crate::player::Player>, Without<Enemy>)>,
+    mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &Transform, &mut SpawnTimer)>,
+    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
-    for (mut bullet_pattern, transform) in bullet_pattern_query.iter_mut() {
-        for player_transform in player_query.iter() {
-            bullet_pattern.0.fire(&mut commands, &sprites, *transform, &time, player_transform);
+    for (mut bullet_pattern, transform, mut timer) in bullet_pattern_query.iter_mut() {
+        if timer.0.tick(time.delta()).finished() {
+            for player_transform in player_query.iter() {
+                bullet_pattern.0.fire(&mut commands, &sprites, *transform, &time, player_transform);
+            }
         }
     }
 }

@@ -13,17 +13,14 @@ mod sprites;
 mod testbed;
 
 use crate::game::{game_plugin, GameObject};
-use resources::images::{load_images, Images};
+use crate::menus::game_over_menu::game_over_menu_plugin;
 use crate::menus::main_menu::main_menu_plugin;
 use crate::player_stats::PlayerStats;
-use resources::sprites::{load_sprites, Sprites};
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
-use crate::bosses::rumia::rumia_plugin;
-use crate::level1::level1_plugin;
-use crate::menus::game_over_menu::game_over_menu_plugin;
-use crate::testbed::testbed_plugin;
+use resources::images::{load_images, Images};
+use resources::sprites::{load_sprites, Sprites};
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
