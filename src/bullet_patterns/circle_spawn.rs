@@ -1,20 +1,16 @@
-use bevy::prelude::*;
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::{get_target_transform, BulletPattern, BulletPatternAngle};
-use crate::movement_patterns::{BoxedMovementPattern, DontMove};
-use crate::movement_patterns::move_to::{build_move_to, MoveTo, MoveToBuilder};
+use crate::movement_patterns::{BoxedMovementPattern};
 use crate::resources::sprites::Sprites;
+use bevy::prelude::*;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct CircleSpawn {
     pub bullet_type: BulletType,
     pub bullets_in_circle: u32,
     pub bullets_in_lines: u32,
     pub angle: BulletPatternAngle,
     pub spawn_circle_radius: f32,
-    pub starting_speed: f32,
-    pub final_speed: f32,
-    pub time_to_final_speed: f32,
 }
 
 impl BulletPattern for CircleSpawn {
@@ -24,10 +20,11 @@ impl BulletPattern for CircleSpawn {
         sprites: &Res<Sprites>,
         transform: Transform,
         _time: &Res<Time>,
-        player_transform: &Transform
+        player_transform: &Transform,
+        movement_pattern: &mut BoxedMovementPattern
     ) -> () {
         if self.bullets_in_lines > 0 {
-            self.fire_wave(commands, sprites, &transform, player_transform);
+            self.fire_wave(commands, sprites, &transform, player_transform, movement_pattern);
             self.bullets_in_lines -= 1;
         }
     }
@@ -40,7 +37,8 @@ impl CircleSpawn {
         commands: &mut Commands,
         sprites: &Res<Sprites>,
         transform: &Transform,
-        player_transform: &Transform
+        player_transform: &Transform,
+        movement_pattern: &mut BoxedMovementPattern
     ) -> () {
         let target = get_target_transform(&self.angle.target, &transform, player_transform);
         let firing_angle = target.translation.y.atan2(target.translation.x);
@@ -50,21 +48,17 @@ impl CircleSpawn {
         }).collect::<Vec<_>>();
 
         for angle in angles {
-            self.fire_bullet(commands, &sprites, &transform, angle);
+            self.fire_bullet(commands, &sprites, &transform, angle, movement_pattern);
         }
     }
 
-    fn fire_bullet(&self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, angle: f32) {
+    fn fire_bullet(&self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, angle: f32, movement_pattern: &BoxedMovementPattern) {
 
-        let destination = transform.translation.truncate() + Vec2::from_angle(angle) * self.spawn_circle_radius;
+        let translation_offset = Vec2::new(angle.cos(), angle.sin());
         spawn_bullet(commands, sprites, BulletSpawner {
             bullet_type: self.bullet_type,
-            position: transform.translation.truncate(),
-            movement_pattern: BoxedMovementPattern(Box::new(build_move_to(MoveToBuilder {
-                start: transform.translation.truncate(),
-                destination,
-                time: 0.1,
-            })))
+            position: transform.translation.truncate() + translation_offset,
+            movement_pattern: movement_pattern.clone(),
         });
     }
 }

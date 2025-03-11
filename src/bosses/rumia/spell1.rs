@@ -1,18 +1,19 @@
 use crate::bosses::boss::Boss;
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType;
-use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
-use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
+use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle, BulletPatternTarget};
 use crate::enemy::Enemy;
-use crate::player::Player;
 use crate::game::{SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
+use crate::movement_patterns::move_away::{build_move_away, MoveAwayBuilder};
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::BoxedMovementPattern;
+use crate::player::Player;
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices, Sprites};
 use bevy::prelude::*;
 use std::f32::consts::PI;
+use std::time::Duration;
 
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -46,29 +47,30 @@ fn phase1_setup(
 ) {
     for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut *animation_indices, 0, 3);
-        commands.spawn((
-            Name::new("spell1"),
-            BoxedBulletPattern(Box::new(BulletStream {
-                bullet_type: BulletType::BlueRimmedCircle,
-                bullets_per_wave: 16,
-                waves_per_iteration: 7,
-                num_iterations: 1,
-                angle: BulletPatternAngle {
-                    target: Player,
-                    spread: PI * 2.0,
-                    offset: 0.0,
-                },
-                speed: 200.0,
-                acceleration: -1.0,
-                startup_timer: Default::default(),
-                wave_timer: Timer::from_seconds(0.05, TimerMode::Once),
-                iteration_timer: Default::default(),
-                waves_left: 0,
-                iterations_left: 0,
-            })),
-            transform.clone(),
-            SpawnTimer(Timer::from_seconds(0.0, TimerMode::Once)),
-        ));
+        for i in 0..6 {
+            commands.spawn((
+                Name::new("spell1"),
+                BoxedBulletPattern(Box::new(CircleSpawn {
+                    bullet_type: BulletType::BlueRimmedCircle,
+                    bullets_in_circle: 16,
+                    bullets_in_lines: 1,
+                    angle: BulletPatternAngle {
+                        target: BulletPatternTarget::Player,
+                        spread: 2.0 * PI,
+                        offset: 0.0,
+                    },
+                    spawn_circle_radius: 10.0,
+                })),
+                BoxedMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
+                    repulsion_point: transform.translation,
+                    starting_velocity: 200.0,
+                    final_velocity: 0.01,
+                    time_to_decelerate: Duration::from_secs(1),
+                }))),
+                transform.clone(),
+                SpawnTimer(Timer::from_seconds(0.0 + 0.1 * i as f32, TimerMode::Once)),
+            ));
+        }
     }
     commands.spawn((
         Name::new("Spell Timer 1"),
@@ -139,9 +141,6 @@ fn phase2_setup(
                         offset: 0.0 + (2.0 * PI / 64.0 * index),
                     },
                     spawn_circle_radius: 50.0,
-                    starting_speed: 0.0,
-                    final_speed: 0.0,
-                    time_to_final_speed: 0.0,
                 })),
                 transform.clone(),
                 SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
@@ -154,13 +153,13 @@ fn update_spellcard(
     time: Res<Time>,
     mut commands: Commands,
     sprites: Res<Sprites>,
-    mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &Transform, &mut SpawnTimer)>,
+    mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &mut BoxedMovementPattern, &Transform, &mut SpawnTimer)>,
     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
-    for (mut bullet_pattern, transform, mut timer) in bullet_pattern_query.iter_mut() {
+    for (mut bullet_pattern, mut movement_pattern, transform, mut timer) in bullet_pattern_query.iter_mut() {
         if timer.0.tick(time.delta()).finished() {
             for player_transform in player_query.iter() {
-                bullet_pattern.0.fire(&mut commands, &sprites, *transform, &time, player_transform);
+                bullet_pattern.0.fire(&mut commands, &sprites, *transform, &time, player_transform, &mut movement_pattern);
             }
         }
     }

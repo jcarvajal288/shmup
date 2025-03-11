@@ -68,16 +68,10 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
 
 pub fn update_enemies(
     time: Res<Time>,
-    mut commands: Commands,
-    sprites: Res<Sprites>,
-    mut enemy_query: Query<(&Enemy, &mut Transform, &mut BoxedMovementPattern, &mut BoxedBulletPattern)>,
-    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    mut enemy_query: Query<(&Enemy, &mut Transform, &mut BoxedMovementPattern)>,
 ) {
-    for (_enemy, mut transform, mut movement_pattern, mut bullet_pattern) in enemy_query.iter_mut() {
+    for (_enemy, mut transform, mut movement_pattern) in enemy_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);
-        for player_transform in player_query.iter() {
-            bullet_pattern.0.fire(&mut commands, &sprites, *transform, &time, player_transform);
-        }
     }
 }
 
