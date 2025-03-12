@@ -18,19 +18,22 @@ impl MovementPattern for MoveAway {
             self.direction = (transform.translation - self.repulsion_point).normalize().with_z(0.0);
         }
         let delta_time = time.delta_secs();
-        if self.is_accelerating && self.velocity < self.final_velocity
-        || !self.is_accelerating && self.velocity > self.final_velocity {
+        if !self.is_finished() {
             self.velocity += self.acceleration * delta_time;
         }
         transform.translation += self.direction * self.velocity * delta_time;
     }
 
     fn lateral_movement(&mut self) -> f32 {
-        self.direction.x * self.final_velocity
+        (self.direction * self.velocity).x
     }
 
     fn is_finished(&self) -> bool {
-        self.velocity == self.final_velocity
+        if self.is_accelerating {
+            self.velocity >= self.final_velocity
+        } else {
+            self.velocity <= self.final_velocity
+        }
     }
 }
 

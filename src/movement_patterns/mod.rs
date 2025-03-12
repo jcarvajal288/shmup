@@ -2,6 +2,7 @@ pub mod move_straight;
 pub mod move_to;
 pub mod move_direction;
 pub mod move_away;
+pub mod move_distance_away;
 
 use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;

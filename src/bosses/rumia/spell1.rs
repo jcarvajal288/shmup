@@ -14,6 +14,7 @@ use crate::resources::sprites::{set_one_off_animation, AnimationIndices, Sprites
 use bevy::prelude::*;
 use std::f32::consts::PI;
 use std::time::Duration;
+use crate::movement_patterns::move_distance_away::{build_move_distance_away, MoveDistanceAwayBuilder};
 
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -138,15 +139,14 @@ fn phase2_setup(
                     angle: BulletPatternAngle {
                         target: Down,
                         spread: 2.0 * PI,
-                        offset: 0.0 + (2.0 * PI / 64.0 * index),
+                        offset: 0.0 + (2.0 * PI / 64.0) * index,
                     },
                     spawn_circle_radius: 50.0,
                 })),
-                BoxedMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
+                BoxedMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
                     repulsion_point: transform.translation,
-                    starting_velocity: 200.0,
-                    final_velocity: 20.0,
-                    time_to_final_velocity: Duration::from_secs(5),
+                    duration: Duration::from_millis(500),
+                    distance: 75.0,
                 }))),
                 transform.clone(),
                 SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
