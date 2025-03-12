@@ -142,6 +142,12 @@ fn phase2_setup(
                     },
                     spawn_circle_radius: 50.0,
                 })),
+                BoxedMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
+                    repulsion_point: transform.translation,
+                    starting_velocity: 200.0,
+                    final_velocity: 20.0,
+                    time_to_decelerate: Duration::from_secs(5),
+                }))),
                 transform.clone(),
                 SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
             ));
