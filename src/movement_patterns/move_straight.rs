@@ -23,6 +23,10 @@ impl Default for MoveStraight {
 }
 
 impl MovementPattern for MoveStraight {
+    fn name(&self) -> &str {
+        ""
+    }
+
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
         let movement_direction = Vec3::new(self.angle.cos(), self.angle.sin(), 0.0);
         let movement_distance = self.speed * time.delta_secs();

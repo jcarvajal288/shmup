@@ -8,6 +8,8 @@ use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;
 
 pub trait MovementPattern: DynClone {
+    fn name(&self) -> &str;
+
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> ();
 
     fn lateral_movement(&mut self) -> f32;
@@ -34,6 +36,8 @@ impl Default for DontMove {
 }
 
 impl MovementPattern for DontMove {
+    fn name(&self) -> &str { "DontMove" }
+
     fn do_move(&mut self, _: &mut Transform, _: &Res<Time>) -> () {}
     fn lateral_movement(&mut self) -> f32 { 0.0 }
     fn is_finished(&self) -> bool { true }

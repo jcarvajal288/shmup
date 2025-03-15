@@ -24,6 +24,8 @@ impl Default for MoveTo {
 }
 
 impl MovementPattern for MoveTo {
+    fn name(&self) -> &str { "MoveTo" }
+
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> () {
         let delta_time = time.delta_secs();
         if self.elapsed_time > self.duration {

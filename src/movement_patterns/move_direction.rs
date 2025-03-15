@@ -11,6 +11,10 @@ pub struct MoveDirection {
 }
 
 impl MovementPattern for MoveDirection {
+    fn name(&self) -> &str {
+        "MoveDirection"
+    }
+
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> () {
         let delta_time = time.delta_secs();
         self.velocity += self.acceleration * delta_time;

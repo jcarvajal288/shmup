@@ -36,6 +36,8 @@ pub fn spell1_plugin(app: &mut App) {
         .add_systems(Update, wait_for_move_to_phase2
             .run_if(in_state(Spell1State::MoveToPhase2)))
         .add_systems(OnEnter(Spell1State::Phase2), phase2_setup)
+        .add_systems(Update, phase2_update
+            .run_if(in_state(Spell1State::Phase2)))
         .add_systems(Update, (update_spellcard)
             .run_if(in_state(RumiaState::Spell1)))
         .init_state::<Spell1State>()
@@ -144,6 +146,7 @@ fn phase2_setup(
                     spawn_circle_radius: 50.0,
                 })),
                 BoxedMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
+                    name: "phase2_part1",
                     repulsion_point: transform.translation,
                     duration: Duration::from_millis(500),
                     distance: 75.0,
@@ -151,6 +154,27 @@ fn phase2_setup(
                 transform.clone(),
                 SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
             ));
+        }
+    }
+}
+
+fn phase2_update(
+    mut rumia_query: Query<(&Boss, &Transform)>,
+    mut query: Query<&mut BoxedMovementPattern>,
+) {
+    for mut movement_pattern in query.iter_mut()
+        .filter(|m| m.0.name() == "phase2_part1") {
+
+        for (_boss, transform) in rumia_query.iter_mut() {
+            if movement_pattern.0.is_finished() {
+                let new_movement_pattern = Box::new(build_move_away(MoveAwayBuilder {
+                    repulsion_point: transform.translation,
+                    starting_velocity: 100.0,
+                    final_velocity: 350.0,
+                    time_to_final_velocity: Duration::from_secs(1),
+                }));
+                let _old_movement_pattern = std::mem::replace(&mut movement_pattern.0, new_movement_pattern);
+            }
         }
     }
 }
