@@ -46,7 +46,7 @@ pub fn spawn_boss(commands: &mut Commands, sprites: &Res<Sprites>, boss_spawner:
 
 pub fn update_bosses(
     time: Res<Time>,
-    mut boss_query: Query<(&Boss, &mut Transform, &mut BoxedMovementPattern, &mut AnimatedSprite, &mut AnimationIndices)>,
+    mut boss_query: Query<(&Boss, &mut Transform, &mut BoxedMovementPattern, &mut Sprite, &mut AnimationIndices)>,
 ) {
     for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);
@@ -56,7 +56,7 @@ pub fn update_bosses(
         } else {
             set_next_animation(&mut indices, 4, 4);
         }
-        sprite.sprite.flip_x = lateral_movement < 0.0;
+        sprite.flip_x = lateral_movement < 0.0;
     }
 }
 
