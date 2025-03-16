@@ -53,7 +53,7 @@ impl CircleSpawn {
     }
 
     fn fire_bullet(&self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, angle: f32, movement_pattern: &BoxedMovementPattern) {
-        let translation_offset = Vec2::new(angle.cos(), angle.sin());
+        let translation_offset = Vec2::new(angle.cos(), angle.sin()) * self.spawn_circle_radius;
         spawn_bullet(commands, sprites, BulletSpawner {
             bullet_type: self.bullet_type,
             position: transform.translation.truncate() + translation_offset,

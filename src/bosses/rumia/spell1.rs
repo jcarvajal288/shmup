@@ -62,7 +62,7 @@ fn phase1_setup(
                         spread: 2.0 * PI,
                         offset: 0.0,
                     },
-                    spawn_circle_radius: 10.0,
+                    spawn_circle_radius: 30.0,
                 })),
                 BoxedMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
                     repulsion_point: transform.translation,
@@ -77,7 +77,7 @@ fn phase1_setup(
     }
     commands.spawn((
         Name::new("Spell Timer 1"),
-        SpellTimer(Timer::from_seconds(2.0, TimerMode::Once)),
+        SpellTimer(Timer::from_seconds(1.0, TimerMode::Once)),
     ));
 }
 
@@ -121,9 +121,10 @@ fn wait_for_move_to_phase2(
 
 fn phase2_setup(
     mut commands: Commands,
-    mut rumia_query: Query<(&Boss, &Transform)>,
+    mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
 ) {
-    for (_boss, transform) in rumia_query.iter_mut() {
+    for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
+        set_one_off_animation(&mut *animation_indices, 0, 3);
         let waves = [
             (BulletType::SmallRedCircle, 0.0),
             (BulletType::SmallYellowCircle, 1.0),
@@ -141,9 +142,9 @@ fn phase2_setup(
                     angle: BulletPatternAngle {
                         target: Down,
                         spread: 2.0 * PI,
-                        offset: 0.0 + ((2.0 * PI) / 16.0) * index,
+                        offset: 0.0 + PI / 3.0 * index,
                     },
-                    spawn_circle_radius: 50.0,
+                    spawn_circle_radius: 30.0,
                 })),
                 BoxedMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
                     name: "phase2_part1",
