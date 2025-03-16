@@ -141,7 +141,7 @@ fn phase2_setup(
                     angle: BulletPatternAngle {
                         target: Down,
                         spread: 2.0 * PI,
-                        offset: 0.0 + (2.0 * PI / 64.0) * index,
+                        offset: 0.0 + ((2.0 * PI) / 16.0) * index,
                     },
                     spawn_circle_radius: 50.0,
                 })),
@@ -169,7 +169,7 @@ fn phase2_update(
             if movement_pattern.0.is_finished() {
                 let new_movement_pattern = Box::new(build_move_away(MoveAwayBuilder {
                     repulsion_point: transform.translation,
-                    starting_velocity: 100.0,
+                    starting_velocity: 0.0,
                     final_velocity: 350.0,
                     time_to_final_velocity: Duration::from_secs(1),
                 }));
