@@ -21,6 +21,7 @@ use bevy::window::WindowResolution;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use resources::images::{load_images, Images};
 use resources::sprites::{load_sprites, Sprites};
+use crate::menus::pause_menu::pause_menu_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
@@ -29,6 +30,7 @@ enum GameState {
     StartingGame,
     PlayingGame,
     GameOver,
+    Paused,
 }
 
 const DEFAULT_RESOLUTION: Vec2 = Vec2::new(800., 600.);
@@ -57,6 +59,7 @@ fn main() {
             main_menu_plugin,
             game_plugin,
             game_over_menu_plugin,
+            pause_menu_plugin,
         ))
         //.add_plugins(WorldInspectorPlugin::new())
         .run();

@@ -22,6 +22,7 @@ struct SpellTimer(Timer);
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum Spell1State {
     #[default]
+    Setup,
     Phase1,
     MoveToPhase2,
     Phase2,
@@ -29,7 +30,8 @@ pub enum Spell1State {
 
 pub fn spell1_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(RumiaState::Spell1), phase1_setup)
+        .add_systems(OnEnter(RumiaState::Spell1), reset_spell1)
+        .add_systems(OnEnter(Spell1State::Phase1), phase1_setup)
         .add_systems(Update, phase1_countdown
             .run_if(in_state(Spell1State::Phase1)))
         .add_systems(OnEnter(Spell1State::MoveToPhase2), move_to_phase2_setup)
@@ -42,6 +44,12 @@ pub fn spell1_plugin(app: &mut App) {
             .run_if(in_state(RumiaState::Spell1)))
         .init_state::<Spell1State>()
     ;
+}
+
+fn reset_spell1(
+    mut state: ResMut<NextState<Spell1State>>,
+) {
+    state.set(Spell1State::Phase1);
 }
 
 fn phase1_setup(
@@ -66,8 +74,8 @@ fn phase1_setup(
                 })),
                 BoxedMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
                     repulsion_point: transform.translation,
-                    starting_velocity: 100.0,
-                    final_velocity: 300.0,
+                    starting_velocity: 50.0,
+                    final_velocity: 300.0 + (i as f32 + 1.0) * 20.0,
                     time_to_final_velocity: Duration::from_secs(1),
                 }))),
                 transform.clone(),

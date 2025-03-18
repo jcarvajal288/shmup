@@ -1,6 +1,7 @@
 use bevy::{prelude::*};
 use crate::{despawn_screen, GameState};
 use crate::game::LevelState;
+use crate::menus::{SELECTED_COLOR, UNSELECTED_COLOR};
 
 // implement menu as a vector of MainMenuStates
 #[derive(Resource)]
@@ -11,9 +12,6 @@ struct MainMenuState {
 
 #[derive(Component)]
 struct OnMainMenuScreen;
-
-const SELECTED_COLOR: Color = Color::srgb(0.9, 0.0, 0.9);
-const UNSELECTED_COLOR: Color = Color::srgb(0.9, 0.9, 0.9);
 
 pub fn main_menu_plugin(app: &mut App) {
     app
@@ -51,7 +49,7 @@ fn main_menu_setup(
         text_font.clone(),
         TextLayout::new_with_justify(text_justification),
         Transform::from_xyz(0.0, -50.0, 100.0),
-        TextColor(SELECTED_COLOR),
+        TextColor(UNSELECTED_COLOR),
         OnMainMenuScreen,
     )).id();
     let quit_option_id = commands.spawn((

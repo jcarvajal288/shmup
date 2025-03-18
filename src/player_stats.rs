@@ -3,6 +3,7 @@ use crate::resources::sprites::Sprites;
 use crate::GameState;
 use bevy::math::Vec3;
 use bevy::prelude::{Commands, Component, Entity, EventReader, Name, NextState, ResMut, Resource, Transform};
+use crate::game::GameObject;
 
 #[derive(Component)]
 struct PlayerLifeCounter;
@@ -40,7 +41,8 @@ fn reset_player_lives(mut commands: Commands, player_stats: &mut ResMut<PlayerSt
             sprites.life_counter.clone(),
             Transform::from_xyz(lives_left_bound + (i as f32 * 22.0), 163.0, 1.1)
                 .with_scale(Vec3::splat(1.5)),
-            PlayerLifeCounter
+            PlayerLifeCounter,
+            GameObject
         )).id());
     }
 }

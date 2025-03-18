@@ -3,7 +3,7 @@ use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, spawn_enem
 use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, respawn_invincibility, PlayerDeathEvent, PlayerShot, PlayerSystemSet, PlayerContinueEvent};
 use crate::player_stats::{initialize_player_stats, listen_for_player_continue, listen_for_player_death};
 use crate::resources::sprites::{animate_sprite, Sprites};
-use crate::GameState;
+use crate::{despawn_screen, GameState};
 use bevy::prelude::*;
 use crate::bosses::boss::{spawn_bosses, update_bosses};
 use crate::level1::level1_plugin;
@@ -36,6 +36,7 @@ pub enum LevelState {
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::StartingGame), (
+            despawn_screen::<GameObject>,
             game_setup,
             initialize_player_stats,
         ))

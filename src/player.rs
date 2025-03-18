@@ -5,6 +5,7 @@ use crate::game::{GameObject, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORD
 use crate::resources::sprites::{set_animation_frames, AnimationIndices, Sprites};
 use bevy::math::bounding::{BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
+use crate::GameState;
 
 #[derive(Event)]
 pub struct PlayerDeathEvent;
@@ -60,6 +61,7 @@ pub fn move_player(
     time: Res<Time>,
     mut player_query: Query<(&mut Player, &mut Transform)>,
     keyboard: Res<ButtonInput<KeyCode>>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     for (player, mut transform) in &mut player_query {
         let speed = if keyboard.pressed(KeyCode::ShiftLeft) { player.focused_speed } else { player.full_movement_speed };
@@ -74,6 +76,9 @@ pub fn move_player(
         }
         if keyboard.pressed(KeyCode::ArrowRight) && transform.translation.x < FRAME_BORDER_RIGHT {
             transform.translation.x += speed * time.delta_secs();
+        }
+        if keyboard.just_pressed(KeyCode::Escape) {
+            game_state.set(GameState::Paused);
         }
     }
 }
