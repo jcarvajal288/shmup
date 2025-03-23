@@ -36,7 +36,6 @@ pub enum LevelState {
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::StartingGame), (
-            despawn_screen::<GameObject>,
             game_setup,
             initialize_player_stats,
         ))

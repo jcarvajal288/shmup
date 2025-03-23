@@ -1,9 +1,9 @@
-mod spell1;
+pub mod spell1;
 
 use crate::bosses::boss::{Boss, BossSpawner};
 use crate::enemy::EnemyType::Rumia;
 use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP, SPAWN_CENTER, SPAWN_TOP};
-use crate::level1::Level1State;
+use crate::level1::FirstLevelState;
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
@@ -18,7 +18,7 @@ enum RumiaState {
 
 pub fn rumia_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(Level1State::Rumia), rumia_setup)
+        .add_systems(OnEnter(FirstLevelState::Rumia), rumia_setup)
         .add_systems(Update, rumia_orchestrator)
         .add_plugins(spell1_plugin)
         .init_state::<RumiaState>()

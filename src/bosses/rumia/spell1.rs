@@ -5,7 +5,7 @@ use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle, BulletPatternTarget};
 use crate::enemy::Enemy;
-use crate::game::{SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
+use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_away::{build_move_away, MoveAwayBuilder};
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::BoxedMovementPattern;
@@ -22,7 +22,7 @@ struct SpellTimer(Timer);
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum Spell1State {
     #[default]
-    Setup,
+    Start,
     Phase1,
     MoveToPhase2,
     Phase2,
@@ -30,8 +30,8 @@ pub enum Spell1State {
 
 pub fn spell1_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(RumiaState::Spell1), reset_spell1)
-        .add_systems(OnEnter(Spell1State::Phase1), phase1_setup)
+        .add_systems(OnEnter(LevelState::Level1), reset_spell1)
+        .add_systems(OnEnter(RumiaState::Spell1), phase1_setup)
         .add_systems(Update, phase1_countdown
             .run_if(in_state(Spell1State::Phase1)))
         .add_systems(OnEnter(Spell1State::MoveToPhase2), move_to_phase2_setup)
@@ -46,10 +46,11 @@ pub fn spell1_plugin(app: &mut App) {
     ;
 }
 
-fn reset_spell1(
+pub fn reset_spell1(
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    state.set(Spell1State::Phase1);
+    println!("reset spell1");
+    state.set(Spell1State::Start);
 }
 
 fn phase1_setup(
@@ -59,6 +60,7 @@ fn phase1_setup(
     for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut *animation_indices, 0, 3);
         for i in 0..6 {
+            let velocity = 100.0 + (i as f32 + 1.0) * 20.0;
             commands.spawn((
                 Name::new("spell1"),
                 BoxedBulletPattern(Box::new(CircleSpawn {
@@ -74,18 +76,20 @@ fn phase1_setup(
                 })),
                 BoxedMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
                     repulsion_point: transform.translation,
-                    starting_velocity: 50.0,
-                    final_velocity: 300.0 + (i as f32 + 1.0) * 20.0,
+                    starting_velocity: velocity,
+                    final_velocity: 300.0,
                     time_to_final_velocity: Duration::from_secs(1),
                 }))),
                 transform.clone(),
                 SpawnTimer(Timer::from_seconds(0.0 + 0.1 * i as f32, TimerMode::Once)),
+                GameObject,
             ));
         }
     }
     commands.spawn((
         Name::new("Spell Timer 1"),
         SpellTimer(Timer::from_seconds(1.0, TimerMode::Once)),
+        GameObject,
     ));
 }
 
@@ -162,6 +166,7 @@ fn phase2_setup(
                 }))),
                 transform.clone(),
                 SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
+                GameObject,
             ));
         }
     }

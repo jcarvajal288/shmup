@@ -12,9 +12,9 @@ use std::f32::consts::PI;
 use crate::bosses::rumia::rumia_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-pub enum Level1State {
+pub enum FirstLevelState {
     #[default]
-    Setup,
+    Start,
     PreRumia,
     Rumia,
 }
@@ -22,13 +22,20 @@ pub enum Level1State {
 pub fn level1_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(LevelState::Level1), level1_setup)
-        .add_systems(Update, listen_for_rumia_entrance)
+        .add_systems(Update, listen_for_rumia_entrance
+            .run_if(in_state(FirstLevelState::PreRumia)))
         .add_plugins(rumia_plugin)
-        .init_state::<Level1State>()
+        .init_state::<FirstLevelState>()
     ;
 }
 
-fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<Level1State>>) {
+pub fn reset_level1(
+    mut state: ResMut<NextState<FirstLevelState>>,
+) {
+    state.set(FirstLevelState::Start);
+}
+
+fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLevelState>>) {
 
     let bullet_stream = BulletStream {
         bullet_type: WhiteArrow,
@@ -91,16 +98,16 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<Level1S
             GameObject,
         ));
     }
-    next_state.set(Level1State::PreRumia);
+    next_state.set(FirstLevelState::PreRumia);
 }
 
 fn listen_for_rumia_entrance(
     spawns: Query<&EnemySpawner>,
     enemies: Query<&Enemy>,
-    state: Res<State<Level1State>>,
-    mut next_state: ResMut<NextState<Level1State>>,
+    state: Res<State<FirstLevelState>>,
+    mut next_state: ResMut<NextState<FirstLevelState>>,
 ) {
-    if *state.get() == Level1State::PreRumia && spawns.is_empty() && enemies.is_empty() {
-        next_state.set(Level1State::Rumia);
+    if *state.get() == FirstLevelState::PreRumia && spawns.is_empty() && enemies.is_empty() {
+        next_state.set(FirstLevelState::Rumia);
     }
 }

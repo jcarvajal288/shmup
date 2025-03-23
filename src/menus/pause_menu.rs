@@ -104,7 +104,7 @@ fn run_menu_action(
             game_state.set(GameState::PlayingGame);
         },
         1 => {
-            game_state.set(GameState::StartingGame);
+            game_state.set(GameState::Resetting);
             level_state.set(LevelState::Level1);
         },
         2 => game_state.set(GameState::MainMenu),
