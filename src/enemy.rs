@@ -100,7 +100,11 @@ pub fn update_enemies(
                         &time,
                         player_transform,
                         &mut bullet_movement_pattern,
-                    )
+                    );
+                    if shot_schedule.times > 1 {
+                        shot_schedule.repeat_timer.reset();
+                        shot_schedule.times -= 1;
+                    }
                 }
             }
         }

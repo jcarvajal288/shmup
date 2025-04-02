@@ -23,10 +23,7 @@ impl BulletPattern for CircleSpawn {
         player_transform: &Transform,
         movement_pattern: &mut BoxedBulletMovementPattern
     ) -> () {
-        if self.bullets_in_lines > 0 {
-            self.fire_wave(commands, sprites, &transform, player_transform, movement_pattern);
-            self.bullets_in_lines -= 1;
-        }
+        self.fire_wave(commands, sprites, &transform, player_transform, movement_pattern);
     }
 }
 

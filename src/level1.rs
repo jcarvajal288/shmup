@@ -75,7 +75,7 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
                 }))),
                 shot_schedule: ShotSchedule {
                     delay_timer: Timer::from_seconds(1.0, TimerMode::Once),
-                    repeat_timer: Timer:: from_seconds(0.5, TimerMode::Repeating),
+                    repeat_timer: Timer:: from_seconds(0.5, TimerMode::Once),
                     times: 5,
                 }
             },
@@ -108,7 +108,7 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
                 }))),
                 shot_schedule: ShotSchedule {
                     delay_timer: Timer::from_seconds(1.0, TimerMode::Once),
-                    repeat_timer: Timer:: from_seconds(0.5, TimerMode::Repeating),
+                    repeat_timer: Timer:: from_seconds(0.5, TimerMode::Once),
                     times: 5,
                 }
             },
