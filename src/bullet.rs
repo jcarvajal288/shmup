@@ -79,7 +79,7 @@ pub fn props_for_bullet_type(_bullet_type: &BulletType) -> BulletProps {
 
 pub fn move_bullets(
     time: Res<Time>,
-    mut bullet_query: Query<(&Bullet, &mut Transform, &mut BoxedMovementPattern)>
+    mut bullet_query: Query<(&Bullet, &mut Transform, &mut BoxedBulletMovementPattern)>
 ) {
     for (_bullet, mut transform, mut movement_pattern) in bullet_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);

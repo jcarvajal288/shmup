@@ -37,11 +37,16 @@ pub struct MoveDirectionBuilder {
 }
 
 pub fn build_move_direction(builder: MoveDirectionBuilder) -> MoveDirection {
+    let acceleration = if builder.time_to_decelerate.as_secs_f32() == 0.0 {
+        0.0
+    } else {
+        (builder.final_velocity - builder.starting_velocity) / builder.time_to_decelerate.as_secs_f32()
+    };
     MoveDirection {
         direction: Vec3::new(builder.direction.cos, builder.direction.sin, 0.0),
         velocity: builder.starting_velocity,
         final_velocity: builder.final_velocity,
-        acceleration: (builder.final_velocity - builder.starting_velocity) / builder.time_to_decelerate.as_secs_f32(),
+        acceleration,
     }
 }
 
