@@ -1,15 +1,17 @@
+use crate::bosses::rumia::rumia_plugin;
 use crate::bullet::BulletType::*;
-use crate::bullet_patterns::bullet_stream::BulletStream;
+use crate::bullet::{ShotSchedule};
+use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
-use crate::enemy::{Enemy, EnemySpawner};
 use crate::enemy::EnemyType::*;
+use crate::enemy::{Enemy, EnemySpawner};
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_LEFT, SPAWN_RIGHT};
+use crate::movement_patterns::move_direction::{build_move_direction, MoveDirectionBuilder};
 use crate::movement_patterns::move_straight::MoveStraight;
-use crate::movement_patterns::BoxedMovementPattern;
+use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
 use bevy::prelude::*;
 use std::f32::consts::PI;
-use crate::bosses::rumia::rumia_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -37,22 +39,16 @@ pub fn reset_level1(
 
 fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLevelState>>) {
 
-    let bullet_stream = BulletStream {
+    let bullet_stream = CircleSpawn {
         bullet_type: WhiteArrow,
-        bullets_per_wave: 1,
-        waves_per_iteration: 1,
-        num_iterations: 99,
+        bullets_in_circle: 1,
+        bullets_in_lines: 1,
         angle: BulletPatternAngle {
             target: Player,
-            spread: PI * 2.0,
+            spread: PI,
             offset: 0.0,
         },
-        speed: 20.0,
-        acceleration: 0.3,
-        startup_timer: Timer::from_seconds(1.0, TimerMode::Once),
-        wave_timer: Timer::from_seconds(0.3, TimerMode::Once),
-        iteration_timer: Timer::from_seconds(0.5, TimerMode::Once),
-        ..default()
+        spawn_circle_radius: 0.0,
     };
 
     for i in 0..1 {
@@ -71,6 +67,17 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
                     ..default()
                 })),
                 bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
+                bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(build_move_direction(MoveDirectionBuilder {
+                    direction: Rot2::degrees(-90.0),
+                    starting_velocity: 300.0,
+                    final_velocity: 300.0,
+                    time_to_decelerate: Default::default(),
+                }))),
+                shot_schedule: ShotSchedule {
+                    delay_timer: Timer::from_seconds(1.0, TimerMode::Once),
+                    repeat_timer: Timer:: from_seconds(0.5, TimerMode::Repeating),
+                    times: 5,
+                }
             },
             SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
             GameObject,
@@ -93,6 +100,17 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
                     ..default()
                 })),
                 bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
+                bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(build_move_direction(MoveDirectionBuilder {
+                    direction: Rot2::degrees(-90.0),
+                    starting_velocity: 300.0,
+                    final_velocity: 300.0,
+                    time_to_decelerate: Default::default(),
+                }))),
+                shot_schedule: ShotSchedule {
+                    delay_timer: Timer::from_seconds(1.0, TimerMode::Once),
+                    repeat_timer: Timer:: from_seconds(0.5, TimerMode::Repeating),
+                    times: 5,
+                }
             },
             SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
             GameObject,

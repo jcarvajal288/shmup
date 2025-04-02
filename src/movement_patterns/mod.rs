@@ -28,6 +28,15 @@ impl Default for BoxedMovementPattern {
     }
 }
 
+#[derive(Component, Clone)]
+pub struct BoxedBulletMovementPattern(pub Box<dyn MovementPattern + Send + Sync>);
+
+impl Default for BoxedBulletMovementPattern {
+    fn default() -> Self {
+        BoxedBulletMovementPattern(Box::new(DontMove::default()))
+    }
+}
+
 #[derive(Clone)]
 pub struct DontMove;
 

@@ -8,7 +8,7 @@ use crate::enemy::Enemy;
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_away::{build_move_away, MoveAwayBuilder};
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
-use crate::movement_patterns::BoxedMovementPattern;
+use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
 use crate::player::Player;
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices, Sprites};
 use bevy::prelude::*;
@@ -49,7 +49,6 @@ pub fn spell1_plugin(app: &mut App) {
 pub fn reset_spell1(
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("reset spell1");
     state.set(Spell1State::Start);
 }
 
@@ -197,7 +196,7 @@ fn update_spellcard(
     time: Res<Time>,
     mut commands: Commands,
     sprites: Res<Sprites>,
-    mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &mut BoxedMovementPattern, &Transform, &mut SpawnTimer)>,
+    mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &mut BoxedBulletMovementPattern, &Transform, &mut SpawnTimer)>,
     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
     for (mut bullet_pattern, mut movement_pattern, transform, mut timer) in bullet_pattern_query.iter_mut() {

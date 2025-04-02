@@ -63,7 +63,6 @@ fn main() {
             reset_spell1,
             reset_game
         ).chain())
-        // TODO: look at one-shot systems in bevy-cheatbook to refactor
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
         .add_plugins((
             main_menu_plugin,
@@ -71,7 +70,7 @@ fn main() {
             game_over_menu_plugin,
             pause_menu_plugin,
         ))
-        //.add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(WorldInspectorPlugin::new())
         .run();
 }
 

@@ -1,7 +1,8 @@
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
-use crate::movement_patterns::BoxedMovementPattern;
+use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
 use crate::resources::sprites::{AnimatedSprite, Sprites};
 use bevy::prelude::*;
+use crate::bullet::{ShotSchedule};
 use crate::bullet_patterns::BoxedBulletPattern;
 use crate::bullet_patterns::bullet_stream::BulletStream;
 use crate::enemy::EnemyType::*;
@@ -24,11 +25,13 @@ pub enum EnemyType {
 
 #[derive(Component)]
 pub struct EnemySpawner {
+    pub name: &'static str,
     pub enemy_type: EnemyType,
     pub starting_position: Vec2,
     pub movement_pattern: BoxedMovementPattern,
     pub bullet_pattern: BoxedBulletPattern,
-    pub name: &'static str,
+    pub bullet_movement_pattern: BoxedBulletMovementPattern,
+    pub shot_schedule: ShotSchedule,
 }
 
 impl Default for EnemySpawner {
@@ -39,6 +42,8 @@ impl Default for EnemySpawner {
             starting_position: Vec2::default(),
             movement_pattern: BoxedMovementPattern(Box::new(MoveStraight::default())),
             bullet_pattern: BoxedBulletPattern(Box::new(BulletStream::default())),
+            bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(MoveStraight::default())),
+            shot_schedule: ShotSchedule::default(),
         }
     }
 }
@@ -62,16 +67,43 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
         animated_sprite.animation_timer.clone(),
         enemy_spawner.movement_pattern,
         enemy_spawner.bullet_pattern,
+        enemy_spawner.bullet_movement_pattern,
+        SpawnTimer(Timer::from_seconds(1.0, TimerMode::Repeating)),
+        enemy_spawner.shot_schedule.clone(),
         GameObject,
     ));
 }
 
 pub fn update_enemies(
+    mut commands: Commands,
+    sprites: Res<Sprites>,
     time: Res<Time>,
-    mut enemy_query: Query<(&Enemy, &mut Transform, &mut BoxedMovementPattern)>,
+    mut enemy_query: Query<(
+        &Enemy,
+        &mut Transform,
+        &mut BoxedMovementPattern,
+        &mut BoxedBulletPattern,
+        &mut BoxedBulletMovementPattern,
+        &mut ShotSchedule,
+    )>,
+    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
-    for (_enemy, mut transform, mut movement_pattern) in enemy_query.iter_mut() {
+    for (_enemy, mut transform, mut movement_pattern, mut bullet_pattern, mut bullet_movement_pattern, mut shot_schedule) in enemy_query.iter_mut() {
         movement_pattern.0.do_move(&mut *transform, &time);
+        for player_transform in player_query.iter() {
+            if shot_schedule.delay_timer.tick(time.delta()).finished() {
+                if shot_schedule.repeat_timer.tick(time.delta()).just_finished() {
+                    bullet_pattern.0.fire(
+                        &mut commands,
+                        &sprites,
+                        *transform,
+                        &time,
+                        player_transform,
+                        &mut bullet_movement_pattern,
+                    )
+                }
+            }
+        }
     }
 }
 
