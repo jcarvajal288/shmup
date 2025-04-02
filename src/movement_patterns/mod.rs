@@ -4,6 +4,8 @@ pub mod move_direction;
 pub mod move_away;
 pub mod move_distance_away;
 
+use std::f32::consts::PI;
+use bevy::math::{Quat, Rot2, Vec3};
 use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;
 
@@ -52,3 +54,7 @@ impl MovementPattern for DontMove {
     fn is_finished(&self) -> bool { true }
 }
 
+pub fn face_travel_direction(transform: &mut Transform, direction: Vec3) {
+    let angle = direction.y.atan2(direction.x);
+    transform.rotation = Quat::from_axis_angle(Vec3::Z, angle + (-PI / 2.0));
+}

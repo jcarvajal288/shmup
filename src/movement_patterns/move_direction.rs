@@ -1,6 +1,6 @@
 use std::time::Duration;
 use bevy::prelude::*;
-use crate::movement_patterns::MovementPattern;
+use crate::movement_patterns::{face_travel_direction, MovementPattern};
 
 #[derive(Clone)]
 pub struct MoveDirection {
@@ -19,6 +19,7 @@ impl MovementPattern for MoveDirection {
         let delta_time = time.delta_secs();
         self.velocity += self.acceleration * delta_time;
         transform.translation += self.direction * self.velocity * delta_time;
+        face_travel_direction(transform, self.direction);
     }
 
     fn lateral_movement(&mut self) -> f32 {
