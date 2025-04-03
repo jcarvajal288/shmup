@@ -53,6 +53,7 @@ pub fn reset_spell1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
+    mut state: ResMut<NextState<Spell1State>>,
 ) {
     for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut *animation_indices, 0, 3);
@@ -88,6 +89,7 @@ fn phase1_setup(
         SpellTimer(Timer::from_seconds(1.0, TimerMode::Once)),
         GameObject,
     ));
+    state.set(Spell1State::Phase1);
 }
 
 fn phase1_countdown(
@@ -171,7 +173,7 @@ fn phase2_setup(
 
 fn phase2_update(
     mut rumia_query: Query<(&Boss, &Transform)>,
-    mut query: Query<&mut BoxedMovementPattern>,
+    mut query: Query<&mut BoxedBulletMovementPattern>,
 ) {
     for mut movement_pattern in query.iter_mut()
         .filter(|m| m.0.name() == "phase2_part1") {
