@@ -1,6 +1,6 @@
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::{get_target_transform, BulletPattern, BulletPatternAngle};
-use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
+use crate::movement_patterns::BoxedBulletMovementPattern;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
 

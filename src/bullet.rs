@@ -52,23 +52,22 @@ pub fn spawn_bullet(commands: &mut Commands, sprites: &Res<Sprites>, bullet_spaw
     ));
 }
 
-// pub fn spawn_bullets(
-//     time: Res<Time>,
-//     sprites: Res<Sprites>,
-//     mut commands: Commands,
-//     mut query: Query<(&Transform, &mut BoxedBulletMovementPattern, &mut BoxedBulletPattern, &mut SpawnTimer)>,
-//     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
-// ) {
-//     // this doesn't work because enemy bullet patterns do not have their own movement pattern or
-//     // spawn timers, so the query is empty.
-//     for (bullet_origin_transform, mut movement_pattern, mut bullet_pattern, mut timer) in query.iter_mut() {
-//         for player_transform in player_query.iter() {
-//             if timer.0.tick(time.delta()).just_finished() {
-//                 bullet_pattern.0.fire(&mut commands, &sprites, *bullet_origin_transform, &time, player_transform, &mut movement_pattern);
-//             }
-//         }
-//     }
-// }
+pub fn spawn_bullets(
+    time: Res<Time>,
+    sprites: Res<Sprites>,
+    mut commands: Commands,
+    mut query: Query<(&Transform, &mut BoxedBulletPattern, &mut BoxedBulletMovementPattern, &mut SpawnTimer)>,
+    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+) {
+    for (bullet_origin_transform, mut bullet_pattern, mut movement_pattern, mut timer) in query.iter_mut() {
+        for player_transform in player_query.iter() {
+            if timer.0.tick(time.delta()).just_finished() {
+                bullet_pattern.0.fire(&mut commands, &sprites, *bullet_origin_transform, &time, player_transform, &mut movement_pattern);
+                // put a shot scheduler in here
+            }
+        }
+    }
+}
 
 
 pub fn props_for_bullet_type(_bullet_type: &BulletType) -> BulletProps {

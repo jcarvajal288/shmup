@@ -62,6 +62,7 @@ fn phase1_setup(
             let velocity = 100.0 + (i as f32 + 1.0) * 20.0;
             commands.spawn((
                 Name::new("spell1"),
+                transform.clone(),
                 BoxedBulletPattern(Box::new(CircleSpawn {
                     bullet_type: BulletType::BlueRimmedCircle,
                     bullets_in_circle: 16,
@@ -73,13 +74,12 @@ fn phase1_setup(
                     },
                     spawn_circle_radius: 30.0,
                 })),
-                BoxedMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
+                BoxedBulletMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
                     repulsion_point: transform.translation,
                     starting_velocity: velocity,
                     final_velocity: 300.0,
                     time_to_final_velocity: Duration::from_secs(1),
                 }))),
-                transform.clone(),
                 SpawnTimer(Timer::from_seconds(0.0 + 0.1 * i as f32, TimerMode::Once)),
                 GameObject,
             ));
@@ -157,7 +157,7 @@ fn phase2_setup(
                     },
                     spawn_circle_radius: 30.0,
                 })),
-                BoxedMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
+                BoxedBulletMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
                     name: "phase2_part1",
                     repulsion_point: transform.translation,
                     duration: Duration::from_millis(500),
