@@ -40,8 +40,6 @@ pub fn spell1_plugin(app: &mut App) {
         .add_systems(OnEnter(Spell1State::Phase2), phase2_setup)
         .add_systems(Update, phase2_update
             .run_if(in_state(Spell1State::Phase2)))
-        .add_systems(Update, (update_spellcard)
-            .run_if(in_state(RumiaState::Spell1)))
         .init_state::<Spell1State>()
     ;
 }
@@ -187,22 +185,6 @@ fn phase2_update(
                     time_to_final_velocity: Duration::from_secs(1),
                 }));
                 let _old_movement_pattern = std::mem::replace(&mut movement_pattern.0, new_movement_pattern);
-            }
-        }
-    }
-}
-
-fn update_spellcard(
-    time: Res<Time>,
-    mut commands: Commands,
-    sprites: Res<Sprites>,
-    mut bullet_pattern_query: Query<(&mut BoxedBulletPattern, &mut BoxedBulletMovementPattern, &Transform, &mut SpawnTimer)>,
-    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
-) {
-    for (mut bullet_pattern, mut movement_pattern, transform, mut timer) in bullet_pattern_query.iter_mut() {
-        if timer.0.tick(time.delta()).finished() {
-            for player_transform in player_query.iter() {
-                bullet_pattern.0.fire(&mut commands, &sprites, *transform, &time, player_transform, &mut movement_pattern);
             }
         }
     }

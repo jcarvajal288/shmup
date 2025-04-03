@@ -63,7 +63,6 @@ pub fn spawn_bullets(
         for player_transform in player_query.iter() {
             if timer.0.tick(time.delta()).just_finished() {
                 bullet_pattern.0.fire(&mut commands, &sprites, *bullet_origin_transform, &time, player_transform, &mut movement_pattern);
-                // put a shot scheduler in here
             }
         }
     }
