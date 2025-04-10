@@ -7,12 +7,12 @@ use crate::level1::FirstLevelState;
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::BoxedMovementPattern;
 use bevy::prelude::*;
-use crate::bosses::rumia::spell1::spell1_plugin;
+use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
-enum RumiaState {
+pub enum RumiaState {
     #[default]
-    Setup,
+    Inactive,
     Spell1,
 }
 
@@ -23,6 +23,13 @@ pub fn rumia_plugin(app: &mut App) {
         .add_plugins(spell1_plugin)
         .init_state::<RumiaState>()
     ;
+}
+
+pub fn reset_rumia(
+    mut state: ResMut<NextState<RumiaState>>,
+) {
+    state.set(RumiaState::Inactive);
+    println!("RumiaState set to Inactive");
 }
 
 pub fn rumia_setup(mut commands: Commands) {
@@ -52,7 +59,7 @@ pub fn rumia_orchestrator(
     mut rumia_next_state: ResMut<NextState<RumiaState>>,
 ) {
     for (_boss, movement_pattern) in boss_query.iter() {
-        if *rumia_state.get() == RumiaState::Setup && movement_pattern.0.is_finished() {
+        if *rumia_state.get() == RumiaState::Inactive && movement_pattern.0.is_finished() {
             rumia_next_state.set(RumiaState::Spell1);
             println!("RumiaState set to Spell1");
         }

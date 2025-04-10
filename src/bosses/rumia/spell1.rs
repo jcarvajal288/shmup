@@ -22,7 +22,7 @@ struct SpellTimer(Timer);
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum Spell1State {
     #[default]
-    Setup,
+    Inactive,
     Phase1,
     MoveToPhase2,
     Phase2,
@@ -47,8 +47,8 @@ pub fn spell1_plugin(app: &mut App) {
 pub fn reset_spell1(
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    state.set(Spell1State::Setup);
-    println!("Spell1State set to Setup");
+    state.set(Spell1State::Inactive);
+    println!("Spell1State set to Inactive");
 }
 
 fn phase1_setup(

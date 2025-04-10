@@ -21,6 +21,7 @@ use bevy::window::WindowResolution;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use resources::images::{load_images, Images};
 use resources::sprites::{load_sprites, Sprites};
+use crate::bosses::rumia::reset_rumia;
 use crate::bosses::rumia::spell1::reset_spell1;
 use crate::level1::reset_level1;
 use crate::menus::pause_menu::pause_menu_plugin;
@@ -61,6 +62,7 @@ fn main() {
             despawn_screen::<GameObject>,
             reset_level1,
             reset_spell1,
+            reset_rumia,
             reset_game
         ).chain())
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
