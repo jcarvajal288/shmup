@@ -12,7 +12,7 @@ mod bosses;
 mod sprites;
 mod testbed;
 
-use crate::game::{game_plugin, GameObject};
+use crate::game::{game_plugin, GameObject, LevelState};
 use crate::menus::game_over_menu::game_over_menu_plugin;
 use crate::menus::main_menu::main_menu_plugin;
 use crate::player_stats::PlayerStats;
@@ -90,6 +90,13 @@ fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands
 
 fn reset_game(
     mut game_state: ResMut<NextState<GameState>>,
+    mut level_state: ResMut<NextState<LevelState>>,
 ) {
     game_state.set(GameState::StartingGame);
+    println!("GameState set to StartingGame");
+    level_state.set(LevelState::None);
+        // current logic doesn't work because state transitions don't trigger on 'identity'
+        // transitions, e.g. Level1 -> Level1.  Consider utilizing OnExit transitions to do
+        // cleanup and then reenter Level1
+    println!("LevelState set to None");
 }

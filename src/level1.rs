@@ -16,7 +16,7 @@ use std::f32::consts::PI;
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
     #[default]
-    Start,
+    Inactive,
     PreRumia,
     Rumia,
 }
@@ -34,11 +34,13 @@ pub fn level1_plugin(app: &mut App) {
 pub fn reset_level1(
     mut state: ResMut<NextState<FirstLevelState>>,
 ) {
-    state.set(FirstLevelState::Start);
+    state.set(FirstLevelState::Inactive);
+    println!("FirstLevelState set to Inactive");
 }
 
 fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLevelState>>) {
 
+    println!("Level 1 setup");
     let bullet_stream = CircleSpawn {
         bullet_type: WhiteArrow,
         bullets_in_circle: 1,
@@ -117,6 +119,7 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
         ));
     }
     next_state.set(FirstLevelState::PreRumia);
+    println!("FirstLevelState set to PreRumia");
 }
 
 fn listen_for_rumia_entrance(
@@ -127,5 +130,6 @@ fn listen_for_rumia_entrance(
 ) {
     if *state.get() == FirstLevelState::PreRumia && spawns.is_empty() && enemies.is_empty() {
         next_state.set(FirstLevelState::Rumia);
+        println!("FirstLevelState set to Rumia");
     }
 }

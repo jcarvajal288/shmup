@@ -78,12 +78,13 @@ pub fn game_plugin(app: &mut App) {
 fn game_setup(
     mut commands: Commands,
     sprites: ResMut<Sprites>,
-    mut game_state: ResMut<NextState<GameState>>
+    game_state: ResMut<NextState<GameState>>,
+    level_state: ResMut<NextState<LevelState>>,
 ) {
     draw_background(&mut commands, &sprites);
     draw_ui_frame(&mut commands, &sprites);
     spawn_player(&mut commands, &sprites);
-    game_state.set(GameState::PlayingGame);
+    start_game(game_state, level_state);
 }
 
 fn draw_background(commands: &mut Commands, sprites: &ResMut<Sprites>) {
@@ -110,6 +111,16 @@ fn draw_ui_frame(commands: &mut Commands, sprites: &ResMut<Sprites>) {
         GameObject,
     ));
 
+}
+
+fn start_game(
+    mut game_state: ResMut<NextState<GameState>>,
+    mut level_state: ResMut<NextState<LevelState>>
+) {
+    game_state.set(GameState::PlayingGame);
+    println!("GameState set to PlayingGame");
+    level_state.set(LevelState::Level1);
+    println!("LevelState set to Level1");
 }
 
 fn out_of_bounds_cleanup(

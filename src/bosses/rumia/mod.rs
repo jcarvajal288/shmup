@@ -54,6 +54,7 @@ pub fn rumia_orchestrator(
     for (_boss, movement_pattern) in boss_query.iter() {
         if *rumia_state.get() == RumiaState::Setup && movement_pattern.0.is_finished() {
             rumia_next_state.set(RumiaState::Spell1);
+            println!("RumiaState set to Spell1");
         }
     }
 }

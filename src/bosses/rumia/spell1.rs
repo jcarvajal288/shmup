@@ -22,7 +22,7 @@ struct SpellTimer(Timer);
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum Spell1State {
     #[default]
-    Start,
+    Setup,
     Phase1,
     MoveToPhase2,
     Phase2,
@@ -47,7 +47,8 @@ pub fn spell1_plugin(app: &mut App) {
 pub fn reset_spell1(
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    state.set(Spell1State::Start);
+    state.set(Spell1State::Setup);
+    println!("Spell1State set to Setup");
 }
 
 fn phase1_setup(
@@ -90,6 +91,7 @@ fn phase1_setup(
         GameObject,
     ));
     state.set(Spell1State::Phase1);
+    println!("Spell1State set to Phase1");
 }
 
 fn phase1_countdown(
@@ -100,6 +102,7 @@ fn phase1_countdown(
     for mut timer in timer_query.iter_mut() {
         if timer.0.tick(time.delta()).just_finished() {
             next_state.set(Spell1State::MoveToPhase2);
+            println!("Spell1State set to MoveToPhase2");
         };
     }
 }
@@ -126,6 +129,7 @@ fn wait_for_move_to_phase2(
     for (_boss, boxed_movement_pattern) in rumia_query.iter() {
         if boxed_movement_pattern.0.is_finished() {
             next_state.set(Spell1State::Phase2);
+            println!("Spell1State set to Phase2");
         }
     }
 }

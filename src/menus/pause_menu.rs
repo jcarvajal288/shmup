@@ -83,31 +83,33 @@ fn handle_input(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     game_state: ResMut<NextState<GameState>>,
     mut menu_state: ResMut<PauseMenuState>,
-    level_state: ResMut<NextState<LevelState>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::ArrowUp) {
         menu_state.selected = if menu_state.selected == 0 { menu_state.options.len() - 1 } else { menu_state.selected - 1 };
     } else if keyboard_input.just_pressed(KeyCode::ArrowDown) {
         menu_state.selected = if menu_state.selected == menu_state.options.len() - 1 { 0 } else { menu_state.selected + 1 };
     } else if keyboard_input.pressed(KeyCode::KeyZ) {
-        run_menu_action(menu_state.selected, game_state, level_state);
+        run_menu_action(menu_state.selected, game_state);
     }
 }
 
 fn run_menu_action(
     menu_selected: usize,
     mut game_state: ResMut<NextState<GameState>>,
-    mut level_state: ResMut<NextState<LevelState>>,
 ) {
     match menu_selected {
         0 => {
             game_state.set(GameState::PlayingGame);
+            println!("GameState set to PlayingGame");
         },
         1 => {
             game_state.set(GameState::Resetting);
-            level_state.set(LevelState::Level1);
+            println!("GameState set to Resetting");
         },
-        2 => game_state.set(GameState::MainMenu),
+        2 => {
+            game_state.set(GameState::MainMenu);
+            println!("GameState set to MainMenu");
+        },
         _ => {}
     }
 }
