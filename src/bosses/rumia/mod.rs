@@ -20,17 +20,18 @@ pub fn rumia_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(FirstLevelState::Rumia), rumia_setup)
         .add_systems(Update, rumia_orchestrator)
+        .add_systems(OnEnter(RumiaState::Inactive), rumia_cleanup)
         .add_plugins(spell1_plugin)
         .init_state::<RumiaState>()
     ;
 }
 
-pub fn reset_rumia(
-    mut state: ResMut<NextState<RumiaState>>,
-) {
-    state.set(RumiaState::Inactive);
-    println!("RumiaState set to Inactive");
-}
+// pub fn reset_rumia(
+//     mut state: ResMut<NextState<RumiaState>>,
+// ) {
+//     state.set(RumiaState::Inactive);
+//     println!("RumiaState set to Inactive");
+// }
 
 pub fn rumia_setup(mut commands: Commands) {
     let start = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
@@ -64,4 +65,11 @@ pub fn rumia_orchestrator(
             println!("RumiaState set to Spell1");
         }
     }
+}
+
+fn rumia_cleanup(
+    mut state: ResMut<NextState<Spell1State>>,
+) {
+    state.set(Spell1State::Inactive);
+    println!("Spell1State set to Inactive");
 }

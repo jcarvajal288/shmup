@@ -6,7 +6,7 @@ use crate::resources::sprites::{animate_sprite, Sprites};
 use crate::{despawn_screen, GameState};
 use bevy::prelude::*;
 use crate::bosses::boss::{spawn_bosses, update_bosses};
-use crate::level1::level1_plugin;
+use crate::level1::{level1_plugin, FirstLevelState};
 use crate::testbed::testbed_plugin;
 
 pub const FRAME_BORDER_LEFT: f32 = -353.0;
@@ -64,6 +64,7 @@ pub fn game_plugin(app: &mut App) {
             move_bullets,
             out_of_bounds_cleanup,
         ).run_if(in_state(GameState::PlayingGame)))
+        .add_systems(OnEnter(LevelState::None), reset_levels)
         .add_plugins((
             testbed_plugin,
             level1_plugin,
@@ -150,4 +151,11 @@ fn out_of_bounds_cleanup(
     for (entity, transform) in shot_query.iter() {
         despawn_if_out_of_bounds(&mut commands, in_bounds_rect, entity, transform);
     }
+}
+
+fn reset_levels(
+    mut first_level_state: ResMut<NextState<FirstLevelState>>,
+) {
+    first_level_state.set(FirstLevelState::Inactive);
+    println!("FirstLevelState set to Inactive");
 }

@@ -21,9 +21,7 @@ use bevy::window::WindowResolution;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use resources::images::{load_images, Images};
 use resources::sprites::{load_sprites, Sprites};
-use crate::bosses::rumia::reset_rumia;
 use crate::bosses::rumia::spell1::reset_spell1;
-use crate::level1::reset_level1;
 use crate::menus::pause_menu::pause_menu_plugin;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -57,13 +55,21 @@ fn main() {
             })
         )
         .init_state::<GameState>()
-        .add_systems(OnEnter(GameState::MainMenu), despawn_screen::<GameObject>)
+        .add_systems(OnEnter(GameState::MainMenu), (
+            despawn_screen::<GameObject>,
+        ))
+        // this works, but see if it still works for just going to MainMenu
+        .add_systems(OnTransition {
+            exited: GameState::Paused,
+            entered: GameState::MainMenu,
+        }, (
+            despawn_screen::<GameObject>,
+            clear_levels,
+        ).chain())
         .add_systems(OnEnter(GameState::Resetting), (
             despawn_screen::<GameObject>,
-            reset_level1,
-            reset_spell1,
-            reset_rumia,
-            reset_game
+            clear_levels,
+            restart_game,
         ).chain())
         .add_systems(Startup, (setup, load_images, load_sprites).chain())
         .add_plugins((
@@ -90,15 +96,16 @@ fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands
     }
 }
 
-fn reset_game(
-    mut game_state: ResMut<NextState<GameState>>,
+fn clear_levels(
     mut level_state: ResMut<NextState<LevelState>>,
+) {
+    level_state.set(LevelState::None);
+    println!("LevelState set to None");
+}
+
+fn restart_game(
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
     game_state.set(GameState::StartingGame);
     println!("GameState set to StartingGame");
-    level_state.set(LevelState::None);
-        // current logic doesn't work because state transitions don't trigger on 'identity'
-        // transitions, e.g. Level1 -> Level1.  Consider utilizing OnExit transitions to do
-        // cleanup and then reenter Level1
-    println!("LevelState set to None");
 }

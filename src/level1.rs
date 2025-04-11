@@ -1,4 +1,4 @@
-use crate::bosses::rumia::rumia_plugin;
+use crate::bosses::rumia::{rumia_plugin, RumiaState};
 use crate::bullet::BulletType::*;
 use crate::bullet::{ShotSchedule};
 use crate::bullet_patterns::circle_spawn::CircleSpawn;
@@ -26,17 +26,18 @@ pub fn level1_plugin(app: &mut App) {
         .add_systems(OnEnter(LevelState::Level1), level1_setup)
         .add_systems(Update, listen_for_rumia_entrance
             .run_if(in_state(FirstLevelState::PreRumia)))
+        .add_systems(OnEnter(FirstLevelState::Inactive), first_level_cleanup)
         .add_plugins(rumia_plugin)
         .init_state::<FirstLevelState>()
     ;
 }
 
-pub fn reset_level1(
-    mut state: ResMut<NextState<FirstLevelState>>,
-) {
-    state.set(FirstLevelState::Inactive);
-    println!("FirstLevelState set to Inactive");
-}
+// pub fn reset_level1(
+//     mut state: ResMut<NextState<FirstLevelState>>,
+// ) {
+//     state.set(FirstLevelState::Inactive);
+//     println!("FirstLevelState set to Inactive");
+// }
 
 fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLevelState>>) {
 
@@ -132,4 +133,11 @@ fn listen_for_rumia_entrance(
         next_state.set(FirstLevelState::Rumia);
         println!("FirstLevelState set to Rumia");
     }
+}
+
+fn first_level_cleanup(
+    mut state: ResMut<NextState<RumiaState>>,
+) {
+    state.set(RumiaState::Inactive);
+    println!("RumiaState set to Inactive");
 }

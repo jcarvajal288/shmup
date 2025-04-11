@@ -1,5 +1,6 @@
 use bevy::{prelude::*};
 use crate::{despawn_screen, GameState};
+use crate::bosses::rumia::spell1::reset_spell1;
 use crate::game::LevelState;
 use crate::menus::{SELECTED_COLOR, UNSELECTED_COLOR};
 
@@ -17,7 +18,9 @@ pub fn main_menu_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::MainMenu), main_menu_setup)
         .add_systems(Update, (handle_input, draw).run_if(in_state(GameState::MainMenu)))
-        .add_systems(OnExit(GameState::MainMenu), despawn_screen::<OnMainMenuScreen>)
+        .add_systems(OnExit(GameState::MainMenu), (
+            despawn_screen::<OnMainMenuScreen>,
+        ).chain())
     ;
 }
 
