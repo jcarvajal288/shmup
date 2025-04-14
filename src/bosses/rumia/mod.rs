@@ -26,17 +26,11 @@ pub fn rumia_plugin(app: &mut App) {
     ;
 }
 
-// pub fn reset_rumia(
-//     mut state: ResMut<NextState<RumiaState>>,
-// ) {
-//     state.set(RumiaState::Inactive);
-//     println!("RumiaState set to Inactive");
-// }
-
 pub fn rumia_setup(mut commands: Commands) {
     let start = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
     let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
     let time = 1.5;
+    println!("Spawning Rumia");
     commands.spawn((
         Name::new("RumiaSpawner"),
         BossSpawner {

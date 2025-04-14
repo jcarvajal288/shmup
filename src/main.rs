@@ -59,6 +59,7 @@ fn main() {
             despawn_screen::<GameObject>,
         ))
         // this works, but see if it still works for just going to MainMenu
+        // game over is broken
         .add_systems(OnTransition {
             exited: GameState::Paused,
             entered: GameState::MainMenu,

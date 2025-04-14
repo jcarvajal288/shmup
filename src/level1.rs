@@ -12,6 +12,7 @@ use crate::movement_patterns::move_straight::MoveStraight;
 use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
 use bevy::prelude::*;
 use std::f32::consts::PI;
+use crate::GameState;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -126,11 +127,16 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
 fn listen_for_rumia_entrance(
     spawns: Query<&EnemySpawner>,
     enemies: Query<&Enemy>,
-    state: Res<State<FirstLevelState>>,
-    mut next_state: ResMut<NextState<FirstLevelState>>,
+    game_state: Res<State<GameState>>,
+    first_level_state: Res<State<FirstLevelState>>,
+    mut next_first_level_state: ResMut<NextState<FirstLevelState>>,
 ) {
-    if *state.get() == FirstLevelState::PreRumia && spawns.is_empty() && enemies.is_empty() {
-        next_state.set(FirstLevelState::Rumia);
+    if *game_state.get() == GameState::PlayingGame
+        && *first_level_state.get() == FirstLevelState::PreRumia
+        && spawns.is_empty()
+        && enemies.is_empty()
+    {
+        next_first_level_state.set(FirstLevelState::Rumia);
         println!("FirstLevelState set to Rumia");
     }
 }
