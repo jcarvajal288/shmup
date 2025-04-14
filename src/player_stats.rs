@@ -35,6 +35,7 @@ pub fn initialize_player_stats(
 
 fn reset_player_lives(mut commands: Commands, player_stats: &mut ResMut<PlayerStats>, sprites: ResMut<Sprites>) {
     let lives_left_bound = 206.0;
+    player_stats.lives.clear();
     for i in 0..player_stats.starting_life_count {
         player_stats.lives.push(commands.spawn((
             Name::new("PlayerLifeCounter"),

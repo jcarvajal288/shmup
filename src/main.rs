@@ -67,6 +67,13 @@ fn main() {
             despawn_screen::<GameObject>,
             clear_levels,
         ).chain())
+        .add_systems(OnTransition {
+            exited: GameState::GameOver,
+            entered: GameState::MainMenu,
+        }, (
+            despawn_screen::<GameObject>,
+            clear_levels,
+        ).chain())
         .add_systems(OnEnter(GameState::Resetting), (
             despawn_screen::<GameObject>,
             clear_levels,
