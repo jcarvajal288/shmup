@@ -33,6 +33,19 @@ pub enum LevelState {
     Level1,
 }
 
+#[derive(Resource)]
+pub struct ChosenLevel {
+    pub level: LevelState,
+}
+
+impl Default for ChosenLevel {
+    fn default() -> Self {
+        Self {
+            level: LevelState::None,
+        }
+    }
+}
+
 pub fn game_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(GameState::StartingGame), (
@@ -81,11 +94,12 @@ fn game_setup(
     sprites: ResMut<Sprites>,
     game_state: ResMut<NextState<GameState>>,
     level_state: ResMut<NextState<LevelState>>,
+    chosen_level: Res<ChosenLevel>,
 ) {
     draw_background(&mut commands, &sprites);
     draw_ui_frame(&mut commands, &sprites);
     spawn_player(&mut commands, &sprites);
-    start_game(game_state, level_state);
+    start_game(game_state, level_state, chosen_level);
 }
 
 fn draw_background(commands: &mut Commands, sprites: &ResMut<Sprites>) {
@@ -116,12 +130,13 @@ fn draw_ui_frame(commands: &mut Commands, sprites: &ResMut<Sprites>) {
 
 fn start_game(
     mut game_state: ResMut<NextState<GameState>>,
-    mut level_state: ResMut<NextState<LevelState>>
+    mut level_state: ResMut<NextState<LevelState>>,
+    chosen_level: Res<ChosenLevel>
 ) {
     game_state.set(GameState::PlayingGame);
     println!("GameState set to PlayingGame");
-    level_state.set(LevelState::Level1);
-    println!("LevelState set to Level1");
+    level_state.set(chosen_level.level);
+    println!("LevelState set to chosen level");
 }
 
 fn out_of_bounds_cleanup(

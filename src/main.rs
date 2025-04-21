@@ -12,7 +12,7 @@ mod bosses;
 mod sprites;
 mod testbed;
 
-use crate::game::{game_plugin, GameObject, LevelState};
+use crate::game::{game_plugin, ChosenLevel, GameObject, LevelState};
 use crate::menus::game_over_menu::game_over_menu_plugin;
 use crate::menus::main_menu::main_menu_plugin;
 use crate::player_stats::PlayerStats;
@@ -58,8 +58,6 @@ fn main() {
         .add_systems(OnEnter(GameState::MainMenu), (
             despawn_screen::<GameObject>,
         ))
-        // this works, but see if it still works for just going to MainMenu
-        // game over is broken
         .add_systems(OnTransition {
             exited: GameState::Paused,
             entered: GameState::MainMenu,
@@ -96,6 +94,7 @@ fn setup(mut commands: Commands) {
     commands.insert_resource(Sprites::default());
     commands.insert_resource(Images::default());
     commands.insert_resource(PlayerStats::default());
+    commands.insert_resource(ChosenLevel::default());
 }
 
 fn despawn_screen<T: Component>(to_despawn: Query<Entity, With<T>>, mut commands: Commands) {

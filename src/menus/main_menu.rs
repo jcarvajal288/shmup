@@ -1,7 +1,7 @@
 use bevy::{prelude::*};
 use crate::{despawn_screen, GameState};
 use crate::bosses::rumia::spell1::reset_spell1;
-use crate::game::LevelState;
+use crate::game::{ChosenLevel, LevelState};
 use crate::menus::{SELECTED_COLOR, UNSELECTED_COLOR};
 
 // implement menu as a vector of MainMenuStates
@@ -76,14 +76,14 @@ fn handle_input(
     mut menu_state: ResMut<MainMenuState>,
     app_exit_events: EventWriter<AppExit>,
     game_state: ResMut<NextState<GameState>>,
-    level_state: ResMut<NextState<LevelState>>,
+    chosen_level: ResMut<ChosenLevel>,
 ) {
     if keyboard_input.just_pressed(KeyCode::ArrowUp) {
         menu_state.selected = if menu_state.selected == 0 { menu_state.options.len() - 1 } else { menu_state.selected - 1 };
     } else if keyboard_input.just_pressed(KeyCode::ArrowDown) {
         menu_state.selected = if menu_state.selected == menu_state.options.len() - 1 { 0 } else { menu_state.selected + 1 };
     } else if keyboard_input.just_pressed(KeyCode::KeyZ) {
-        run_main_menu_action(menu_state.selected, app_exit_events, game_state, level_state);
+        run_main_menu_action(menu_state.selected, app_exit_events, game_state, chosen_level);
     }
 }
 
@@ -91,20 +91,18 @@ fn run_main_menu_action(
     menu_selected: usize,
     mut app_exit_events: EventWriter<AppExit>,
     mut game_state: ResMut<NextState<GameState>>,
-    mut level_state: ResMut<NextState<LevelState>>,
+    mut chosen_level: ResMut<ChosenLevel>,
 ) {
     match menu_selected {
         0 => {
             game_state.set(GameState::StartingGame);
             println!("GameState set to StartingGame");
-            // level_state.set(LevelState::TestBed);
-            // println!("LevelState set to TestBed");
+            chosen_level.level = LevelState::TestBed;
         },
         1 => {
             game_state.set(GameState::StartingGame);
             println!("GameState set to StartingGame");
-            // level_state.set(LevelState::Level1);
-            // println!("LevelState set to Level1");
+            chosen_level.level = LevelState::Level1;
         },
         2 => { app_exit_events.send(AppExit::Success); },
         _ => {}
