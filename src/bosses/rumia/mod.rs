@@ -24,9 +24,12 @@ pub fn rumia_plugin(app: &mut App) {
         .add_plugins(spell1_plugin)
         .init_state::<RumiaState>()
     ;
+    // Testbed doesn't restart properly
 }
 
-pub fn rumia_setup(mut commands: Commands) {
+pub fn rumia_setup(
+    mut commands: Commands,
+) {
     let start = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
     let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
     let time = 1.5;
@@ -54,6 +57,7 @@ pub fn rumia_orchestrator(
     mut rumia_next_state: ResMut<NextState<RumiaState>>,
 ) {
     for (_boss, movement_pattern) in boss_query.iter() {
+        println!("{:?}", rumia_state.get());
         if *rumia_state.get() == RumiaState::Inactive && movement_pattern.0.is_finished() {
             rumia_next_state.set(RumiaState::Spell1);
             println!("RumiaState set to Spell1");

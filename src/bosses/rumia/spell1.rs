@@ -30,7 +30,7 @@ pub enum Spell1State {
 
 pub fn spell1_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(LevelState::Level1), reset_spell1)
+        .add_systems(OnEnter(LevelState::None), reset_spell1)
         .add_systems(OnEnter(RumiaState::Spell1), phase1_setup)
         .add_systems(Update, phase1_countdown
             .run_if(in_state(Spell1State::Phase1)))
