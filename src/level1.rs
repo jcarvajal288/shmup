@@ -1,19 +1,18 @@
 use crate::bosses::rumia::{rumia_plugin, RumiaState};
 use crate::bullet::BulletType::*;
-use crate::bullet::{ShotSchedule};
+use crate::bullet::ShotSchedule;
 use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
-use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_LEFT, SPAWN_RIGHT};
+use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_direction::{build_move_direction, MoveDirectionBuilder};
-use crate::movement_patterns::move_straight::MoveStraight;
+use crate::movement_patterns::sine_wave::MoveSineWave;
 use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
+use crate::GameState;
 use bevy::prelude::*;
 use std::f32::consts::PI;
-use crate::GameState;
-use crate::movement_patterns::sine_wave::SineWave;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -56,13 +55,17 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
             EnemySpawner {
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
-                starting_position: Vec2::new(SPAWN_CENTER, 150.0),
+                starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0),
                 // movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
                 //     angle: 0.0,
                 //     speed: 40.0,
                 //     ..default()
                 // })),
-                movement_pattern: BoxedMovementPattern(Box::new(SineWave {})),
+                movement_pattern: BoxedMovementPattern(Box::new(MoveSineWave {
+                    amplitude: 0.5,
+                    wavelength: 0.5,
+                    speed: 200.0,
+                })),
                 bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
                 bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(build_move_direction(MoveDirectionBuilder {
                     direction: Rot2::degrees(-90.0),
