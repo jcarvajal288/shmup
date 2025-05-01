@@ -8,7 +8,6 @@ use bevy::prelude::*;
 pub struct CircleSpawn {
     pub bullet_type: BulletType,
     pub bullets_in_circle: u32,
-    pub bullets_in_lines: u32,
     pub angle: BulletPatternAngle,
     pub spawn_circle_radius: f32,
 }

@@ -38,7 +38,6 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
     let bullet_stream = CircleSpawn {
         bullet_type: WhiteArrow,
         bullets_in_circle: 1,
-        bullets_in_lines: 1,
         angle: BulletPatternAngle {
             target: Player,
             spread: PI,

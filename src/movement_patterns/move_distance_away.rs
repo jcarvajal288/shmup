@@ -7,8 +7,6 @@ use crate::movement_patterns::MovementPattern;
 pub struct MoveDistanceAway {
     pub name: &'static str,
     pub repulsion_point: Vec3,
-    pub distance: f32,
-    pub duration: Duration,
     pub velocity: f32,
     pub acceleration: f32,
     pub direction: Vec3,
@@ -19,8 +17,6 @@ impl Default for MoveDistanceAway {
         Self {
             name: Default::default(),
             repulsion_point: Default::default(),
-            distance: 0.0,
-            duration: Default::default(),
             direction: Vec3::ZERO,
             velocity: 0.0,
             acceleration: 0.0,
@@ -66,8 +62,6 @@ pub fn build_move_distance_away(builder: MoveDistanceAwayBuilder) -> MoveDistanc
     MoveDistanceAway {
         name: builder.name,
         repulsion_point: builder.repulsion_point,
-        duration: builder.duration,
-        distance: builder.distance,
         velocity,
         acceleration: -1.0 * velocity / builder.duration.as_secs_f32(),
         direction: Vec3::ZERO,

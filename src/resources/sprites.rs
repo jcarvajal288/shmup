@@ -150,6 +150,7 @@ fn next_animation(indices: &mut AnimationIndices) {
     indices.last = indices.next_last;
 }
 
+#[allow(clippy::too_many_arguments)]
 fn load_sprite_sheet(
     texture: Handle<Image>,
     animated_sprite: &mut AnimatedSprite,

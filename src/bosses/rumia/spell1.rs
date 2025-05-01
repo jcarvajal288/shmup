@@ -63,7 +63,6 @@ fn phase1_setup(
                 BoxedBulletPattern(Box::new(CircleSpawn {
                     bullet_type: BulletType::BlueRimmedCircle,
                     bullets_in_circle: 16,
-                    bullets_in_lines: 1,
                     angle: BulletPatternAngle {
                         target: BulletPatternTarget::Player,
                         spread: 2.0 * PI,
@@ -147,7 +146,6 @@ fn phase2_setup(
                 BoxedBulletPattern(Box::new(CircleSpawn {
                     bullet_type: *bullet_type,
                     bullets_in_circle: 64,
-                    bullets_in_lines: 1,
                     angle: BulletPatternAngle {
                         target: Down,
                         spread: 2.0 * PI,
