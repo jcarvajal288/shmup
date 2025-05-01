@@ -24,6 +24,7 @@ pub struct AnimatedSprite {
 }
 
 #[derive(Resource)]
+#[derive(Default)]
 pub struct Sprites {
     pub dark_background: Sprite,
     pub frame: Sprite,
@@ -48,31 +49,6 @@ pub struct Sprites {
     pub bullet_small_blue_circle: Sprite,
 }
 
-impl Default for Sprites {
-    fn default() -> Self {
-        Self {
-            dark_background: Sprite::default(),
-            frame: Sprite::default(),
-            remilia: AnimatedSprite::default(),
-            blue_fairy: AnimatedSprite::default(),
-            red_fairy: AnimatedSprite::default(),
-            green_fairy: AnimatedSprite::default(),
-            yellow_fairy: AnimatedSprite::default(),
-            player_spell_text: Sprite::default(),
-            life_counter: Sprite::default(),
-            blue_fang_shot: Sprite::default(),
-            rumia: AnimatedSprite::default(),
-
-            bullet_white_arrow: Sprite::default(),
-            bullet_blue_rimmed_circle: Sprite::default(),
-            bullet_small_red_circle: Sprite::default(),
-            bullet_small_yellow_circle: Sprite::default(),
-            bullet_small_green_circle: Sprite::default(),
-            bullet_small_purple_circle: Sprite::default(),
-            bullet_small_blue_circle: Sprite::default(),
-        }
-    }
-}
 
 
 pub fn animate_sprite(

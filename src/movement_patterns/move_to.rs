@@ -26,7 +26,7 @@ impl Default for MoveTo {
 impl MovementPattern for MoveTo {
     fn name(&self) -> &str { "MoveTo" }
 
-    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> () {
+    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
         let delta_time = time.delta_secs();
         if self.elapsed_time > self.duration {
             return;
@@ -69,6 +69,6 @@ pub fn build_move_to(builder: MoveToBuilder) -> MoveTo {
 fn find_accel_to_stop_at_destination(start: Vec2, dest: Vec2, speed: f32, time: f32) -> Vec2 {
     let displacement = dest - start;
     let velocity = displacement.normalize() * speed;
-    let acceleration = (2.0 * (displacement - (velocity * time))) / (time * time);
-    acceleration
+    
+    (2.0 * (displacement - (velocity * time))) / (time * time)
 }

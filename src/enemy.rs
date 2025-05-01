@@ -89,22 +89,20 @@ pub fn update_enemies(
     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
     for (_enemy, mut transform, mut movement_pattern, mut bullet_pattern, mut bullet_movement_pattern, mut shot_schedule) in enemy_query.iter_mut() {
-        movement_pattern.0.do_move(&mut *transform, &time);
+        movement_pattern.0.do_move(&mut transform, &time);
         for player_transform in player_query.iter() {
-            if shot_schedule.delay_timer.tick(time.delta()).finished() {
-                if shot_schedule.repeat_timer.tick(time.delta()).just_finished() {
-                    bullet_pattern.0.fire(
-                        &mut commands,
-                        &sprites,
-                        *transform,
-                        &time,
-                        player_transform,
-                        &mut bullet_movement_pattern,
-                    );
-                    if shot_schedule.times > 1 {
-                        shot_schedule.repeat_timer.reset();
-                        shot_schedule.times -= 1;
-                    }
+            if shot_schedule.delay_timer.tick(time.delta()).finished() && shot_schedule.repeat_timer.tick(time.delta()).just_finished() {
+                bullet_pattern.0.fire(
+                    &mut commands,
+                    &sprites,
+                    *transform,
+                    &time,
+                    player_transform,
+                    &mut bullet_movement_pattern,
+                );
+                if shot_schedule.times > 1 {
+                    shot_schedule.repeat_timer.reset();
+                    shot_schedule.times -= 1;
                 }
             }
         }
@@ -139,7 +137,7 @@ pub fn check_shot_enemy_collision(
             );
             let shot_hit_box = Aabb2d::new(
                 shot_transform.translation.truncate(),
-                Vec2::from(shot_sprite.rect.unwrap().half_size()),
+                shot_sprite.rect.unwrap().half_size(),
             );
             if enemy_hit_circle.intersects(&shot_hit_box) {
                 enemy.hit_points -= shot.damage;

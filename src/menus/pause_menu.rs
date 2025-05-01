@@ -1,8 +1,7 @@
 use bevy::prelude::*;
-use crate::game::{LevelState, FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
+use crate::game::{FRAME_BORDER_BOTTOM, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::{despawn_screen, GameState};
 use crate::menus::{SELECTED_COLOR, UNSELECTED_COLOR};
-use crate::player::PlayerContinueEvent;
 
 #[derive(Resource)]
 struct PauseMenuState {

@@ -1,8 +1,7 @@
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::BulletPatternTarget::Player;
 use crate::bullet_patterns::{get_target_transform, BulletPattern, BulletPatternAngle};
-use crate::movement_patterns::move_straight::MoveStraight;
-use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern, MovementPattern};
+use crate::movement_patterns::BoxedBulletMovementPattern;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::{Commands, Component, Res, Time, Timer, Transform, Vec2};
 use std::f32::consts::PI;
@@ -66,7 +65,7 @@ impl BulletPattern for BulletStream {
         if !self.startup_timer.finished() { return }
 
         if self.wave_timer.tick(time.delta()).just_finished() && self.waves_left > 0 {
-            self.fire_wave(commands, &sprites, &transform, player_transform, movement_pattern);
+            self.fire_wave(commands, sprites, &transform, player_transform, movement_pattern);
             self.waves_left -= 1;
 
             if self.waves_left == 0 && self.iterations_left > 0 {
@@ -87,7 +86,7 @@ impl BulletStream {
 
     fn fire_bullet(&mut self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, firing_angle: f32, movement_pattern: &mut BoxedBulletMovementPattern) {
         let new_movement_pattern = std::mem::take(movement_pattern);
-        spawn_bullet(commands, &sprites, BulletSpawner {
+        spawn_bullet(commands, sprites, BulletSpawner {
             bullet_type: self.bullet_type,
             position: Vec2::new(transform.translation.x, transform.translation.y),
             movement_pattern: new_movement_pattern,
@@ -95,19 +94,19 @@ impl BulletStream {
     }
 
     fn fire_wave(&mut self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, player_transform: &Transform, movement_pattern: &mut BoxedBulletMovementPattern) {
-        let target = get_target_transform(&self.angle.target, &transform, player_transform);
+        let target = get_target_transform(&self.angle.target, transform, player_transform);
         let firing_angle = target.translation.y.atan2(target.translation.x);
 
         if self.bullets_per_wave == 1 {
-            self.fire_bullet(commands, &sprites, &transform, firing_angle, movement_pattern);
+            self.fire_bullet(commands, sprites, transform, firing_angle, movement_pattern);
         } else {
             let step_size = self.angle.spread / (self.bullets_per_wave as f32 - 1.0);
             let angles = (0..self.bullets_per_wave as i32).map(|i: i32| {
-                return firing_angle - (self.angle.spread / 2.0) + (i as f32 * step_size) + self.angle.offset;
+                firing_angle - (self.angle.spread / 2.0) + (i as f32 * step_size) + self.angle.offset
             }).collect::<Vec<_>>();
 
             for angle in angles {
-                self.fire_bullet(commands, &sprites, &transform, angle, movement_pattern);
+                self.fire_bullet(commands, sprites, transform, angle, movement_pattern);
             }
         }
     }

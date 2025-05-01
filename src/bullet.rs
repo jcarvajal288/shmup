@@ -1,4 +1,4 @@
-use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
+use crate::movement_patterns::BoxedBulletMovementPattern;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
@@ -42,7 +42,7 @@ pub struct BulletSpawner {
 pub fn spawn_bullet(commands: &mut Commands, sprites: &Res<Sprites>, bullet_spawner: BulletSpawner) {
     commands.spawn((
         Name::new("Bullet"),
-        sprite_for_bullet_type(&bullet_spawner.bullet_type, &sprites),
+        sprite_for_bullet_type(&bullet_spawner.bullet_type, sprites),
         Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
         Bullet {
             bullet_type: bullet_spawner.bullet_type,
@@ -80,7 +80,7 @@ pub fn move_bullets(
     mut bullet_query: Query<(&Bullet, &mut Transform, &mut BoxedBulletMovementPattern)>
 ) {
     for (_bullet, mut transform, mut movement_pattern) in bullet_query.iter_mut() {
-        movement_pattern.0.do_move(&mut *transform, &time);
+        movement_pattern.0.do_move(&mut transform, &time);
     }
 }
 

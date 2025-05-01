@@ -54,12 +54,12 @@ fn phase1_setup(
     mut state: ResMut<NextState<Spell1State>>,
 ) {
     for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
-        set_one_off_animation(&mut *animation_indices, 0, 3);
+        set_one_off_animation(&mut animation_indices, 0, 3);
         for i in 0..6 {
             let velocity = 100.0 + (i as f32 + 1.0) * 20.0;
             commands.spawn((
                 Name::new("spell1"),
-                transform.clone(),
+                *transform,
                 BoxedBulletPattern(Box::new(CircleSpawn {
                     bullet_type: BulletType::BlueRimmedCircle,
                     bullets_in_circle: 16,
@@ -118,7 +118,7 @@ fn move_to_phase2_setup(
 }
 
 fn wait_for_move_to_phase2(
-    mut rumia_query: Query<(&Boss, &BoxedMovementPattern)>,
+    rumia_query: Query<(&Boss, &BoxedMovementPattern)>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
     for (_boss, boxed_movement_pattern) in rumia_query.iter() {
@@ -133,7 +133,7 @@ fn phase2_setup(
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
 ) {
     for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
-        set_one_off_animation(&mut *animation_indices, 0, 3);
+        set_one_off_animation(&mut animation_indices, 0, 3);
         let waves = [
             (BulletType::SmallRedCircle, 0.0),
             (BulletType::SmallYellowCircle, 1.0),
@@ -145,7 +145,7 @@ fn phase2_setup(
             commands.spawn((
                 Name::new("spell2"),
                 BoxedBulletPattern(Box::new(CircleSpawn {
-                    bullet_type: bullet_type.clone(),
+                    bullet_type: *bullet_type,
                     bullets_in_circle: 64,
                     bullets_in_lines: 1,
                     angle: BulletPatternAngle {
@@ -161,7 +161,7 @@ fn phase2_setup(
                     duration: Duration::from_millis(500),
                     distance: 75.0,
                 }))),
-                transform.clone(),
+                *transform,
                 SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
                 GameObject,
             ));

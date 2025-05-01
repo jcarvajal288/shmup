@@ -2,7 +2,7 @@ pub mod bullet_stream;
 pub mod circle_spawn;
 
 use crate::bullet_patterns::BulletPatternTarget::Player;
-use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern, MovementPattern};
+use crate::movement_patterns::BoxedBulletMovementPattern;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::{Commands, Component, Res, Time, Transform};
 use dyn_clone::DynClone;
@@ -16,7 +16,7 @@ pub trait BulletPattern: DynClone {
         time: &Res<Time>,
         player_transform: &Transform,
         movement_pattern: &mut BoxedBulletMovementPattern
-    ) -> ();
+    );
 }
 
 dyn_clone::clone_trait_object!(BulletPattern);

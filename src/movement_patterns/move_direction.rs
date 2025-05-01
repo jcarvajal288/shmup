@@ -15,7 +15,7 @@ impl MovementPattern for MoveDirection {
         "MoveDirection"
     }
 
-    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> () {
+    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
         let delta_time = time.delta_secs();
         self.velocity += self.acceleration * delta_time;
         transform.translation += self.direction * self.velocity * delta_time;

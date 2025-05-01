@@ -17,7 +17,7 @@ impl MovementPattern for MoveAway {
         "MoveAway"
     }
 
-    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) -> () {
+    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
         if self.direction == Vec3::ZERO {
             self.direction = (transform.translation - self.repulsion_point).normalize().with_z(0.0);
         }

@@ -1,6 +1,5 @@
 use bevy::{prelude::*};
 use crate::{despawn_screen, GameState};
-use crate::bosses::rumia::spell1::reset_spell1;
 use crate::game::{ChosenLevel, LevelState};
 use crate::menus::{SELECTED_COLOR, UNSELECTED_COLOR};
 

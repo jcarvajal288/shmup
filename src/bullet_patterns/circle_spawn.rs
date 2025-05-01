@@ -22,7 +22,7 @@ impl BulletPattern for CircleSpawn {
         _time: &Res<Time>,
         player_transform: &Transform,
         movement_pattern: &mut BoxedBulletMovementPattern
-    ) -> () {
+    ) {
         self.fire_wave(commands, sprites, &transform, player_transform, movement_pattern);
     }
 }
@@ -36,16 +36,16 @@ impl CircleSpawn {
         transform: &Transform,
         player_transform: &Transform,
         movement_pattern: &mut BoxedBulletMovementPattern
-    ) -> () {
-        let target = get_target_transform(&self.angle.target, &transform, player_transform);
+    ) {
+        let target = get_target_transform(&self.angle.target, transform, player_transform);
         let firing_angle = target.translation.y.atan2(target.translation.x);
         let step_size = if self.bullets_in_circle <= 1 { 0.0 } else { self.angle.spread / (self.bullets_in_circle as f32 - 1.0) };
         let angles = (0..self.bullets_in_circle as i32).map(|i: i32| {
-            return firing_angle - (self.angle.spread / 2.0) + (i as f32 * step_size) + self.angle.offset;
+            firing_angle - (self.angle.spread / 2.0) + (i as f32 * step_size) + self.angle.offset
         }).collect::<Vec<_>>();
 
         for angle in angles {
-            self.fire_bullet(commands, &sprites, &transform, angle, movement_pattern);
+            self.fire_bullet(commands, sprites, transform, angle, movement_pattern);
         }
     }
 
