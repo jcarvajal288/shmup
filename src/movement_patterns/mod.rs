@@ -3,6 +3,7 @@ pub mod move_to;
 pub mod move_direction;
 pub mod move_away;
 pub mod move_distance_away;
+pub mod sine_wave;
 
 use std::f32::consts::PI;
 use bevy::math::{Quat, Vec3};
