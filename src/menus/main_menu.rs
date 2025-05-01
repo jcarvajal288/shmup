@@ -96,12 +96,10 @@ fn run_main_menu_action(
     match menu_selected {
         0 => {
             game_state.set(GameState::StartingGame);
-            println!("GameState set to StartingGame");
             chosen_level.level = LevelState::TestBed;
         },
         1 => {
             game_state.set(GameState::StartingGame);
-            println!("GameState set to StartingGame");
             chosen_level.level = LevelState::Level1;
         },
         2 => { app_exit_events.send(AppExit::Success); },

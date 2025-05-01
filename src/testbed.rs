@@ -13,5 +13,4 @@ fn testbed_cleanup(
     mut state: ResMut<NextState<RumiaState>>,
 ) {
     state.set(RumiaState::Inactive);
-    println!("RumiaState set to Inactive");
 }

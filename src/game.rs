@@ -134,9 +134,7 @@ fn start_game(
     chosen_level: Res<ChosenLevel>
 ) {
     game_state.set(GameState::PlayingGame);
-    println!("GameState set to PlayingGame");
     level_state.set(chosen_level.level);
-    println!("LevelState set to chosen level");
 }
 
 fn out_of_bounds_cleanup(
@@ -172,5 +170,4 @@ fn reset_levels(
     mut first_level_state: ResMut<NextState<FirstLevelState>>,
 ) {
     first_level_state.set(FirstLevelState::Inactive);
-    println!("FirstLevelState set to Inactive");
 }

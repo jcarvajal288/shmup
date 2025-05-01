@@ -4,17 +4,15 @@ use crate::bullet::BulletType;
 use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle, BulletPatternTarget};
-use crate::enemy::Enemy;
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_away::{build_move_away, MoveAwayBuilder};
+use crate::movement_patterns::move_distance_away::{build_move_distance_away, MoveDistanceAwayBuilder};
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
-use crate::player::Player;
-use crate::resources::sprites::{set_one_off_animation, AnimationIndices, Sprites};
+use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
 use std::f32::consts::PI;
 use std::time::Duration;
-use crate::movement_patterns::move_distance_away::{build_move_distance_away, MoveDistanceAwayBuilder};
 
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -48,7 +46,6 @@ pub fn reset_spell1(
     mut state: ResMut<NextState<Spell1State>>,
 ) {
     state.set(Spell1State::Inactive);
-    println!("Spell1State set to Inactive");
 }
 
 fn phase1_setup(
@@ -91,7 +88,6 @@ fn phase1_setup(
         GameObject,
     ));
     state.set(Spell1State::Phase1);
-    println!("Spell1State set to Phase1");
 }
 
 fn phase1_countdown(
@@ -102,7 +98,6 @@ fn phase1_countdown(
     for mut timer in timer_query.iter_mut() {
         if timer.0.tick(time.delta()).just_finished() {
             next_state.set(Spell1State::MoveToPhase2);
-            println!("Spell1State set to MoveToPhase2");
         };
     }
 }
@@ -129,7 +124,6 @@ fn wait_for_move_to_phase2(
     for (_boss, boxed_movement_pattern) in rumia_query.iter() {
         if boxed_movement_pattern.0.is_finished() {
             next_state.set(Spell1State::Phase2);
-            println!("Spell1State set to Phase2");
         }
     }
 }

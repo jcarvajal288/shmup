@@ -79,7 +79,6 @@ pub fn move_player(
         }
         if keyboard.just_pressed(KeyCode::Escape) {
             game_state.set(GameState::Paused);
-            println!("GameState set to Paused");
         }
     }
 }
@@ -173,7 +172,6 @@ pub fn fire_shot(
 ) {
     for (_player, transform, mut shot_timer) in &mut player_query.iter_mut() {
         if shot_timer.0.tick(time.delta()).finished() && keyboard.pressed(KeyCode::KeyZ) {
-            println!("#######################################");
             let shot_angle = PI / 2.0;
             commands.spawn((
                 Name::new("PlayerShot"),

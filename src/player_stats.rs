@@ -59,7 +59,6 @@ pub fn listen_for_player_death(
             Some(life_counter) => commands.entity(life_counter).despawn(),
             None => {
                 game_state.set(GameState::GameOver);
-                println!("Game State set to GameOver");
             },
         }
         player_death_event_reader.clear();

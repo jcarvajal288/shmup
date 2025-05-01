@@ -100,15 +100,12 @@ fn run_menu_action(
     match menu_selected {
         0 => {
             game_state.set(GameState::PlayingGame);
-            println!("GameState set to PlayingGame");
         },
         1 => {
             game_state.set(GameState::Resetting);
-            println!("GameState set to Resetting");
         },
         2 => {
             game_state.set(GameState::MainMenu);
-            println!("GameState set to MainMenu");
         },
         _ => {}
     }

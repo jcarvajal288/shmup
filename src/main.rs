@@ -107,12 +107,10 @@ fn clear_levels(
     mut level_state: ResMut<NextState<LevelState>>,
 ) {
     level_state.set(LevelState::None);
-    println!("LevelState set to None");
 }
 
 fn restart_game(
     mut game_state: ResMut<NextState<GameState>>,
 ) {
     game_state.set(GameState::StartingGame);
-    println!("GameState set to StartingGame");
 }

@@ -93,12 +93,10 @@ fn run_menu_action(
     match menu_selected {
         0 => {
             game_state.set(GameState::PlayingGame);
-            println!("GameState set to PlayingGame");
             player_continue_event_writer.send(PlayerContinueEvent);
         },
         1 => {
             game_state.set(GameState::MainMenu);
-            println!("GameState set to MainMenu");
         },
         _ => {}
     }

@@ -33,16 +33,8 @@ pub fn level1_plugin(app: &mut App) {
     ;
 }
 
-// pub fn reset_level1(
-//     mut state: ResMut<NextState<FirstLevelState>>,
-// ) {
-//     state.set(FirstLevelState::Inactive);
-//     println!("FirstLevelState set to Inactive");
-// }
-
 fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLevelState>>) {
 
-    println!("Level 1 setup");
     let bullet_stream = CircleSpawn {
         bullet_type: WhiteArrow,
         bullets_in_circle: 1,
@@ -121,7 +113,6 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
         ));
     }
     next_state.set(FirstLevelState::PreRumia);
-    println!("FirstLevelState set to PreRumia");
 }
 
 fn listen_for_rumia_entrance(
@@ -137,7 +128,6 @@ fn listen_for_rumia_entrance(
         && enemies.is_empty()
     {
         next_first_level_state.set(FirstLevelState::Rumia);
-        println!("FirstLevelState set to Rumia");
     }
 }
 
@@ -145,5 +135,4 @@ fn first_level_cleanup(
     mut state: ResMut<NextState<RumiaState>>,
 ) {
     state.set(RumiaState::Inactive);
-    println!("RumiaState set to Inactive");
 }
