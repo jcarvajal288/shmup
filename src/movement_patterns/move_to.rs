@@ -65,10 +65,3 @@ pub fn build_move_to(builder: MoveToBuilder) -> MoveTo {
         elapsed_time: 0.0,
     }
 }
-
-fn find_accel_to_stop_at_destination(start: Vec2, dest: Vec2, speed: f32, time: f32) -> Vec2 {
-    let displacement = dest - start;
-    let velocity = displacement.normalize() * speed;
-    
-    (2.0 * (displacement - (velocity * time))) / (time * time)
-}

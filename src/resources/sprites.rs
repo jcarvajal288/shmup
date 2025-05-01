@@ -1,9 +1,6 @@
 use bevy::prelude::*;
 use crate::resources::images::Images;
 
-pub const PLAYER_SPRITE_SIZE: u32 = 45;
-pub const FAIRY_SPRITE_SIZE: u32 = 32;
-
 #[derive(Component, Clone, Default)]
 pub struct AnimationIndices {
     pub first: usize,

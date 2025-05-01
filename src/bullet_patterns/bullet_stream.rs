@@ -13,8 +13,6 @@ pub struct BulletStream {
     pub waves_per_iteration: usize,
     pub num_iterations: usize,
     pub angle: BulletPatternAngle,
-    pub speed: f32,
-    pub acceleration: f32,
 
     pub startup_timer: Timer,
     pub wave_timer: Timer,
@@ -36,8 +34,6 @@ impl Default for BulletStream {
                 spread: PI / 2.0,
                 offset: 0.0,
             },
-            speed: 0.0,
-            acceleration: 0.0,
             startup_timer: Default::default(),
             wave_timer: Default::default(),
             iteration_timer: Default::default(),
@@ -84,7 +80,7 @@ impl BulletPattern for BulletStream {
 
 impl BulletStream {
 
-    fn fire_bullet(&mut self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, firing_angle: f32, movement_pattern: &mut BoxedBulletMovementPattern) {
+    fn fire_bullet(&mut self, commands: &mut Commands, sprites: &Res<Sprites>, transform: &Transform, movement_pattern: &mut BoxedBulletMovementPattern) {
         let new_movement_pattern = std::mem::take(movement_pattern);
         spawn_bullet(commands, sprites, BulletSpawner {
             bullet_type: self.bullet_type,
@@ -98,15 +94,15 @@ impl BulletStream {
         let firing_angle = target.translation.y.atan2(target.translation.x);
 
         if self.bullets_per_wave == 1 {
-            self.fire_bullet(commands, sprites, transform, firing_angle, movement_pattern);
+            self.fire_bullet(commands, sprites, transform, movement_pattern);
         } else {
             let step_size = self.angle.spread / (self.bullets_per_wave as f32 - 1.0);
             let angles = (0..self.bullets_per_wave as i32).map(|i: i32| {
                 firing_angle - (self.angle.spread / 2.0) + (i as f32 * step_size) + self.angle.offset
             }).collect::<Vec<_>>();
 
-            for angle in angles {
-                self.fire_bullet(commands, sprites, transform, angle, movement_pattern);
+            for _angle in angles {
+                self.fire_bullet(commands, sprites, transform, movement_pattern);
             }
         }
     }
