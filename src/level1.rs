@@ -33,7 +33,11 @@ pub fn level1_plugin(app: &mut App) {
     ;
 }
 
-fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLevelState>>) {
+fn level1_setup(
+    mut commands: Commands,
+    mut next_state: ResMut<NextState<FirstLevelState>>,
+    time: Res<Time>,
+) {
 
     let bullet_stream = CircleSpawn {
         bullet_type: WhiteArrow,
@@ -46,9 +50,9 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
         spawn_circle_radius: 0.0,
     };
 
-    for i in 0..1 {
+    for i in 0..5 {
         let initial_delay = 0.0;
-        let iter_delay = 1.0;
+        let iter_delay = 0.3;
         let full_delay = initial_delay + (iter_delay * i as f32);
         commands.spawn((
             Name::new("EnemySpawner"),
@@ -56,15 +60,11 @@ fn level1_setup(mut commands: Commands, mut next_state: ResMut<NextState<FirstLe
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
                 starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0),
-                // movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
-                //     angle: 0.0,
-                //     speed: 40.0,
-                //     ..default()
-                // })),
                 movement_pattern: BoxedMovementPattern(Box::new(MoveSineWave {
-                    amplitude: 0.5,
-                    wavelength: 0.5,
-                    speed: 200.0,
+                    amplitude: 150.0,
+                    wavelength: 100.0,
+                    frequency: 25.0,
+                    starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0),
                 })),
                 bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
                 bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(build_move_direction(MoveDirectionBuilder {
