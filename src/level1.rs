@@ -54,17 +54,18 @@ fn level1_setup(
         let initial_delay = 0.0;
         let iter_delay = 0.3;
         let full_delay = initial_delay + (iter_delay * i as f32);
+        let starting_position = Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0);
         commands.spawn((
             Name::new("EnemySpawner"),
             EnemySpawner {
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
-                starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0),
+                starting_position,
                 movement_pattern: BoxedMovementPattern(Box::new(MoveSineWave {
                     amplitude: 150.0,
                     wavelength: 100.0,
                     frequency: 25.0,
-                    starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0),
+                    starting_position,
                 })),
                 bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
                 bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(build_move_direction(MoveDirectionBuilder {
