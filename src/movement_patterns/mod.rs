@@ -11,24 +11,27 @@ use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;
 use crate::movement_patterns::MovementPatterns::{StraightAtPlayer, StraightLine};
 
-#[derive(Component, Clone)]
+#[derive(Component, Clone, PartialEq)]
 pub enum MovementPatterns {
-    StraightLine(Rot2, f32), // angle, speed
+    StraightLine(Rot2, f32, bool), // angle, speed, face travel direction
     StraightAtPlayer(f32), // speed
 }
 
 pub fn run_movement_pattern(movement_pattern: &MovementPatterns, transform: &mut Transform, time: &Res<Time>) {
     match movement_pattern {
-        StraightLine(angle, speed) => move_straight_line(*angle, *speed, transform, time),
+        StraightLine(angle, speed, face_travel_direction) => move_straight_line(*angle, *speed, *face_travel_direction, transform, time),
         StraightAtPlayer(_speed) => { /* this is run as StraightLine */}
     }
 }
 
-fn move_straight_line(angle: Rot2, speed: f32, transform: &mut Transform, time: &Res<Time>) {
+fn move_straight_line(angle: Rot2, speed: f32, face_travel_direction: bool, transform: &mut Transform, time: &Res<Time>) {
     let movement_direction = Vec3::new(angle.cos, angle.sin, 0.0);
     let movement_distance = speed * time.delta_secs();
     let translation_delta = movement_direction * movement_distance;
     transform.translation += translation_delta;
+    if face_travel_direction {
+        transform.rotation = Quat::from_axis_angle(Vec3::Z, angle.as_radians() + (-PI / 2.0));
+    }
 }
 
 pub trait MovementPattern: DynClone {

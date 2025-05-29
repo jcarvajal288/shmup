@@ -35,6 +35,7 @@ pub fn fire_bullet_pattern(
                         movement_pattern: StraightAtPlayer(*speed)
                     }
                 ));
+                shot_timer.reset();
             }
         }
     }

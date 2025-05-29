@@ -40,7 +40,7 @@ impl Default for EnemySpawner {
             name: "Enemy",
             enemy_type: BlueFairy,
             starting_position: Vec2::default(),
-            movement_pattern: StraightLine(Rot2::degrees(0.0), 0.0),
+            movement_pattern: StraightLine(Rot2::degrees(0.0), 0.0, false),
             bullet_pattern: ShootAtPlayer(WhiteArrow, 0.0, Timer::default())
         }
     }
@@ -83,7 +83,7 @@ pub fn enemy_fire(
     time: Res<Time>,
     mut enemy_query: Query<(&Enemy, &mut BulletPatterns, &mut Transform)>,
 ) {
-    for (_enemy, mut bullet_pattern, mut transform) in enemy_query.iter_mut() {
+    for (_enemy, mut bullet_pattern, transform) in enemy_query.iter_mut() {
         fire_bullet_pattern(&mut commands, &mut bullet_pattern, &time, &transform);
     }
 }
