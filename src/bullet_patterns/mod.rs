@@ -1,11 +1,44 @@
 pub mod bullet_stream;
 pub mod circle_spawn;
 
+use std::time::Duration;
+use bevy::math::Rot2;
 use crate::bullet_patterns::BulletPatternTarget::Player;
-use crate::movement_patterns::BoxedBulletMovementPattern;
+use crate::movement_patterns::{BoxedBulletMovementPattern, MovementPatterns};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::{Commands, Component, Res, Time, Transform};
+use bevy::time::Timer;
 use dyn_clone::DynClone;
+use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
+use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
+use crate::movement_patterns::move_straight::MoveStraight;
+use crate::movement_patterns::MovementPatterns::StraightAtPlayer;
+
+#[derive(Component)]
+pub enum BulletPatterns {
+    ShootAtPlayer(BulletType, f32, Timer), // bullet type, speed, shot interval
+}
+
+pub fn fire_bullet_pattern(
+    commands: &mut Commands,
+    bullet_pattern: &mut BulletPatterns,
+    time: &Res<Time>,
+    transform: &Transform
+) {
+    match bullet_pattern {
+        ShootAtPlayer(bullet_type, speed, ref mut shot_timer) => {
+            if shot_timer.tick(time.delta()).just_finished() {
+                commands.spawn((
+                    BulletSpawner {
+                        bullet_type: *bullet_type,
+                        position: transform.translation.truncate(),
+                        movement_pattern: StraightAtPlayer(*speed)
+                    }
+                ));
+            }
+        }
+    }
+}
 
 pub trait BulletPattern: DynClone {
     fn fire(

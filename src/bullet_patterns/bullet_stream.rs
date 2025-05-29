@@ -1,10 +1,11 @@
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::BulletPatternTarget::Player;
 use crate::bullet_patterns::{get_target_transform, BulletPattern, BulletPatternAngle};
-use crate::movement_patterns::BoxedBulletMovementPattern;
+use crate::movement_patterns::{BoxedBulletMovementPattern, MovementPatterns};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::{Commands, Component, Res, Time, Timer, Transform, Vec2};
 use std::f32::consts::PI;
+use bevy::math::Rot2;
 
 #[derive(Component, Clone)]
 pub struct BulletStream {
@@ -85,7 +86,7 @@ impl BulletStream {
         spawn_bullet(commands, sprites, BulletSpawner {
             bullet_type: self.bullet_type,
             position: Vec2::new(transform.translation.x, transform.translation.y),
-            movement_pattern: new_movement_pattern,
+            movement_pattern: MovementPatterns::StraightLine(Rot2::degrees(0.0), 0.0), // placeholder for refactor
         });
     }
 

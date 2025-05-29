@@ -1,4 +1,4 @@
-use crate::movement_patterns::BoxedBulletMovementPattern;
+use crate::movement_patterns::{BoxedBulletMovementPattern, MovementPatterns};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
 use crate::bullet_patterns::BoxedBulletPattern;
@@ -33,10 +33,11 @@ pub struct ShotSchedule {
     pub times: usize,
 }
 
+#[derive(Component)]
 pub struct BulletSpawner {
     pub bullet_type: BulletType,
     pub position: Vec2,
-    pub movement_pattern: BoxedBulletMovementPattern,
+    pub movement_pattern: MovementPatterns,
 }
 
 pub fn spawn_bullet(commands: &mut Commands, sprites: &Res<Sprites>, bullet_spawner: BulletSpawner) {
@@ -56,14 +57,22 @@ pub fn spawn_bullets(
     time: Res<Time>,
     sprites: Res<Sprites>,
     mut commands: Commands,
-    mut query: Query<(&Transform, &mut BoxedBulletPattern, &mut BoxedBulletMovementPattern, &mut SpawnTimer)>,
+    mut query: Query<(&BulletSpawner)>,
     player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
-    for (bullet_origin_transform, mut bullet_pattern, mut movement_pattern, mut timer) in query.iter_mut() {
+    for (bullet_spawner) in query.iter_mut() {
         for player_transform in player_query.iter() {
-            if timer.0.tick(time.delta()).just_finished() {
-                bullet_pattern.0.fire(&mut commands, &sprites, *bullet_origin_transform, &time, player_transform, &mut movement_pattern);
-            }
+            println!("spawning bullets");
+            commands.spawn((
+                Name::new("Bullet"),
+                sprite_for_bullet_type(&bullet_spawner.bullet_type, &sprites),
+                Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
+                Bullet {
+                    bullet_type: bullet_spawner.bullet_type,
+                },
+                bullet_spawner.movement_pattern.clone(),
+                GameObject,
+            ));
         }
     }
 }

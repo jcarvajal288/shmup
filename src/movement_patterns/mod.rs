@@ -9,16 +9,18 @@ use std::f32::consts::PI;
 use bevy::math::{Quat, Rot2, Vec3};
 use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;
-use crate::movement_patterns::MovementPatterns::StraightLine;
+use crate::movement_patterns::MovementPatterns::{StraightAtPlayer, StraightLine};
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub enum MovementPatterns {
     StraightLine(Rot2, f32), // angle, speed
+    StraightAtPlayer(f32), // speed
 }
 
 pub fn run_movement_pattern(movement_pattern: &MovementPatterns, transform: &mut Transform, time: &Res<Time>) {
     match movement_pattern {
         StraightLine(angle, speed) => move_straight_line(*angle, *speed, transform, time),
+        StraightAtPlayer(_speed) => { /* this is run as StraightLine */}
     }
 }
 

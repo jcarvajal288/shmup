@@ -1,6 +1,6 @@
 use crate::bosses::rumia::{rumia_plugin, RumiaState};
 use crate::bullet::BulletType::*;
-use crate::bullet::ShotSchedule;
+use crate::bullet::{BulletType, ShotSchedule};
 use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
@@ -13,6 +13,8 @@ use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern,
 use crate::GameState;
 use bevy::prelude::*;
 use std::f32::consts::PI;
+use std::time::Duration;
+use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
 use crate::movement_patterns::MovementPatterns::StraightLine;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -45,7 +47,8 @@ fn level1_setup(
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
                 starting_position,
-                movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0)
+                movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
+                bullet_pattern: ShootAtPlayer(WhiteArrow, 200.0, Timer::from_seconds(0.2, TimerMode::Repeating)),
             },
             SpawnTimer(Timer::from_seconds(0.1, TimerMode::Once)),
             GameObject,

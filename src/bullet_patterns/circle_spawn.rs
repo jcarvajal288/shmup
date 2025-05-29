@@ -1,6 +1,6 @@
 use crate::bullet::{spawn_bullet, BulletSpawner, BulletType};
 use crate::bullet_patterns::{get_target_transform, BulletPattern, BulletPatternAngle};
-use crate::movement_patterns::BoxedBulletMovementPattern;
+use crate::movement_patterns::{BoxedBulletMovementPattern, MovementPatterns};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
 
@@ -53,7 +53,7 @@ impl CircleSpawn {
         spawn_bullet(commands, sprites, BulletSpawner {
             bullet_type: self.bullet_type,
             position: transform.translation.truncate() + translation_offset,
-            movement_pattern: movement_pattern.clone(),
+            movement_pattern: MovementPatterns::StraightLine(Rot2::degrees(0.0), 0.0), // placeholder for refactor
         });
     }
 }
