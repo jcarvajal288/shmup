@@ -1,4 +1,3 @@
-pub mod move_straight;
 pub mod move_to;
 pub mod move_direction;
 pub mod move_away;
@@ -15,6 +14,7 @@ use crate::movement_patterns::MovementPatterns::{StraightAtPlayer, StraightLine}
 pub enum MovementPatterns {
     StraightLine(Rot2, f32, bool), // angle, speed, face travel direction
     StraightAtPlayer(f32), // speed
+
 }
 
 pub fn run_movement_pattern(movement_pattern: &MovementPatterns, transform: &mut Transform, time: &Res<Time>) {

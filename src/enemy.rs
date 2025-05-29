@@ -1,4 +1,6 @@
-use std::time::Duration;
+use crate::bullet::BulletType::WhiteArrow;
+use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
+use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
 use crate::enemy::EnemyType::*;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::MovementPatterns::StraightLine;
@@ -8,10 +10,6 @@ use crate::resources::sprites::{AnimatedSprite, Sprites};
 use crate::sprites;
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
-use crate::bullet::{spawn_bullet, BulletType};
-use crate::bullet::BulletType::WhiteArrow;
-use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
-use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
 
 #[derive(Component)]
 pub struct Enemy {
