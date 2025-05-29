@@ -6,9 +6,28 @@ pub mod move_distance_away;
 pub mod sine_wave;
 
 use std::f32::consts::PI;
-use bevy::math::{Quat, Vec3};
+use bevy::math::{Quat, Rot2, Vec3};
 use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;
+use crate::movement_patterns::MovementPatterns::StraightLine;
+
+#[derive(Component)]
+pub enum MovementPatterns {
+    StraightLine(Rot2, f32), // angle, speed
+}
+
+pub fn run_movement_pattern(movement_pattern: &MovementPatterns, transform: &mut Transform, time: &Res<Time>) {
+    match movement_pattern {
+        StraightLine(angle, speed) => move_straight_line(*angle, *speed, transform, time),
+    }
+}
+
+fn move_straight_line(angle: Rot2, speed: f32, transform: &mut Transform, time: &Res<Time>) {
+    let movement_direction = Vec3::new(angle.cos, angle.sin, 0.0);
+    let movement_distance = speed * time.delta_secs();
+    let translation_delta = movement_direction * movement_distance;
+    transform.translation += translation_delta;
+}
 
 pub trait MovementPattern: DynClone {
     fn name(&self) -> &str;

@@ -9,10 +9,11 @@ use crate::enemy::{Enemy, EnemySpawner};
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_direction::{build_move_direction, MoveDirectionBuilder};
 use crate::movement_patterns::sine_wave::MoveSineWave;
-use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
+use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern, MovementPatterns};
 use crate::GameState;
 use bevy::prelude::*;
 use std::f32::consts::PI;
+use crate::movement_patterns::MovementPatterns::StraightLine;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -36,24 +37,7 @@ pub fn level1_plugin(app: &mut App) {
 fn level1_setup(
     mut commands: Commands,
     mut next_state: ResMut<NextState<FirstLevelState>>,
-    time: Res<Time>,
 ) {
-
-    let bullet_stream = CircleSpawn {
-        bullet_type: WhiteArrow,
-        bullets_in_circle: 1,
-        angle: BulletPatternAngle {
-            target: Player,
-            spread: PI,
-            offset: 0.0,
-        },
-        spawn_circle_radius: 0.0,
-    };
-
-    for i in 0..5 {
-        let initial_delay = 0.0;
-        let iter_delay = 0.3;
-        let full_delay = initial_delay + (iter_delay * i as f32);
         let starting_position = Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0);
         commands.spawn((
             Name::new("EnemySpawner"),
@@ -61,62 +45,11 @@ fn level1_setup(
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
                 starting_position,
-                movement_pattern: BoxedMovementPattern(Box::new(MoveSineWave {
-                    amplitude: 150.0,
-                    wavelength: 100.0,
-                    frequency: 25.0,
-                    starting_position,
-                })),
-                bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
-                bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(build_move_direction(MoveDirectionBuilder {
-                    direction: Rot2::degrees(-90.0),
-                    starting_velocity: 300.0,
-                    final_velocity: 300.0,
-                    time_to_decelerate: Default::default(),
-                }))),
-                shot_schedule: ShotSchedule {
-                    delay_timer: Timer::from_seconds(1.0, TimerMode::Once),
-                    repeat_timer: Timer:: from_seconds(0.5, TimerMode::Once),
-                    times: 5,
-                }
+                movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0)
             },
-            SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
+            SpawnTimer(Timer::from_seconds(0.1, TimerMode::Once)),
             GameObject,
         ));
-    }
-
-    // for i in 0..1 {
-    //     let initial_delay = 5.0;
-    //     let iter_delay = 1.0;
-    //     let full_delay = initial_delay + (iter_delay * i as f32);
-    //     commands.spawn((
-    //         Name::new("EnemySpawner"),
-    //         EnemySpawner {
-    //             name: "Blue Fairy",
-    //             enemy_type: BlueFairy,
-    //             starting_position: Vec2::new(SPAWN_RIGHT, 150.0),
-    //             movement_pattern: BoxedMovementPattern(Box::new(MoveStraight {
-    //                 angle: -PI,
-    //                 speed: 40.0,
-    //                 ..default()
-    //             })),
-    //             bullet_pattern: BoxedBulletPattern(Box::new(bullet_stream.clone())),
-    //             bullet_movement_pattern: BoxedBulletMovementPattern(Box::new(build_move_direction(MoveDirectionBuilder {
-    //                 direction: Rot2::degrees(-90.0),
-    //                 starting_velocity: 300.0,
-    //                 final_velocity: 300.0,
-    //                 time_to_decelerate: Default::default(),
-    //             }))),
-    //             shot_schedule: ShotSchedule {
-    //                 delay_timer: Timer::from_seconds(1.0, TimerMode::Once),
-    //                 repeat_timer: Timer:: from_seconds(0.5, TimerMode::Once),
-    //                 times: 5,
-    //             }
-    //         },
-    //         SpawnTimer(Timer::from_seconds(full_delay, TimerMode::Once)),
-    //         GameObject,
-    //     ));
-    // }
     next_state.set(FirstLevelState::PreRumia);
 }
 

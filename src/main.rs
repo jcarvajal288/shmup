@@ -18,6 +18,7 @@ use crate::menus::main_menu::main_menu_plugin;
 use crate::player_stats::PlayerStats;
 use bevy::prelude::*;
 use bevy::window::WindowResolution;
+use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use resources::images::{load_images, Images};
 use resources::sprites::{load_sprites, Sprites};
 use crate::menus::pause_menu::pause_menu_plugin;
