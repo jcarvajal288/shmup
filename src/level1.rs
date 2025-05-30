@@ -5,10 +5,8 @@ use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
-use crate::movement_patterns::create_decelerate_pattern;
 use crate::GameState;
 use bevy::prelude::*;
-use std::time::Duration;
 use crate::movement_patterns::MovementPatterns::SineWave;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]

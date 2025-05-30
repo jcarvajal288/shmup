@@ -13,7 +13,7 @@ use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
 use std::f32::consts::PI;
 use std::time::Duration;
-use crate::bullet_patterns::starburst::Starburst;
+use crate::bullet_patterns::starburst::{fire_starburst, Starburst};
 use crate::enemy::Enemy;
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -59,16 +59,16 @@ fn phase1_setup(
     let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
-        starburst::fire_starburst(&mut bullet_spawn_events, Starburst {
+        fire_starburst(&mut bullet_spawn_events, Starburst {
             bullet_type: BulletType::BlueRimmedCircle,
             num_lines: 16,
             num_bullets_in_line: 5,
             lowest_speed: 200.0,
             highest_speed: 120.0,
+            offset: 0.0,
             origin: boss_transform.translation.truncate(),
             target: player_transform.translation.truncate(),
         });
-
     }
     commands.spawn((
         Name::new("Spell Timer 1"),
@@ -119,41 +119,55 @@ fn wait_for_move_to_phase2(
 fn phase2_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
+    mut bullet_spawn_events: EventWriter<BulletSpawnEvent>,
 ) {
-    // for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
-    //     set_one_off_animation(&mut animation_indices, 0, 3);
-    //     let waves = [
-    //         (BulletType::SmallRedCircle, 0.0),
-    //         (BulletType::SmallYellowCircle, 1.0),
-    //         (BulletType::SmallGreenCircle, 2.0),
-    //         (BulletType::SmallPurpleCircle, 3.0),
-    //         (BulletType::SmallBlueCircle, 4.0)
-    //     ];
-    //     for (bullet_type, index) in waves.iter() {
-    //         commands.spawn((
-    //             Name::new("spell2"),
-    //             BoxedBulletPattern(Box::new(CircleSpawn {
-    //                 bullet_type: *bullet_type,
-    //                 bullets_in_circle: 64,
-    //                 angle: BulletPatternAngle {
-    //                     target: Down,
-    //                     spread: 2.0 * PI,
-    //                     offset: 0.0 + PI / 3.0 * index,
-    //                 },
-    //                 spawn_circle_radius: 30.0,
-    //             })),
-    //             BoxedBulletMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
-    //                 name: "phase2_part1",
-    //                 repulsion_point: transform.translation,
-    //                 duration: Duration::from_millis(500),
-    //                 distance: 75.0,
-    //             }))),
-    //             *transform,
-    //             SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
-    //             GameObject,
-    //         ));
-    //     }
-    // }
+    for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
+        set_one_off_animation(&mut animation_indices, 0, 3);
+        let waves = [
+            (BulletType::SmallRedCircle, 0.0),
+            (BulletType::SmallYellowCircle, 1.0),
+            (BulletType::SmallGreenCircle, 2.0),
+            (BulletType::SmallPurpleCircle, 3.0),
+            (BulletType::SmallBlueCircle, 4.0)
+        ];
+        for wave in waves {
+            fire_starburst(&mut bullet_spawn_events, Starburst {
+                bullet_type: wave.0,
+                num_lines: 64,
+                num_bullets_in_line: 1,
+                lowest_speed: 200.0,
+                highest_speed: 120.0,
+                offset: wave.1,
+                origin: boss_transform.translation.truncate(),
+                target: boss_transform.translation.with_y(boss_transform.translation.y - 1.0).truncate(),
+            });
+        }
+
+        // for (bullet_type, index) in waves.iter() {
+        //     commands.spawn((
+        //         Name::new("spell2"),
+        //         BoxedBulletPattern(Box::new(CircleSpawn {
+        //             bullet_type: *bullet_type,
+        //             bullets_in_circle: 64,
+        //             angle: BulletPatternAngle {
+        //                 target: Down,
+        //                 spread: 2.0 * PI,
+        //                 offset: 0.0 + PI / 3.0 * index,
+        //             },
+        //             spawn_circle_radius: 30.0,
+        //         })),
+        //         BoxedBulletMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
+        //             name: "phase2_part1",
+        //             repulsion_point: transform.translation,
+        //             duration: Duration::from_millis(500),
+        //             distance: 75.0,
+        //         }))),
+        //         *transform,
+        //         SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
+        //         GameObject,
+        //     ));
+        // }
+    }
 }
 
 fn phase2_update(

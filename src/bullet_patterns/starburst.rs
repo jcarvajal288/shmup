@@ -12,6 +12,7 @@ pub struct Starburst {
     pub num_bullets_in_line: usize,
     pub lowest_speed: f32,
     pub highest_speed: f32,
+    pub offset: f32,
     pub origin: Vec2,
     pub target: Vec2,
 }
@@ -26,7 +27,7 @@ pub fn fire_starburst(bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>, s
     let firing_angle = starburst.target.y.atan2(starburst.target.x);
     let step_size = (2.0 * PI) / starburst.num_lines as f32;
     let angles = (0..starburst.num_lines).map(|i: usize| {
-        firing_angle - PI + (i as f32 * step_size)
+        firing_angle - PI + (i as f32 * step_size) + starburst.offset
     }).collect::<Vec<f32>>();
     for (bullet_type, speed) in bullet_line.iter()
         .zip(speeds.iter())
