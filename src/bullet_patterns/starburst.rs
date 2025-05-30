@@ -1,10 +1,7 @@
-use crate::bullet::{spawn_bullet, BulletSpawnEvent, BulletSpawner, BulletType};
-use crate::bullet_patterns::{get_target_transform, BulletPattern, BulletPatternAngle};
-use crate::movement_patterns::{BoxedBulletMovementPattern, MovementPatterns};
-use crate::resources::sprites::Sprites;
+use crate::bullet::{BulletSpawnEvent, BulletType};
+use crate::movement_patterns::MovementPatterns::StraightLine;
 use bevy::prelude::*;
 use std::f32::consts::PI;
-use crate::movement_patterns::MovementPatterns::StraightLine;
 
 pub struct Starburst {
     pub bullet_type: BulletType,
@@ -15,6 +12,23 @@ pub struct Starburst {
     pub offset: f32,
     pub origin: Vec2,
     pub target: Vec2,
+    pub timer: Timer,
+}
+
+impl Default for Starburst {
+    fn default() -> Self {
+        Self {
+            bullet_type: BulletType::WhiteArrow,
+            num_lines: 0,
+            num_bullets_in_line: 0,
+            lowest_speed: 0.0,
+            highest_speed: 0.0,
+            offset: 0.0,
+            origin: Default::default(),
+            target: Default::default(),
+            timer: Timer::default(),
+        }
+    }
 }
 
 
@@ -38,6 +52,7 @@ pub fn fire_starburst(bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>, s
                 bullet_type: *bullet_type,
                 position: starburst.origin,
                 movement_pattern: StraightLine(Rot2::radians(*angle), *speed),
+                timer: starburst.timer.clone(),
             });
         }
     }

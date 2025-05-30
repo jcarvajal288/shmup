@@ -1,14 +1,15 @@
-pub mod bullet_stream;
 pub mod starburst;
 
-use crate::bullet::{BulletSpawner, BulletType};
+use bevy::math::Rot2;
+use crate::bullet::{BulletSpawnEvent, BulletSpawner, BulletType};
 use crate::bullet_patterns::BulletPatternTarget::Player;
 use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
-use crate::movement_patterns::MovementPatterns::StraightAtPlayer;
+use crate::movement_patterns::MovementPatterns::{StraightAtPlayer, StraightLine};
 use crate::movement_patterns::BoxedBulletMovementPattern;
 use crate::resources::sprites::Sprites;
-use bevy::prelude::{Commands, Component, Res, Time, Transform};
+use bevy::prelude::{Commands, Component, EventWriter, Res, Time, Transform};
 use bevy::time::Timer;
+use bevy::utils::default;
 use dyn_clone::DynClone;
 
 #[derive(Component)]
@@ -17,21 +18,23 @@ pub enum BulletPatterns {
 }
 
 pub fn fire_bullet_pattern(
-    commands: &mut Commands,
     bullet_pattern: &mut BulletPatterns,
     time: &Res<Time>,
-    transform: &Transform
+    transform: &Transform,
+    player_transform: &Transform,
+    bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>,
 ) {
     match bullet_pattern {
         ShootAtPlayer(bullet_type, speed, ref mut shot_timer) => {
             if shot_timer.tick(time.delta()).just_finished() {
-                commands.spawn((
-                    BulletSpawner {
-                        bullet_type: *bullet_type,
-                        position: transform.translation.truncate(),
-                        movement_pattern: StraightAtPlayer(*speed)
-                    }
-                ));
+                let diff = player_transform.translation.truncate() - transform.translation.truncate();
+                let angle = diff.y.atan2(diff.x);
+                bullet_spawn_events.send(BulletSpawnEvent {
+                    bullet_type: *bullet_type,
+                    position: transform.translation.truncate(),
+                    movement_pattern: StraightLine(Rot2::radians(angle), *speed),
+                    ..default()
+                });
                 shot_timer.reset();
             }
         }

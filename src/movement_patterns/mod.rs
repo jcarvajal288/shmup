@@ -16,6 +16,7 @@ use crate::movement_patterns::straight_line::move_straight_line;
 
 #[derive(Component, Clone, PartialEq)]
 pub enum MovementPatterns {
+    DontMove,
     StraightLine(Rot2, f32), // angle, speed
     StraightAtPlayer(f32), // speed
     Decelerate(Rot2, f32, f32, f32), // angle, current speed, final speed, deceleration
@@ -34,6 +35,7 @@ pub fn run_movement_pattern(movement_pattern: &mut MovementPatterns, transform: 
         SineWave(amplitude, wavelength, frequency, starting_position) => {
             move_sine_wave(*amplitude, *wavelength, *frequency, *starting_position, transform, time, face_travel_direction)
         }
+        MovementPatterns::DontMove => {}
     }
 }
 

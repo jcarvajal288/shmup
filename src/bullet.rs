@@ -1,10 +1,10 @@
-use crate::enemy::Enemy;
-use crate::game::GameObject;
-use crate::movement_patterns::MovementPatterns::{StraightAtPlayer, StraightLine};
+use std::time::Duration;
+use crate::game::{GameObject, SpawnTimer};
+use crate::movement_patterns::MovementPatterns::DontMove;
 use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
-use crate::player::Player;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
+use crate::bosses::boss::BossSpawner;
 
 #[derive(Component)]
 pub struct Bullet {
@@ -45,72 +45,69 @@ pub struct BulletSpawnEvent {
     pub bullet_type: BulletType,
     pub position: Vec2,
     pub movement_pattern: MovementPatterns,
+    pub timer: Timer,
 }
 
-pub fn spawn_bullet(commands: &mut Commands, sprites: &Res<Sprites>, bullet_spawner: BulletSpawner) {
-    commands.spawn((
-        Name::new("Bullet"),
-        sprite_for_bullet_type(&bullet_spawner.bullet_type, sprites),
-        Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
-        Bullet {
-            bullet_type: bullet_spawner.bullet_type,
-        },
-        bullet_spawner.movement_pattern,
-        GameObject,
-    ));
+impl Default for BulletSpawnEvent {
+    fn default() -> Self {
+        Self {
+            bullet_type: BulletType::WhiteArrow,
+            position: Default::default(),
+            movement_pattern: DontMove,
+            timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
+        }
+    }
 }
 
 pub fn spawn_bullets(
     sprites: Res<Sprites>,
     mut commands: Commands,
-    mut query: Query<(Entity, &BulletSpawner)>,
-    player_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    mut bullet_spawn_events: EventReader<BulletSpawnEvent>,
 ) {
-    for (entity, bullet_spawner) in query.iter_mut() {
-        for player_transform in player_query.iter() {
-            let movement_pattern = match bullet_spawner.movement_pattern {
-                StraightAtPlayer(speed) => {
-                    let diff = player_transform.translation.truncate() - bullet_spawner.position;
-                    let angle = diff.y.atan2(diff.x);
-                    StraightLine(Rot2::radians(angle), speed)
-                }
-                _ => bullet_spawner.movement_pattern.clone(),
-            };
+    for event in bullet_spawn_events.read() {
+        let spawner = BulletSpawner {
+            bullet_type: event.bullet_type,
+            position: event.position,
+            movement_pattern: event.movement_pattern.clone(),
+        };
+        spawn_bullet(&sprites, &mut commands, &spawner);
+        // if event.timer.finished() {
+        //     spawn_bullet(&sprites, &mut commands, &spawner);
+        // } else {
+        //     commands.spawn((
+        //         spawner,
+        //         SpawnTimer(event.timer.clone())
+        //     ));
+        // }
+    }
+}
 
-            commands.spawn((
-                Name::new("Bullet"),
-                sprite_for_bullet_type(&bullet_spawner.bullet_type, &sprites),
-                Transform::from_xyz(bullet_spawner.position.x, bullet_spawner.position.y, 0.7),
-                Bullet {
-                    bullet_type: bullet_spawner.bullet_type,
-                },
-                movement_pattern,
-                GameObject,
-            ));
-            commands.entity(entity).despawn();
+pub fn spawn_delayed_bullets(
+    sprites: Res<Sprites>,
+    mut commands: Commands,
+    time: Res<Time>,
+    mut bullet_spawner_query: Query<(&BulletSpawner, &mut SpawnTimer, Entity)>,
+) {
+    for (bullet_spawner, mut timer, entity) in &mut bullet_spawner_query {
+        if timer.0.tick(time.delta()).just_finished() {
+            spawn_bullet(&sprites, &mut commands, bullet_spawner);
+            commands.entity(entity).despawn_recursive();
         }
     }
 }
 
-pub fn spawn_bullets_from_events(
-    sprites: Res<Sprites>,
-    mut commands: Commands,
-    mut bullet_spawn_events: EventReader<BulletSpawnEvent>,
-) {
-    for event in bullet_spawn_events.read() {
-        commands.spawn((
-            Name::new("Bullet"),
-            sprite_for_bullet_type(&event.bullet_type, &sprites),
-            Transform::from_xyz(event.position.x, event.position.y, 0.7),
-            Bullet {
-                bullet_type: event.bullet_type,
-            },
-            event.movement_pattern.clone(),
-            GameObject,
-        ));
-    }
+fn spawn_bullet(sprites: &Res<Sprites>, commands: &mut Commands, spawner: &BulletSpawner) {
+    commands.spawn((
+        Name::new("Bullet"),
+        sprite_for_bullet_type(&spawner.bullet_type, &sprites),
+        Transform::from_xyz(spawner.position.x, spawner.position.y, 0.7),
+        Bullet {
+            bullet_type: spawner.bullet_type,
+        },
+        spawner.movement_pattern.clone(),
+        GameObject,
+    ));
 }
-
 
 pub fn props_for_bullet_type(_bullet_type: &BulletType) -> BulletProps {
     BulletProps {

@@ -65,9 +65,9 @@ fn phase1_setup(
             num_bullets_in_line: 5,
             lowest_speed: 200.0,
             highest_speed: 120.0,
-            offset: 0.0,
             origin: boss_transform.translation.truncate(),
             target: player_transform.translation.truncate(),
+            ..default()
         });
     }
     commands.spawn((
@@ -140,6 +140,7 @@ fn phase2_setup(
                 offset: wave.1,
                 origin: boss_transform.translation.truncate(),
                 target: boss_transform.translation.with_y(boss_transform.translation.y - 1.0).truncate(),
+                timer: Timer::from_seconds(0.2 * wave.1, TimerMode::Once)
             });
         }
 
