@@ -72,23 +72,7 @@ fn phase1_setup(
         );
         let speeds = vec!(200.0, 180.0, 160.0, 140.0, 120.0);
         let target = Transform::from_translation(player_transform.translation - boss_transform.translation);
-        let firing_angle = target.translation.y.atan2(target.translation.x);
-        let step_size = (2.0 * PI) / num_lines as f32;
-        let angles = (0..num_lines).map(|i: usize| {
-            firing_angle - (2.0 * PI / 2.0) + (i as f32 * step_size)
-        }).collect::<Vec<f32>>();
-        for (bullet_type, speed) in bullet_line.iter()
-            .zip(speeds.iter())
-            .map(|(bullet_type, speed)| (bullet_type, speed))
-        {
-            for angle in &angles {
-                bullet_spawn_events.send(BulletSpawnEvent {
-                    bullet_type: *bullet_type,
-                    position: boss_transform.translation.truncate(),
-                    movement_pattern: StraightLine(Rot2::radians(*angle), *speed),
-                });
-            }
-        }
+        fire_starburst(&mut bullet_spawn_events, boss_transform, num_lines, bullet_line, speeds, target);
 
     }
     commands.spawn((
@@ -97,6 +81,26 @@ fn phase1_setup(
         GameObject,
     ));
     state.set(Spell1State::Phase1);
+}
+
+fn fire_starburst(bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>, boss_transform: &Transform, num_lines: usize, bullet_line: Vec<BulletType>, speeds: Vec<f32>, target: Transform) {
+    let firing_angle = target.translation.y.atan2(target.translation.x);
+    let step_size = (2.0 * PI) / num_lines as f32;
+    let angles = (0..num_lines).map(|i: usize| {
+        firing_angle - (2.0 * PI / 2.0) + (i as f32 * step_size)
+    }).collect::<Vec<f32>>();
+    for (bullet_type, speed) in bullet_line.iter()
+        .zip(speeds.iter())
+        .map(|(bullet_type, speed)| (bullet_type, speed))
+    {
+        for angle in &angles {
+            bullet_spawn_events.send(BulletSpawnEvent {
+                bullet_type: *bullet_type,
+                position: boss_transform.translation.truncate(),
+                movement_pattern: StraightLine(Rot2::radians(*angle), *speed),
+            });
+        }
+    }
 }
 
 fn phase1_countdown(
