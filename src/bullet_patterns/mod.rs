@@ -1,5 +1,5 @@
 pub mod bullet_stream;
-pub mod circle_spawn;
+pub mod starburst;
 
 use crate::bullet::{BulletSpawner, BulletType};
 use crate::bullet_patterns::BulletPatternTarget::Player;
