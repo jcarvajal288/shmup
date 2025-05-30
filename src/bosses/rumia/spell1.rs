@@ -1,6 +1,7 @@
 use crate::bosses::boss::Boss;
+use crate::player::Player;
 use crate::bosses::rumia::RumiaState;
-use crate::bullet::BulletType;
+use crate::bullet::{spawn_bullet, BulletSpawnEvent, BulletType};
 use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle, BulletPatternTarget};
@@ -13,6 +14,9 @@ use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
 use std::f32::consts::PI;
 use std::time::Duration;
+use crate::enemy::Enemy;
+use crate::movement_patterns::MovementPatterns::StraightLine;
+use crate::player;
 
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -51,35 +55,41 @@ pub fn reset_spell1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
+    player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    mut bullet_spawn_events: EventWriter<BulletSpawnEvent>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    for (_boss, transform, mut animation_indices) in rumia_query.iter_mut() {
+    let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
+    for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
-        for i in 0..6 {
-            let velocity = 100.0 + (i as f32 + 1.0) * 20.0;
-            commands.spawn((
-                Name::new("spell1"),
-                *transform,
-                BoxedBulletPattern(Box::new(CircleSpawn {
-                    bullet_type: BulletType::BlueRimmedCircle,
-                    bullets_in_circle: 16,
-                    angle: BulletPatternAngle {
-                        target: BulletPatternTarget::Player,
-                        spread: 2.0 * PI,
-                        offset: 0.0,
-                    },
-                    spawn_circle_radius: 30.0,
-                })),
-                BoxedBulletMovementPattern(Box::new(build_move_away(MoveAwayBuilder {
-                    repulsion_point: transform.translation,
-                    starting_velocity: velocity,
-                    final_velocity: 300.0,
-                    time_to_final_velocity: Duration::from_secs(1),
-                }))),
-                SpawnTimer(Timer::from_seconds(0.0 + 0.1 * i as f32, TimerMode::Once)),
-                GameObject,
-            ));
+        let num_lines = 16;
+        let bullet_line = vec!(
+            BulletType::BlueRimmedCircle,
+            BulletType::BlueRimmedCircle,
+            BulletType::BlueRimmedCircle,
+            BulletType::BlueRimmedCircle,
+            BulletType::BlueRimmedCircle,
+        );
+        let speeds = vec!(200.0, 180.0, 160.0, 140.0, 120.0);
+        let target = Transform::from_translation(player_transform.translation - boss_transform.translation);
+        let firing_angle = target.translation.y.atan2(target.translation.x);
+        let step_size = (2.0 * PI) / num_lines as f32;
+        let angles = (0..num_lines).map(|i: usize| {
+            firing_angle - (2.0 * PI / 2.0) + (i as f32 * step_size)
+        }).collect::<Vec<f32>>();
+        for (bullet_type, speed) in bullet_line.iter()
+            .zip(speeds.iter())
+            .map(|(bullet_type, speed)| (bullet_type, speed))
+        {
+            for angle in &angles {
+                bullet_spawn_events.send(BulletSpawnEvent {
+                    bullet_type: *bullet_type,
+                    position: boss_transform.translation.truncate(),
+                    movement_pattern: StraightLine(Rot2::radians(*angle), *speed),
+                });
+            }
         }
+
     }
     commands.spawn((
         Name::new("Spell Timer 1"),

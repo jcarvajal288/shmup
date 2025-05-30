@@ -1,4 +1,4 @@
-use crate::bullet::{move_bullets, spawn_bullets, Bullet};
+use crate::bullet::{move_bullets, spawn_bullets, spawn_bullets_from_events, Bullet, BulletSpawnEvent};
 use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, enemy_fire, move_enemies, spawn_enemies, Enemy, EnemySystemSet};
 use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, respawn_invincibility, PlayerDeathEvent, PlayerShot, PlayerSystemSet, PlayerContinueEvent};
 use crate::player_stats::{initialize_player_stats, listen_for_player_continue, listen_for_player_death};
@@ -68,6 +68,7 @@ pub fn game_plugin(app: &mut App) {
                 spawn_enemies,
                 spawn_bosses,
                 spawn_bullets,
+                spawn_bullets_from_events,
                 //update_enemies,
                 enemy_fire,
                 move_enemies,
@@ -87,6 +88,7 @@ pub fn game_plugin(app: &mut App) {
         .init_state::<LevelState>()
         .add_event::<PlayerDeathEvent>()
         .add_event::<PlayerContinueEvent>()
+        .add_event::<BulletSpawnEvent>()
     ;
 
 }

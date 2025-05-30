@@ -40,6 +40,13 @@ pub struct BulletSpawner {
     pub movement_pattern: MovementPatterns,
 }
 
+#[derive(Event)]
+pub struct BulletSpawnEvent {
+    pub bullet_type: BulletType,
+    pub position: Vec2,
+    pub movement_pattern: MovementPatterns,
+}
+
 pub fn spawn_bullet(commands: &mut Commands, sprites: &Res<Sprites>, bullet_spawner: BulletSpawner) {
     commands.spawn((
         Name::new("Bullet"),
@@ -82,6 +89,25 @@ pub fn spawn_bullets(
             ));
             commands.entity(entity).despawn();
         }
+    }
+}
+
+pub fn spawn_bullets_from_events(
+    sprites: Res<Sprites>,
+    mut commands: Commands,
+    mut bullet_spawn_events: EventReader<BulletSpawnEvent>,
+) {
+    for event in bullet_spawn_events.read() {
+        commands.spawn((
+            Name::new("Bullet"),
+            sprite_for_bullet_type(&event.bullet_type, &sprites),
+            Transform::from_xyz(event.position.x, event.position.y, 0.7),
+            Bullet {
+                bullet_type: event.bullet_type,
+            },
+            event.movement_pattern.clone(),
+            GameObject,
+        ));
     }
 }
 
