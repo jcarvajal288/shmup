@@ -1,35 +1,67 @@
 pub mod move_to;
-pub mod move_direction;
 pub mod move_away;
 pub mod move_distance_away;
 pub mod sine_wave;
 
 use std::f32::consts::PI;
+use std::time::Duration;
 use bevy::math::{Quat, Rot2, Vec3};
 use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;
-use crate::movement_patterns::MovementPatterns::{StraightAtPlayer, StraightLine};
+use crate::movement_patterns::MovementPatterns::{Decelerate, StraightAtPlayer, StraightLine};
 
 #[derive(Component, Clone, PartialEq)]
 pub enum MovementPatterns {
-    StraightLine(Rot2, f32, bool), // angle, speed, face travel direction
+    StraightLine(Rot2, f32), // angle, speed
     StraightAtPlayer(f32), // speed
-
+    Decelerate(Rot2, f32, f32, f32), // angle, current speed, final speed, deceleration
 }
 
-pub fn run_movement_pattern(movement_pattern: &MovementPatterns, transform: &mut Transform, time: &Res<Time>) {
+pub fn run_movement_pattern(movement_pattern: &mut MovementPatterns, transform: &mut Transform, time: &Res<Time>, face_travel_direction: bool) {
     match movement_pattern {
-        StraightLine(angle, speed, face_travel_direction) => move_straight_line(*angle, *speed, *face_travel_direction, transform, time),
-        StraightAtPlayer(_speed) => { /* this is run as StraightLine */}
+        StraightLine(angle, speed) =>
+            move_straight_line(*angle, *speed, transform, time, face_travel_direction),
+        StraightAtPlayer(_speed) => { /* this is run as StraightLine */},
+        Decelerate(angle, current_speed, final_speed, deceleration) =>
+            move_decelerate(*angle, current_speed, *final_speed, *deceleration, transform, time, face_travel_direction),
     }
 }
 
-fn move_straight_line(angle: Rot2, speed: f32, face_travel_direction: bool, transform: &mut Transform, time: &Res<Time>) {
+pub fn create_decelerate_pattern(direction: Rot2, starting_speed: f32, final_speed: f32, time_to_decelerate: Duration) -> MovementPatterns {
+    let deceleration = if time_to_decelerate.as_secs_f32() == 0.0 {
+        0.0
+    } else {
+        (final_speed - starting_speed) / time_to_decelerate.as_secs_f32()
+    };
+    Decelerate(direction, starting_speed, final_speed, deceleration)
+}
+
+fn move_decelerate(
+    angle: Rot2,
+    current_speed: &mut f32,
+    final_speed: f32,
+    deceleration: f32,
+    transform: &mut Transform,
+    time: &Res<Time>,
+    face_travel: bool
+) {
+    let direction = Vec3::new(angle.cos, angle.sin, 0.0);
+    let delta_time = time.delta_secs();
+    if *current_speed > final_speed {
+        *current_speed += deceleration * delta_time;
+    }
+    transform.translation += direction * *current_speed * delta_time;
+    if face_travel {
+        face_travel_direction(transform, direction);
+    }
+}
+
+fn move_straight_line(angle: Rot2, speed: f32, transform: &mut Transform, time: &Res<Time>, face_travel: bool) {
     let movement_direction = Vec3::new(angle.cos, angle.sin, 0.0);
     let movement_distance = speed * time.delta_secs();
     let translation_delta = movement_direction * movement_distance;
     transform.translation += translation_delta;
-    if face_travel_direction {
+    if face_travel {
         transform.rotation = Quat::from_axis_angle(Vec3::Z, angle.as_radians() + (-PI / 2.0));
     }
 }

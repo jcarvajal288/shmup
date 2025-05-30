@@ -1,7 +1,7 @@
 use crate::enemy::Enemy;
 use crate::game::GameObject;
 use crate::movement_patterns::MovementPatterns::{StraightAtPlayer, StraightLine};
-use crate::movement_patterns::{run_movement_pattern, BoxedBulletMovementPattern, MovementPatterns};
+use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
 use crate::player::Player;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
@@ -65,7 +65,7 @@ pub fn spawn_bullets(
                 StraightAtPlayer(speed) => {
                     let diff = player_transform.translation.truncate() - bullet_spawner.position;
                     let angle = diff.y.atan2(diff.x);
-                    StraightLine(Rot2::radians(angle), speed, true)
+                    StraightLine(Rot2::radians(angle), speed)
                 }
                 _ => bullet_spawner.movement_pattern.clone(),
             };
@@ -97,7 +97,7 @@ pub fn move_bullets(
     mut bullet_query: Query<(&Bullet, &mut Transform, &mut MovementPatterns)>,
 ) {
     for (_bullet, mut transform, mut movement_pattern) in bullet_query.iter_mut() {
-        run_movement_pattern(&movement_pattern, &mut transform, &time)
+        run_movement_pattern(&mut movement_pattern, &mut transform, &time, true)
     }
 }
 

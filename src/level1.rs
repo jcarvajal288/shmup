@@ -1,21 +1,14 @@
 use crate::bosses::rumia::{rumia_plugin, RumiaState};
 use crate::bullet::BulletType::*;
-use crate::bullet::{BulletType, ShotSchedule};
-use crate::bullet_patterns::circle_spawn::CircleSpawn;
 use crate::bullet_patterns::BulletPatternTarget::*;
-use crate::bullet_patterns::{BoxedBulletPattern, BulletPatternAngle};
+use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
-use crate::movement_patterns::move_direction::{build_move_direction, MoveDirectionBuilder};
-use crate::movement_patterns::sine_wave::MoveSineWave;
-use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern, MovementPatterns};
+use crate::movement_patterns::create_decelerate_pattern;
 use crate::GameState;
 use bevy::prelude::*;
-use std::f32::consts::PI;
 use std::time::Duration;
-use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
-use crate::movement_patterns::MovementPatterns::StraightLine;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -47,7 +40,8 @@ fn level1_setup(
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
                 starting_position,
-                movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0, false),
+                movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 200.0, 20.0, Duration::from_secs(2)),
+                //movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
                 bullet_pattern: ShootAtPlayer(WhiteArrow, 200.0, Timer::from_seconds(0.5, TimerMode::Once)),
             },
             SpawnTimer(Timer::from_seconds(0.1, TimerMode::Once)),

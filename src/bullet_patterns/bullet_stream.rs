@@ -86,7 +86,7 @@ impl BulletStream {
         spawn_bullet(commands, sprites, BulletSpawner {
             bullet_type: self.bullet_type,
             position: Vec2::new(transform.translation.x, transform.translation.y),
-            movement_pattern: MovementPatterns::StraightLine(Rot2::degrees(0.0), 0.0, true), // placeholder for refactor
+            movement_pattern: MovementPatterns::StraightLine(Rot2::degrees(0.0), 0.0), // placeholder for refactor
         });
     }
 
