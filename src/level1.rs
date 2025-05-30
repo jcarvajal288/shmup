@@ -9,6 +9,7 @@ use crate::movement_patterns::create_decelerate_pattern;
 use crate::GameState;
 use bevy::prelude::*;
 use std::time::Duration;
+use crate::movement_patterns::MovementPatterns::SineWave;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -40,8 +41,9 @@ fn level1_setup(
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
                 starting_position,
-                movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 200.0, 20.0, Duration::from_secs(2)),
+                //movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 200.0, 20.0, Duration::from_secs(2)),
                 //movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
+                movement_pattern: SineWave(150.0, 100.0, 25.0, starting_position),
                 bullet_pattern: ShootAtPlayer(WhiteArrow, 200.0, Timer::from_seconds(0.5, TimerMode::Once)),
             },
             SpawnTimer(Timer::from_seconds(0.1, TimerMode::Once)),
