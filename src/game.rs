@@ -1,11 +1,11 @@
-use crate::bullet::{move_bullets, spawn_bullets, Bullet, BulletSpawnEvent};
-use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_player, spawn_player, switch_player_sprite, respawn_invincibility, PlayerDeathEvent, PlayerShot, PlayerSystemSet, PlayerContinueEvent};
+use crate::bullet::{fire_bullet_patterns, move_bullets, read_bullet_spawn_events, Bullet, BulletSpawnEvent};
+use crate::player::{check_bullet_player_collision, fire_shot, move_player, move_shot, respawn_invincibility, respawn_player, spawn_player, switch_player_sprite, PlayerContinueEvent, PlayerDeathEvent, PlayerShot, PlayerSystemSet};
 use crate::player_stats::{initialize_player_stats, listen_for_player_continue, listen_for_player_death};
 use crate::resources::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
 use crate::bosses::boss::{spawn_bosses, update_bosses};
-use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, enemy_fire, move_enemies, spawn_enemies, Enemy, EnemySystemSet};
+use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, move_enemies, spawn_enemies, Enemy, EnemySystemSet};
 use crate::level1::{level1_plugin, FirstLevelState};
 use crate::testbed::testbed_plugin;
 
@@ -67,9 +67,9 @@ pub fn game_plugin(app: &mut App) {
             (
                 spawn_enemies,
                 spawn_bosses,
-                spawn_bullets,
+                read_bullet_spawn_events,
                 move_enemies,
-                enemy_fire,
+                fire_bullet_patterns,
                 update_bosses,
                 check_shot_enemy_collision,
                 check_for_enemy_death,

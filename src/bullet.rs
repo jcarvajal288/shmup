@@ -4,7 +4,8 @@ use crate::movement_patterns::MovementPatterns::DontMove;
 use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
-use crate::bosses::boss::BossSpawner;
+use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
+use crate::player::Player;
 
 #[derive(Component)]
 pub struct Bullet {
@@ -59,9 +60,10 @@ impl Default for BulletSpawnEvent {
     }
 }
 
-pub fn spawn_bullets(
+pub fn read_bullet_spawn_events(
     sprites: Res<Sprites>,
     mut commands: Commands,
+    time: Res<Time>,
     mut bullet_spawn_events: EventReader<BulletSpawnEvent>,
 ) {
     for event in bullet_spawn_events.read() {
@@ -71,7 +73,7 @@ pub fn spawn_bullets(
             movement_pattern: event.movement_pattern.clone(),
         };
         spawn_bullet(&sprites, &mut commands, &spawner);
-        // if event.timer.finished() {
+        // if event.timer.tick(time.delta()).finished() {
         //     spawn_bullet(&sprites, &mut commands, &spawner);
         // } else {
         //     commands.spawn((
@@ -133,5 +135,18 @@ fn sprite_for_bullet_type(bullet_type: &BulletType, sprites: &Sprites) -> Sprite
         BulletType::SmallGreenCircle => sprites.bullet_small_green_circle.clone(),
         BulletType::SmallPurpleCircle => sprites.bullet_small_purple_circle.clone(),
         BulletType::SmallBlueCircle => sprites.bullet_small_blue_circle.clone(),
+    }
+}
+
+pub fn fire_bullet_patterns(
+    time: Res<Time>,
+    player_transform_query: Query<&Transform, With<Player>>,
+    mut enemy_query: Query<(&mut BulletPatterns, &mut Transform), Without<Player>>,
+    mut bullet_spawn_events: EventWriter<BulletSpawnEvent>,
+) {
+    for (player_transform) in player_transform_query.iter() {
+        for (mut bullet_pattern, transform) in enemy_query.iter_mut() {
+            fire_bullet_pattern(&mut bullet_pattern, &time, &transform, &player_transform, &mut bullet_spawn_events);
+        }
     }
 }

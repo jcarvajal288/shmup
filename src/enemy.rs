@@ -1,17 +1,15 @@
 use crate::bullet::BulletType::WhiteArrow;
 use crate::bullet_patterns::BulletPatterns::ShootAtPlayer;
-use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
+use crate::bullet_patterns::BulletPatterns;
 use crate::enemy::EnemyType::*;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::MovementPatterns::StraightLine;
 use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
-use crate::player::{Player, PlayerShot};
+use crate::player::PlayerShot;
 use crate::resources::sprites::{AnimatedSprite, Sprites};
 use crate::sprites;
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
-use crate::bullet::BulletSpawnEvent;
-
 #[derive(Component)]
 pub struct Enemy {
     pub enemy_type: EnemyType,
@@ -74,19 +72,6 @@ pub fn move_enemies(
 ) {
     for (_enemy, mut movement_pattern, mut transform) in enemy_query.iter_mut() {
         run_movement_pattern(&mut movement_pattern, &mut transform, &time, false);
-    }
-}
-
-pub fn enemy_fire(
-    time: Res<Time>,
-    player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
-    mut enemy_query: Query<(&Enemy, &mut BulletPatterns, &mut Transform)>,
-    mut bullet_spawn_events: EventWriter<BulletSpawnEvent>,
-) {
-    for (player_transform) in player_transform_query.iter() {
-        for (_enemy, mut bullet_pattern, transform) in enemy_query.iter_mut() {
-            fire_bullet_pattern(&mut bullet_pattern, &time, &transform, &player_transform, &mut bullet_spawn_events);
-        }
     }
 }
 
