@@ -39,7 +39,6 @@ pub struct BulletSpawnEvent {
     pub bullet_type: BulletType,
     pub position: Vec2,
     pub movement_pattern: MovementPatterns,
-    pub timer: Timer,
 }
 
 impl Default for BulletSpawnEvent {
@@ -48,7 +47,6 @@ impl Default for BulletSpawnEvent {
             bullet_type: BulletType::WhiteArrow,
             position: Default::default(),
             movement_pattern: DontMove,
-            timer: Timer::new(Duration::from_secs(0), TimerMode::Once),
         }
     }
 }

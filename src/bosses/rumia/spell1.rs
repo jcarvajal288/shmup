@@ -13,7 +13,10 @@ use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
 use std::f32::consts::PI;
 use std::time::Duration;
-use crate::bullet_patterns::starburst::{fire_starburst, Starburst};
+use crate::bullet::BulletType::BlueRimmedCircle;
+use crate::bullet_patterns::BulletPatterns::StarburstPattern;
+use crate::bullet_patterns::shot_schedule::ShotSchedule;
+use crate::bullet_patterns::starburst::{Starburst};
 use crate::enemy::Enemy;
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -53,22 +56,25 @@ fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
     player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
-    mut bullet_spawn_events: EventWriter<BulletSpawnEvent>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
     let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
-        fire_starburst(&mut bullet_spawn_events, Starburst {
-            bullet_type: BulletType::BlueRimmedCircle,
-            num_lines: 16,
-            num_bullets_in_line: 5,
-            lowest_speed: 200.0,
-            highest_speed: 120.0,
-            origin: boss_transform.translation.truncate(),
-            target: player_transform.translation.truncate(),
-            ..default()
-        });
+        commands.spawn((
+            StarburstPattern(
+                Starburst {
+                    bullets: vec![BlueRimmedCircle; 5],
+                    num_lines: 16,
+                    speed_range: (120.0, 200.0),
+                    origin: boss_transform.translation.truncate(),
+                    target: player_transform.translation.truncate(),
+                    ..default()
+                },
+                ShotSchedule::default()
+            ),
+            Transform::from_translation(boss_transform.translation),
+        ));
     }
     commands.spawn((
         Name::new("Spell Timer 1"),
@@ -119,7 +125,6 @@ fn wait_for_move_to_phase2(
 fn phase2_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
-    mut bullet_spawn_events: EventWriter<BulletSpawnEvent>,
 ) {
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
@@ -131,17 +136,23 @@ fn phase2_setup(
             (BulletType::SmallBlueCircle, 4.0)
         ];
         for wave in waves {
-            fire_starburst(&mut bullet_spawn_events, Starburst {
-                bullet_type: wave.0,
-                num_lines: 64,
-                num_bullets_in_line: 1,
-                lowest_speed: 200.0,
-                highest_speed: 120.0,
-                offset: wave.1,
-                origin: boss_transform.translation.truncate(),
-                target: boss_transform.translation.with_y(boss_transform.translation.y - 1.0).truncate(),
-                timer: Timer::from_seconds(0.2 * wave.1, TimerMode::Once)
-            });
+            commands.spawn((
+                StarburstPattern(
+                    Starburst {
+                        bullets: vec![wave.0],
+                        num_lines: 64,
+                        speed_range: (120.0, 200.0),
+                        offset: wave.1,
+                        origin: boss_transform.translation.truncate(),
+                        target: boss_transform.translation.with_y(boss_transform.translation.y - 1.0).truncate(),
+                    },
+                    ShotSchedule {
+                        delay: Timer::from_seconds(0.2 * wave.1, TimerMode::Once),
+                        ..default()
+                    }
+                ),
+                Transform::from_translation(boss_transform.translation),
+            ));
         }
 
         // for (bullet_type, index) in waves.iter() {

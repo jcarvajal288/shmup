@@ -5,18 +5,20 @@ pub mod shot_schedule;
 use crate::bullet::BulletSpawnEvent;
 use crate::bullet_patterns::shoot_at_player::ShootAtPlayer;
 use crate::bullet_patterns::BulletPatternTarget::Player;
-use crate::bullet_patterns::BulletPatterns::ShootAtPlayerPattern;
+use crate::bullet_patterns::BulletPatterns::{ShootAtPlayerPattern, StarburstPattern};
 use crate::movement_patterns::BoxedBulletMovementPattern;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::{Commands, Component, EventWriter, Res, Time, Transform};
 use dyn_clone::DynClone;
 use shot_schedule::ShotSchedule;
+use crate::bullet_patterns::starburst::Starburst;
 
 pub const ENDLESS: i32 = -1;
 
 #[derive(Component)]
 pub enum BulletPatterns {
     ShootAtPlayerPattern(ShootAtPlayer, ShotSchedule),
+    StarburstPattern(Starburst, ShotSchedule),
 }
 
 pub fn fire_bullet_pattern(
@@ -29,7 +31,11 @@ pub fn fire_bullet_pattern(
     match bullet_pattern {
         ShootAtPlayerPattern(shoot_at_player, shot_schedule) => {
             let fire = || shoot_at_player.fire(transform, player_transform, bullet_spawn_events);
-            run_schedule(fire, shot_schedule, time)
+            run_schedule(fire, shot_schedule, time);
+        }
+        StarburstPattern(starburst, shot_schedule) => {
+            let fire = || starburst.fire(bullet_spawn_events);
+            run_schedule(fire, shot_schedule, time);
         }
     }
 }
@@ -37,12 +43,14 @@ pub fn fire_bullet_pattern(
 fn run_schedule<F>(mut fire: F, shot_schedule: &mut ShotSchedule, time: &Res<Time>)
 where F: FnMut()
 {
-    if shot_schedule.repetitions != 0 {
-        if shot_schedule.interval.tick(time.delta()).just_finished() {
-            fire();
-            shot_schedule.interval.reset();
-            if shot_schedule.repetitions > 0 {
-                shot_schedule.repetitions -= 1
+    if shot_schedule.delay.tick(time.delta()).finished() {
+        if shot_schedule.repetitions != 0 {
+            if shot_schedule.interval.tick(time.delta()).just_finished() {
+                fire();
+                shot_schedule.interval.reset();
+                if shot_schedule.repetitions > 0 {
+                    shot_schedule.repetitions -= 1
+                }
             }
         }
     }

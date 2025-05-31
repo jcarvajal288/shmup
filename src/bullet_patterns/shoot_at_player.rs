@@ -53,6 +53,7 @@ pub fn shoot_at_player_pattern(
         ShotSchedule {
             interval: Timer::from_seconds(interval_secs, TimerMode::Once),
             repetitions,
+            ..default()
         }
     )
 }
