@@ -7,7 +7,7 @@ use crate::enemy::{Enemy, EnemySpawner};
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
 use crate::GameState;
 use bevy::prelude::*;
-use crate::movement_patterns::MovementPatterns::SineWave;
+use crate::movement_patterns::MovementPatterns::{SineWave, StraightLine};
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -40,7 +40,7 @@ fn level1_setup(
                 enemy_type: BlueFairy,
                 starting_position,
                 //movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 200.0, 20.0, Duration::from_secs(2)),
-                //movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
+                // movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
                 movement_pattern: SineWave(150.0, 100.0, 25.0, starting_position),
                 bullet_pattern: ShootAtPlayer(WhiteArrow, 200.0, Timer::from_seconds(0.5, TimerMode::Once)),
             },

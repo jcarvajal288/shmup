@@ -15,7 +15,7 @@ pub fn move_sine_wave(
     let new_y = transform.translation.y - frequency * time.delta_secs();
     let x_increment = amplitude * f32::sin(2.0 * PI / wavelength * (new_y - starting_position.y));
     let old_translation = transform.translation;
-    let new_translation = Vec3::new(starting_position.x + x_increment, new_y, 0.0);
+    let new_translation = Vec3::new(starting_position.x + x_increment, new_y, old_translation.z);
     transform.translation = new_translation;
     if face_travel {
         let direction = new_translation - old_translation;
