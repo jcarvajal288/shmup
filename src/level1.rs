@@ -43,7 +43,7 @@ fn level1_setup(
                 //movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 200.0, 20.0, Duration::from_secs(2)),
                 // movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
                 movement_pattern: SineWave(150.0, 100.0, 25.0, starting_position),
-                bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, 2),
+                bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
             },
             SpawnTimer(Timer::from_seconds(0.1, TimerMode::Once)),
             GameObject,

@@ -28,14 +28,21 @@ pub fn fire_bullet_pattern(
 ) {
     match bullet_pattern {
         ShootAtPlayerPattern(shoot_at_player, shot_schedule) => {
-            if shot_schedule.repetitions != 0 {
-                if shot_schedule.interval.tick(time.delta()).just_finished() {
-                    shoot_at_player.fire(transform, player_transform, bullet_spawn_events);
-                    shot_schedule.interval.reset();
-                    if shot_schedule.repetitions > 0 {
-                        shot_schedule.repetitions -= 1
-                    }
-                }
+            let fire = || shoot_at_player.fire(transform, player_transform, bullet_spawn_events);
+            run_schedule(fire, shot_schedule, time)
+        }
+    }
+}
+
+fn run_schedule<F>(mut fire: F, shot_schedule: &mut ShotSchedule, time: &Res<Time>)
+where F: FnMut()
+{
+    if shot_schedule.repetitions != 0 {
+        if shot_schedule.interval.tick(time.delta()).just_finished() {
+            fire();
+            shot_schedule.interval.reset();
+            if shot_schedule.repetitions > 0 {
+                shot_schedule.repetitions -= 1
             }
         }
     }
