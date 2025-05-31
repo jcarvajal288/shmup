@@ -24,17 +24,17 @@ pub enum BulletPatterns {
 pub fn fire_bullet_pattern(
     bullet_pattern: &mut BulletPatterns,
     time: &Res<Time>,
-    transform: &Transform,
+    origin: &Transform,
     player_transform: &Transform,
     bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>,
 ) {
     match bullet_pattern {
         ShootAtPlayerPattern(shoot_at_player, shot_schedule) => {
-            let fire = || shoot_at_player.fire(transform, player_transform, bullet_spawn_events);
+            let fire = || shoot_at_player.fire(origin, player_transform, bullet_spawn_events);
             run_schedule(fire, shot_schedule, time);
         }
         StarburstPattern(starburst, shot_schedule) => {
-            let fire = || starburst.fire(bullet_spawn_events);
+            let fire = || starburst.fire(origin, bullet_spawn_events);
             run_schedule(fire, shot_schedule, time);
         }
     }

@@ -67,7 +67,6 @@ fn phase1_setup(
                     bullets: vec![BlueRimmedCircle; 5],
                     num_lines: 16,
                     speed_range: (120.0, 200.0),
-                    origin: boss_transform.translation.truncate(),
                     target: player_transform.translation.truncate(),
                     ..default()
                 },
@@ -143,7 +142,6 @@ fn phase2_setup(
                         num_lines: 64,
                         speed_range: (120.0, 200.0),
                         offset: wave.1,
-                        origin: boss_transform.translation.truncate(),
                         target: boss_transform.translation.with_y(boss_transform.translation.y - 1.0).truncate(),
                     },
                     ShotSchedule {

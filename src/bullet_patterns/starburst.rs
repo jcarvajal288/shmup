@@ -8,7 +8,6 @@ pub struct Starburst {
     pub num_lines: usize,
     pub speed_range: (f32, f32),
     pub offset: f32,
-    pub origin: Vec2,
     pub target: Vec2,
 }
 
@@ -19,7 +18,6 @@ impl Default for Starburst {
             num_lines: 0,
             speed_range: (0.0, 0.0),
             offset: 0.0,
-            origin: Default::default(),
             target: Default::default(),
         }
     }
@@ -28,7 +26,7 @@ impl Default for Starburst {
 
 impl Starburst {
 
-    pub fn fire(&self, bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>) {
+    pub fn fire(&self, origin: &Transform, bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>) {
         let speed_increment = (self.speed_range.1 - self.speed_range.0) / self.bullets.len() as f32;
         let speeds = (0..self.bullets.len()).map(|i| {
             self.speed_range.0 + (i as f32 * speed_increment)
@@ -45,7 +43,7 @@ impl Starburst {
             for angle in &angles {
                 bullet_spawn_events.send(BulletSpawnEvent {
                     bullet_type: *bullet_type,
-                    position: self.origin,
+                    position: origin.translation.truncate(),
                     movement_pattern: StraightLine(Rot2::radians(*angle), *speed),
                 });
             }

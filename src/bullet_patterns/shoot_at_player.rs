@@ -24,15 +24,15 @@ impl ShootAtPlayer {
 
     pub fn fire(
         &self,
-        transform: &Transform,
+        origin: &Transform,
         player_transform: &Transform,
         bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>,
     ) {
-        let diff = player_transform.translation.truncate() - transform.translation.truncate();
+        let diff = player_transform.translation.truncate() - origin.translation.truncate();
         let angle = diff.y.atan2(diff.x);
         bullet_spawn_events.send(BulletSpawnEvent {
             bullet_type: self.bullet_type,
-            position: transform.translation.truncate(),
+            position: origin.translation.truncate(),
             movement_pattern: StraightLine(Rot2::radians(angle), self.speed),
             ..default()
         });
