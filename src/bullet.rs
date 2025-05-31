@@ -27,13 +27,6 @@ pub enum BulletType {
     SmallBlueCircle,
 }
 
-#[derive(Component, Clone, Default)]
-pub struct ShotSchedule {
-    pub delay_timer: Timer,
-    pub repeat_timer: Timer,
-    pub times: usize,
-}
-
 #[derive(Component)]
 pub struct BulletSpawner {
     pub bullet_type: BulletType,
