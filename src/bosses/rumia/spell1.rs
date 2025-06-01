@@ -1,23 +1,19 @@
 use crate::bosses::boss::Boss;
-use crate::player::Player;
 use crate::bosses::rumia::RumiaState;
-use crate::bullet::{BulletSpawnEvent, BulletType};
-use crate::bullet_patterns::BulletPatternTarget::*;
-use crate::bullet_patterns::{starburst, BoxedBulletPattern, BulletPatternAngle};
-use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
+use crate::bullet::BulletType::BlueRimmedCircle;
+use crate::bullet::BulletType;
+use crate::bullet_patterns::shot_schedule::ShotSchedule;
+use crate::bullet_patterns::starburst::Starburst;
+use crate::bullet_patterns::BulletPatterns::StarburstPattern;
+use crate::enemy::Enemy;
+use crate::game::{GameObject, LevelState, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_away::{build_move_away, MoveAwayBuilder};
-use crate::movement_patterns::move_distance_away::{build_move_distance_away, MoveDistanceAwayBuilder};
 use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
 use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
+use crate::player::Player;
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
-use std::f32::consts::PI;
 use std::time::Duration;
-use crate::bullet::BulletType::BlueRimmedCircle;
-use crate::bullet_patterns::BulletPatterns::StarburstPattern;
-use crate::bullet_patterns::shot_schedule::ShotSchedule;
-use crate::bullet_patterns::starburst::{Starburst};
-use crate::enemy::Enemy;
 #[derive(Component)]
 struct SpellTimer(Timer);
 

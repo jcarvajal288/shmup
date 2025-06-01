@@ -4,14 +4,11 @@ pub mod shot_schedule;
 
 use crate::bullet::BulletSpawnEvent;
 use crate::bullet_patterns::shoot_at_player::ShootAtPlayer;
-use crate::bullet_patterns::BulletPatternTarget::Player;
+use crate::bullet_patterns::starburst::Starburst;
 use crate::bullet_patterns::BulletPatterns::{ShootAtPlayerPattern, StarburstPattern};
-use crate::movement_patterns::BoxedBulletMovementPattern;
-use crate::resources::sprites::Sprites;
-use bevy::prelude::{Commands, Component, EventWriter, Res, Time, Transform};
+use bevy::prelude::{Component, EventWriter, Res, Time, Transform};
 use dyn_clone::DynClone;
 use shot_schedule::ShotSchedule;
-use crate::bullet_patterns::starburst::Starburst;
 
 pub const ENDLESS: i32 = -1;
 
@@ -55,42 +52,3 @@ where F: FnMut()
         }
     }
 }
-
-pub trait BulletPattern: DynClone {
-    fn fire(
-        &mut self,
-        commands: &mut Commands,
-        sprites: &Res<Sprites>,
-        transform: Transform,
-        time: &Res<Time>,
-        player_transform: &Transform,
-        movement_pattern: &mut BoxedBulletMovementPattern
-    );
-}
-
-dyn_clone::clone_trait_object!(BulletPattern);
-
-#[derive(Component, Clone)]
-pub struct BoxedBulletPattern(pub Box<dyn BulletPattern + Send + Sync>);
-
-#[derive(Eq, PartialEq, Clone, Copy)]
-pub enum BulletPatternTarget {
-    Player,
-    Down,
-}
-
-#[derive(Clone, Copy)]
-pub struct BulletPatternAngle {
-    pub target: BulletPatternTarget,
-    pub spread: f32,
-    pub offset: f32,
-}
-
-fn get_target_transform(target: &BulletPatternTarget, starting_transform: &Transform, player_transform: &Transform) -> Transform {
-    if *target == Player {
-        Transform::from_translation(player_transform.translation - starting_transform.translation)
-    } else {
-        Transform::from_translation(*starting_transform.down())
-    }
-}
-

@@ -1,7 +1,6 @@
 use crate::bosses::rumia::{rumia_plugin, RumiaState};
 use crate::bullet::BulletType::*;
 use crate::bullet_patterns::shoot_at_player::shoot_at_player_pattern;
-use crate::bullet_patterns::BulletPatternTarget::*;
 use crate::bullet_patterns::ENDLESS;
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
