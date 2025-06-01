@@ -2,7 +2,7 @@ use crate::bullet_patterns::BulletPatterns::ShootAtPlayerPattern;
 use crate::bullet_patterns::BulletPatterns;
 use crate::enemy::EnemyType::*;
 use crate::game::{GameObject, SpawnTimer};
-use crate::movement_patterns::MovementPatterns::StraightLine;
+use crate::movement_patterns::MovementPatterns::StraightLinePattern;
 use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
 use crate::player::PlayerShot;
 use crate::resources::sprites::{AnimatedSprite, Sprites};
@@ -11,6 +11,7 @@ use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
 use crate::bullet_patterns::shoot_at_player::ShootAtPlayer;
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
+use crate::movement_patterns::straight_line::StraightLine;
 
 #[derive(Component)]
 pub struct Enemy {
@@ -39,7 +40,7 @@ impl Default for EnemySpawner {
             name: "Enemy",
             enemy_type: BlueFairy,
             starting_position: Vec2::default(),
-            movement_pattern: StraightLine(Rot2::degrees(0.0), 0.0),
+            movement_pattern: StraightLinePattern(StraightLine::default()),
             bullet_pattern: ShootAtPlayerPattern(ShootAtPlayer::default(), ShotSchedule::default())
         }
     }

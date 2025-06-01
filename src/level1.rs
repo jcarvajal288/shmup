@@ -5,9 +5,10 @@ use crate::bullet_patterns::ENDLESS;
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
 use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
-use crate::movement_patterns::MovementPatterns::SineWave;
+use crate::movement_patterns::MovementPatterns::SineWavePattern;
 use crate::GameState;
 use bevy::prelude::*;
+use crate::movement_patterns::sine_wave::create_sine_wave_pattern;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -41,7 +42,7 @@ fn level1_setup(
                 starting_position,
                 //movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 200.0, 20.0, Duration::from_secs(2)),
                 // movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
-                movement_pattern: SineWave(150.0, 100.0, 25.0, starting_position),
+                movement_pattern: create_sine_wave_pattern(150.0, 100.0, 25.0, starting_position),
                 bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
             },
             SpawnTimer(Timer::from_seconds(0.1, TimerMode::Once)),

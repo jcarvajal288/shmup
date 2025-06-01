@@ -1,9 +1,33 @@
 use crate::movement_patterns::MovementPattern;
 use bevy::math::Vec2;
 use bevy::prelude::{Res, Time, Transform, Vec3};
+use crate::movement_patterns;
+
+#[derive(Clone, PartialEq)]
+pub struct MoveTo {
+    pub destination: Vec2,
+    pub current_speed: f32,
+    pub acceleration: f32,
+}
+
+impl MoveTo {
+    pub fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>, face_travel: bool) {
+        let diff = self.destination - transform.translation.truncate();
+        let angle = diff.y.atan2(diff.x);
+        let direction = Vec3::new(f32::cos(angle), f32::sin(angle), 0.0);
+        let distance = self.current_speed * time.delta_secs();
+        let translation_delta = direction * distance;
+        transform.translation += translation_delta;
+        self.current_speed += self.acceleration;
+        if face_travel {
+            movement_patterns::face_travel_direction(transform, direction);
+        }
+    }
+}
+
 
 #[derive(Clone)]
-pub struct MoveTo {
+pub struct MoveToOld {
     pub direction: Vec3,
     pub velocity: f32,
     pub acceleration: f32,
@@ -11,7 +35,7 @@ pub struct MoveTo {
     pub elapsed_time: f32,
 }
 
-impl Default for MoveTo {
+impl Default for MoveToOld {
     fn default() -> Self {
         Self {
             direction: Vec3::ZERO,
@@ -23,7 +47,7 @@ impl Default for MoveTo {
     }
 }
 
-impl MovementPattern for MoveTo {
+impl MovementPattern for MoveToOld {
     fn name(&self) -> &str { "MoveTo" }
 
     fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
@@ -51,13 +75,13 @@ pub struct MoveToBuilder {
     pub time: f32,
 }
 
-pub fn build_move_to(builder: MoveToBuilder) -> MoveTo {
+pub fn build_move_to(builder: MoveToBuilder) -> MoveToOld {
     let displacement = builder.destination - builder.start;
     let distance = displacement.length();
     let direction = displacement.normalize().extend(0.0);
     let velocity = distance * 2.0 / builder.time;
     let duration = builder.time;
-    MoveTo {
+    MoveToOld {
         direction,
         velocity,
         acceleration: -velocity / builder.time,

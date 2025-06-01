@@ -4,7 +4,7 @@ use crate::movement_patterns::BoxedMovementPattern;
 use crate::resources::sprites::{set_next_animation, AnimationIndices, Sprites};
 use crate::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
-use crate::movement_patterns::move_to::MoveTo;
+use crate::movement_patterns::move_to::MoveToOld;
 
 #[derive(Component)]
 pub struct Boss;
@@ -23,7 +23,7 @@ impl Default for BossSpawner {
             name: "Boss",
             enemy_type: EnemyType::Rumia,
             starting_position: Vec2::ZERO,
-            movement_pattern: BoxedMovementPattern(Box::new(MoveTo::default())),
+            movement_pattern: BoxedMovementPattern(Box::new(MoveToOld::default())),
         }
     }
 }

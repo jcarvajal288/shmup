@@ -2,9 +2,10 @@ use crate::bullet::{BulletSpawnEvent, BulletType};
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::bullet_patterns::BulletPatterns::ShootAtPlayerPattern;
 use crate::bullet_patterns::BulletPatterns;
-use crate::movement_patterns::MovementPatterns::StraightLine;
+use crate::movement_patterns::MovementPatterns::StraightLinePattern;
 use bevy::math::Rot2;
 use bevy::prelude::{default, EventWriter, Timer, TimerMode, Transform};
+use crate::movement_patterns::straight_line::create_straight_line_pattern;
 
 pub struct ShootAtPlayer {
     pub bullet_type: BulletType,
@@ -33,7 +34,7 @@ impl ShootAtPlayer {
         bullet_spawn_events.send(BulletSpawnEvent {
             bullet_type: self.bullet_type,
             position: origin.translation.truncate(),
-            movement_pattern: StraightLine(Rot2::radians(angle), self.speed),
+            movement_pattern: create_straight_line_pattern(Rot2::radians(angle), self.speed),
             ..default()
         });
     }

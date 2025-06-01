@@ -1,7 +1,8 @@
 use crate::bullet::{BulletSpawnEvent, BulletType};
-use crate::movement_patterns::MovementPatterns::StraightLine;
+use crate::movement_patterns::MovementPatterns::StraightLinePattern;
 use bevy::prelude::*;
 use std::f32::consts::PI;
+use crate::movement_patterns::straight_line::create_straight_line_pattern;
 
 pub struct Starburst {
     pub bullets: Vec<BulletType>,
@@ -44,7 +45,7 @@ impl Starburst {
                 bullet_spawn_events.send(BulletSpawnEvent {
                     bullet_type: *bullet_type,
                     position: origin.translation.truncate(),
-                    movement_pattern: StraightLine(Rot2::radians(*angle), *speed),
+                    movement_pattern: create_straight_line_pattern(Rot2::radians(*angle), *speed),
                 });
             }
         }

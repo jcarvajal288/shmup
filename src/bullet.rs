@@ -1,6 +1,6 @@
 use std::time::Duration;
 use crate::game::{GameObject, SpawnTimer};
-use crate::movement_patterns::MovementPatterns::DontMove;
+use crate::movement_patterns::MovementPatterns::DontMovePattern;
 use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
@@ -46,7 +46,7 @@ impl Default for BulletSpawnEvent {
         Self {
             bullet_type: BulletType::WhiteArrow,
             position: Default::default(),
-            movement_pattern: DontMove,
+            movement_pattern: DontMovePattern,
         }
     }
 }
