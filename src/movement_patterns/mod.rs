@@ -11,7 +11,7 @@ use bevy::prelude::{Component, Res, Time, Transform};
 use dyn_clone::DynClone;
 use crate::movement_patterns::decelerate::{Decelerate};
 use crate::movement_patterns::move_to::{MoveTo};
-use crate::movement_patterns::MovementPatterns::{DeceleratePattern, MoveToPattern, SineWavePattern, StraightAtPlayerPattern, StraightLinePattern};
+use crate::movement_patterns::MovementPatterns::{DeceleratePattern, MoveToPattern, SineWavePattern, StraightLinePattern};
 use crate::movement_patterns::sine_wave::{SineWave};
 use crate::movement_patterns::straight_line::StraightLine;
 
@@ -19,7 +19,6 @@ use crate::movement_patterns::straight_line::StraightLine;
 pub enum MovementPatterns {
     DontMovePattern,
     StraightLinePattern(StraightLine),
-    StraightAtPlayerPattern(f32),
     DeceleratePattern(Decelerate),
     SineWavePattern(SineWave),
     MoveToPattern(MoveTo),
@@ -30,7 +29,6 @@ pub fn run_movement_pattern(movement_pattern: &mut MovementPatterns, transform: 
         StraightLinePattern(straight_line) => {
             straight_line.do_move(transform, time, face_travel_direction)
         }
-        StraightAtPlayerPattern(_speed) => { /* this is run as StraightLine */},
         DeceleratePattern(decelerate) => {
             decelerate.do_move(transform, time, face_travel_direction)
         }
