@@ -5,11 +5,10 @@ use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
 use crate::enemy::EnemyType::Rumia;
 use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP, SPAWN_CENTER, SPAWN_TOP};
 use crate::level1::FirstLevelState;
-use crate::movement_patterns::move_to::create_move_to_pattern;
 use crate::movement_patterns::{is_finished, MovementPatterns};
 use bevy::prelude::*;
 use std::time::Duration;
-use crate::movement_patterns::sine_wave::create_sine_wave_pattern;
+use crate::movement_patterns::decelerate::create_move_to_pattern;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum RumiaState {

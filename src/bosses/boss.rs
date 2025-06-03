@@ -4,8 +4,7 @@ use crate::movement_patterns::{get_lateral_movement, run_movement_pattern, DontM
 use crate::resources::sprites::{set_next_animation, AnimationIndices, Sprites};
 use crate::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
-use crate::movement_patterns::move_to::{MoveTo};
-use crate::movement_patterns::MovementPatterns::{DontMovePattern, MoveToPattern};
+use crate::movement_patterns::MovementPatterns::{DontMovePattern};
 
 #[derive(Component)]
 pub struct Boss;
@@ -52,7 +51,7 @@ pub fn update_bosses(
     for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {
         run_movement_pattern(&mut *movement_pattern, &mut *transform, &time, false);
         let lateral_movement = get_lateral_movement(&*movement_pattern);
-        if !(-1.0..1.0).contains(&lateral_movement) {
+        if !(-0.5..0.5).contains(&lateral_movement) {
             set_next_animation(&mut indices, 5, 5);
         } else {
             set_next_animation(&mut indices, 4, 4);

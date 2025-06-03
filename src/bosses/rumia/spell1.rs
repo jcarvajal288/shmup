@@ -1,19 +1,18 @@
 use crate::bosses::boss::Boss;
 use crate::bosses::rumia::RumiaState;
-use crate::bullet::BulletType::BlueRimmedCircle;
 use crate::bullet::BulletType;
+use crate::bullet::BulletType::BlueRimmedCircle;
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::bullet_patterns::starburst::Starburst;
 use crate::bullet_patterns::BulletPatterns::StarburstPattern;
 use crate::enemy::Enemy;
 use crate::game::{GameObject, LevelState, SPAWN_CENTER, SPAWN_TOP};
-use crate::movement_patterns::move_away::{build_move_away, MoveAwayBuilder};
-use crate::movement_patterns::move_to::{build_move_to, create_move_to_pattern, MoveToBuilder};
+use crate::movement_patterns::decelerate::create_move_to_pattern;
+use crate::movement_patterns::{is_finished, MovementPatterns};
 use crate::player::Player;
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
 use std::time::Duration;
-use crate::movement_patterns::{is_finished, MovementPatterns};
 
 #[derive(Component)]
 struct SpellTimer(Timer);
