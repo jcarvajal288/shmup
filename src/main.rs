@@ -1,3 +1,5 @@
+extern crate core;
+
 mod game;
 mod player;
 mod level1;

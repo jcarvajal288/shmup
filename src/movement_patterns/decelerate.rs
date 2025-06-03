@@ -1,3 +1,4 @@
+use std::f32::consts::PI;
 use crate::movement_patterns;
 use crate::movement_patterns::{MovementPattern, MovementPatterns};
 use bevy::math::{Rot2, Vec2, Vec3};
@@ -42,7 +43,7 @@ impl MovementPattern for Decelerate {
 
     fn lateral_movement(&self) -> f32 {
         if self.current_speed == 0.0 {
-            0.0
+            PI / 2.0
         } else {
             self.angle.as_radians()
         }

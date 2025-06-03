@@ -1,10 +1,14 @@
+use std::f32::consts::PI;
+use std::ops::Range;
 use crate::enemy::EnemyType;
 use crate::game::{GameObject, SpawnTimer};
-use crate::movement_patterns::{get_lateral_movement, run_movement_pattern, DontMove, MovementPatterns};
+use crate::movement_patterns::{get_lateral_movement, is_finished, run_movement_pattern, DontMove, MovementPatterns};
 use crate::resources::sprites::{set_next_animation, AnimationIndices, Sprites};
 use crate::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
 use crate::movement_patterns::MovementPatterns::{DontMovePattern};
+
+const UP_DOWN_MOVEMENT_BRACKET: Range<f32> = 5.0 * PI / 12.0 .. 7.0 * PI / 12.0;
 
 #[derive(Component)]
 pub struct Boss;
@@ -51,12 +55,12 @@ pub fn update_bosses(
     for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {
         run_movement_pattern(&mut *movement_pattern, &mut *transform, &time, false);
         let lateral_movement = get_lateral_movement(&*movement_pattern);
-        if !(-0.5..0.5).contains(&lateral_movement) {
+        if !UP_DOWN_MOVEMENT_BRACKET.contains(&lateral_movement.abs()) && !is_finished(&*movement_pattern) {
             set_next_animation(&mut indices, 5, 5);
         } else {
             set_next_animation(&mut indices, 4, 4);
         }
-        sprite.flip_x = lateral_movement < 0.0;
+        sprite.flip_x = lateral_movement > PI / 2.0;
     }
 }
 
