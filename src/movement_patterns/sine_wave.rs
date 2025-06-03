@@ -2,7 +2,7 @@ use bevy::math::{Vec2, Vec3};
 use bevy::prelude::{Res, Time, Transform};
 use std::f32::consts::PI;
 use crate::movement_patterns;
-use crate::movement_patterns::MovementPatterns;
+use crate::movement_patterns::{MovementPattern, MovementPatterns};
 use crate::movement_patterns::MovementPatterns::SineWavePattern;
 
 #[derive(Clone, PartialEq)]
@@ -13,9 +13,13 @@ pub struct SineWave {
     pub starting_position: Vec2,
 }
 
-impl SineWave {
-    pub fn do_move(
-        &self,
+impl MovementPattern for SineWave {
+    fn name(&self) -> &str {
+        "SineWave"
+    }
+
+    fn do_move(
+        &mut self,
         transform: &mut Transform,
         time: &Res<Time>,
         face_travel: bool
@@ -29,6 +33,14 @@ impl SineWave {
             let direction = new_translation - old_translation;
             movement_patterns::face_travel_direction(transform, direction);
         }
+    }
+
+    fn lateral_movement(&self) -> f32 {
+        0.0
+    }
+
+    fn is_finished(&self) -> bool {
+        false
     }
 }
 

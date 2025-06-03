@@ -8,12 +8,13 @@ use crate::bullet_patterns::BulletPatterns::StarburstPattern;
 use crate::enemy::Enemy;
 use crate::game::{GameObject, LevelState, SPAWN_CENTER, SPAWN_TOP};
 use crate::movement_patterns::move_away::{build_move_away, MoveAwayBuilder};
-use crate::movement_patterns::move_to::{build_move_to, MoveToBuilder};
-use crate::movement_patterns::{BoxedBulletMovementPattern, BoxedMovementPattern};
+use crate::movement_patterns::move_to::{build_move_to, create_move_to_pattern, MoveToBuilder};
 use crate::player::Player;
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
 use std::time::Duration;
+use crate::movement_patterns::{is_finished, MovementPatterns};
+
 #[derive(Component)]
 struct SpellTimer(Timer);
 
@@ -92,26 +93,21 @@ fn phase1_countdown(
 }
 
 fn move_to_phase2_setup(
-    mut rumia_query: Query<(&Boss, &Transform, &mut BoxedMovementPattern)>,
+    mut rumia_query: Query<(&Boss, &Transform, &mut MovementPatterns)>,
 ) {
-    for (_boss, transform, mut boxed_movement_pattern) in rumia_query.iter_mut() {
+    for (_boss, transform, mut movement_pattern) in rumia_query.iter_mut() {
         let start = transform.translation.xy();
         let destination = Vec2::new(SPAWN_CENTER, SPAWN_TOP - 100.0);
-        let time = 1.5;
-        boxed_movement_pattern.0 = Box::new(build_move_to(MoveToBuilder {
-            start,
-            destination,
-            time,
-        }))
+        *movement_pattern = create_move_to_pattern(start, destination, Duration::from_millis(1500));
     }
 }
 
 fn wait_for_move_to_phase2(
-    rumia_query: Query<(&Boss, &BoxedMovementPattern)>,
+    rumia_query: Query<(&Boss, &MovementPatterns)>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    for (_boss, boxed_movement_pattern) in rumia_query.iter() {
-        if boxed_movement_pattern.0.is_finished() {
+    for (_boss, movement_pattern) in rumia_query.iter() {
+        if is_finished(movement_pattern) {
             next_state.set(Spell1State::Phase2);
         }
     }
@@ -178,21 +174,21 @@ fn phase2_setup(
 
 fn phase2_update(
     mut rumia_query: Query<(&Boss, &Transform)>,
-    mut query: Query<&mut BoxedBulletMovementPattern>,
+    mut query: Query<&mut MovementPatterns>,
 ) {
-    for mut movement_pattern in query.iter_mut()
-        .filter(|m| m.0.name() == "phase2_part1") {
-
-        for (_boss, transform) in rumia_query.iter_mut() {
-            if movement_pattern.0.is_finished() {
-                let new_movement_pattern = Box::new(build_move_away(MoveAwayBuilder {
-                    repulsion_point: transform.translation,
-                    starting_velocity: 0.0,
-                    final_velocity: 350.0,
-                    time_to_final_velocity: Duration::from_secs(1),
-                }));
-                let _old_movement_pattern = std::mem::replace(&mut movement_pattern.0, new_movement_pattern);
-            }
-        }
-    }
+    // for mut movement_pattern in query.iter_mut()
+    //     .filter(|m| m.name() == "phase2_part1") {
+    //
+    //     for (_boss, transform) in rumia_query.iter_mut() {
+    //         if movement_pattern.is_finished() {
+    //             let new_movement_pattern = Box::new(build_move_away(MoveAwayBuilder {
+    //                 repulsion_point: transform.translation,
+    //                 starting_velocity: 0.0,
+    //                 final_velocity: 350.0,
+    //                 time_to_final_velocity: Duration::from_secs(1),
+    //             }));
+    //             let _old_movement_pattern = std::mem::replace(&mut movement_pattern.0, new_movement_pattern);
+    //         }
+    //     }
+    // }
 }

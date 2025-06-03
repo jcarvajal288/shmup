@@ -1,7 +1,9 @@
-use crate::movement_patterns::MovementPattern;
+use std::time::Duration;
+use crate::movement_patterns::{MovementPattern, MovementPatterns};
 use bevy::math::Vec2;
 use bevy::prelude::{Res, Time, Transform, Vec3};
 use crate::movement_patterns;
+use crate::movement_patterns::MovementPatterns::MoveToPattern;
 
 #[derive(Clone, PartialEq)]
 pub struct MoveTo {
@@ -10,19 +12,48 @@ pub struct MoveTo {
     pub acceleration: f32,
 }
 
-impl MoveTo {
-    pub fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>, face_travel: bool) {
+impl MovementPattern for MoveTo {
+    fn name(&self) -> &str {
+        "MoveTo"
+    }
+
+    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>, face_travel: bool) {
+        if self.is_finished() {
+            self.current_speed = 0.0;
+            return;
+        }
+        self.current_speed += self.acceleration * time.delta_secs();
         let diff = self.destination - transform.translation.truncate();
         let angle = diff.y.atan2(diff.x);
         let direction = Vec3::new(f32::cos(angle), f32::sin(angle), 0.0);
         let distance = self.current_speed * time.delta_secs();
         let translation_delta = direction * distance;
         transform.translation += translation_delta;
-        self.current_speed += self.acceleration;
         if face_travel {
             movement_patterns::face_travel_direction(transform, direction);
         }
     }
+
+    fn lateral_movement(&self) -> f32 {
+        0.0
+    }
+
+    fn is_finished(&self) -> bool {
+        !(self.current_speed > 0.0)
+    }
+}
+
+pub fn create_move_to_pattern(starting_position: Vec2, destination: Vec2, time: Duration) -> MovementPatterns {
+    let displacement = destination - starting_position;
+    let distance = displacement.length();
+    let velocity = distance * 2.0 / time.as_secs_f32();
+    MoveToPattern(
+        MoveTo {
+            destination,
+            current_speed: velocity,
+            acceleration: -velocity / time.as_secs_f32(),
+        }
+    )
 }
 
 
@@ -50,7 +81,7 @@ impl Default for MoveToOld {
 impl MovementPattern for MoveToOld {
     fn name(&self) -> &str { "MoveTo" }
 
-    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
+    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>, _face_travel: bool) {
         let delta_time = time.delta_secs();
         if self.elapsed_time > self.duration {
             return;
@@ -60,7 +91,7 @@ impl MovementPattern for MoveToOld {
         self.elapsed_time += delta_time;
     }
 
-    fn lateral_movement(&mut self) -> f32 {
+    fn lateral_movement(&self) -> f32 {
         self.direction.x * self.velocity
     }
 

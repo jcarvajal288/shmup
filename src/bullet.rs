@@ -1,7 +1,7 @@
 use std::time::Duration;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::MovementPatterns::DontMovePattern;
-use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
+use crate::movement_patterns::{run_movement_pattern, DontMove, MovementPatterns};
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
 use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
@@ -46,7 +46,7 @@ impl Default for BulletSpawnEvent {
         Self {
             bullet_type: BulletType::WhiteArrow,
             position: Default::default(),
-            movement_pattern: DontMovePattern,
+            movement_pattern: DontMovePattern(DontMove::default()),
         }
     }
 }
@@ -54,7 +54,6 @@ impl Default for BulletSpawnEvent {
 pub fn read_bullet_spawn_events(
     sprites: Res<Sprites>,
     mut commands: Commands,
-    time: Res<Time>,
     mut bullet_spawn_events: EventReader<BulletSpawnEvent>,
 ) {
     for event in bullet_spawn_events.read() {
@@ -64,14 +63,6 @@ pub fn read_bullet_spawn_events(
             movement_pattern: event.movement_pattern.clone(),
         };
         spawn_bullet(&sprites, &mut commands, &spawner);
-        // if event.timer.tick(time.delta()).finished() {
-        //     spawn_bullet(&sprites, &mut commands, &spawner);
-        // } else {
-        //     commands.spawn((
-        //         spawner,
-        //         SpawnTimer(event.timer.clone())
-        //     ));
-        // }
     }
 }
 

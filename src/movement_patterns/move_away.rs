@@ -17,7 +17,7 @@ impl MovementPattern for MoveAway {
         "MoveAway"
     }
 
-    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>) {
+    fn do_move(&mut self, transform: &mut Transform, time: &Res<Time>, _face_travel: bool) {
         if self.direction == Vec3::ZERO {
             self.direction = (transform.translation - self.repulsion_point).normalize().with_z(0.0);
         }
@@ -28,7 +28,7 @@ impl MovementPattern for MoveAway {
         transform.translation += self.direction * self.velocity * delta_time;
     }
 
-    fn lateral_movement(&mut self) -> f32 {
+    fn lateral_movement(&self) -> f32 {
         (self.direction * self.velocity).x
     }
 

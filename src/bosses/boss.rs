@@ -1,10 +1,11 @@
 use crate::enemy::EnemyType;
 use crate::game::{GameObject, SpawnTimer};
-use crate::movement_patterns::BoxedMovementPattern;
+use crate::movement_patterns::{get_lateral_movement, run_movement_pattern, DontMove, MovementPatterns};
 use crate::resources::sprites::{set_next_animation, AnimationIndices, Sprites};
 use crate::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
-use crate::movement_patterns::move_to::MoveToOld;
+use crate::movement_patterns::move_to::{MoveTo};
+use crate::movement_patterns::MovementPatterns::{DontMovePattern, MoveToPattern};
 
 #[derive(Component)]
 pub struct Boss;
@@ -14,7 +15,7 @@ pub struct BossSpawner {
     pub name: &'static str,
     pub enemy_type: EnemyType,
     pub starting_position: Vec2,
-    pub movement_pattern: BoxedMovementPattern,
+    pub movement_pattern: MovementPatterns,
 }
 
 impl Default for BossSpawner {
@@ -23,7 +24,7 @@ impl Default for BossSpawner {
             name: "Boss",
             enemy_type: EnemyType::Rumia,
             starting_position: Vec2::ZERO,
-            movement_pattern: BoxedMovementPattern(Box::new(MoveToOld::default())),
+            movement_pattern: DontMovePattern(DontMove::default()),
         }
     }
 }
@@ -46,11 +47,11 @@ pub fn spawn_boss(commands: &mut Commands, sprites: &Res<Sprites>, boss_spawner:
 
 pub fn update_bosses(
     time: Res<Time>,
-    mut boss_query: Query<(&Boss, &mut Transform, &mut BoxedMovementPattern, &mut Sprite, &mut AnimationIndices)>,
+    mut boss_query: Query<(&Boss, &mut Transform, &mut MovementPatterns, &mut Sprite, &mut AnimationIndices)>,
 ) {
     for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {
-        movement_pattern.0.do_move(&mut transform, &time);
-        let lateral_movement = movement_pattern.0.lateral_movement();
+        run_movement_pattern(&mut *movement_pattern, &mut *transform, &time, false);
+        let lateral_movement = get_lateral_movement(&*movement_pattern);
         if !(-1.0..1.0).contains(&lateral_movement) {
             set_next_animation(&mut indices, 5, 5);
         } else {

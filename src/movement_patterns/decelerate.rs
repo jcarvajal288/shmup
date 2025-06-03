@@ -1,8 +1,8 @@
+use crate::movement_patterns;
+use crate::movement_patterns::MovementPattern;
 use bevy::math::{Rot2, Vec3};
 use bevy::prelude::{Res, Time, Transform};
 use std::time::Duration;
-use crate::movement_patterns;
-use crate::movement_patterns::MovementPatterns;
 
 #[derive(Clone, PartialEq)]
 pub struct Decelerate {
@@ -13,8 +13,12 @@ pub struct Decelerate {
 }
 
 
-impl Decelerate {
-    pub fn do_move(
+impl MovementPattern for Decelerate {
+    fn name(&self) -> &str {
+        "Decelerate"
+    }
+
+    fn do_move(
         &mut self,
         transform: &mut Transform,
         time: &Res<Time>,
@@ -29,6 +33,14 @@ impl Decelerate {
         if face_travel {
             movement_patterns::face_travel_direction(transform, direction);
         }
+    }
+
+    fn lateral_movement(&self) -> f32 {
+        self.angle.as_radians()
+    }
+
+    fn is_finished(&self) -> bool {
+        !(self.current_speed > self.final_speed)
     }
 }
 
