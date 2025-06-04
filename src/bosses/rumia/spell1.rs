@@ -143,31 +143,6 @@ fn phase2_setup(
                 Transform::from_translation(boss_transform.translation),
             ));
         }
-
-        // for (bullet_type, index) in waves.iter() {
-        //     commands.spawn((
-        //         Name::new("spell2"),
-        //         BoxedBulletPattern(Box::new(CircleSpawn {
-        //             bullet_type: *bullet_type,
-        //             bullets_in_circle: 64,
-        //             angle: BulletPatternAngle {
-        //                 target: Down,
-        //                 spread: 2.0 * PI,
-        //                 offset: 0.0 + PI / 3.0 * index,
-        //             },
-        //             spawn_circle_radius: 30.0,
-        //         })),
-        //         BoxedBulletMovementPattern(Box::new(build_move_distance_away(MoveDistanceAwayBuilder {
-        //             name: "phase2_part1",
-        //             repulsion_point: transform.translation,
-        //             duration: Duration::from_millis(500),
-        //             distance: 75.0,
-        //         }))),
-        //         *transform,
-        //         SpawnTimer(Timer::from_seconds(0.2 * index, TimerMode::Once)),
-        //         GameObject,
-        //     ));
-        // }
     }
 }
 

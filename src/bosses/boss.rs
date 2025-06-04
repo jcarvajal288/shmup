@@ -55,13 +55,17 @@ pub fn update_bosses(
     for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {
         run_movement_pattern(&mut *movement_pattern, &mut *transform, &time, false);
         let lateral_movement = get_lateral_movement(&*movement_pattern);
-        if !UP_DOWN_MOVEMENT_BRACKET.contains(&lateral_movement.abs()) && !is_finished(&*movement_pattern) {
+        if is_moving_laterally(movement_pattern, lateral_movement) {
             set_next_animation(&mut indices, 5, 5);
         } else {
             set_next_animation(&mut indices, 4, 4);
         }
-        sprite.flip_x = lateral_movement > PI / 2.0;
+        sprite.flip_x = lateral_movement >= PI / 2.0;
     }
+}
+
+fn is_moving_laterally(movement_pattern: Mut<MovementPatterns>, lateral_movement: f32) -> bool {
+    !UP_DOWN_MOVEMENT_BRACKET.contains(&lateral_movement.abs()) && !is_finished(&*movement_pattern)
 }
 
 pub fn spawn_bosses(
