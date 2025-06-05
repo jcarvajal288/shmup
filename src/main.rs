@@ -13,6 +13,7 @@ mod resources;
 mod bosses;
 mod sprites;
 mod testbed;
+mod spawns;
 
 use crate::game::{game_plugin, ChosenLevel, GameObject, LevelState};
 use crate::menus::game_over_menu::game_over_menu_plugin;

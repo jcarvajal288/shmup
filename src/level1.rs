@@ -4,11 +4,13 @@ use crate::bullet_patterns::shoot_at_player::shoot_at_player_pattern;
 use crate::bullet_patterns::ENDLESS;
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
-use crate::game::{GameObject, LevelState, SpawnTimer, SPAWN_CENTER, SPAWN_TOP};
+use crate::game::{GameObject, LevelState, SpawnTimer, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, SPAWN_CENTER, SPAWN_LEFT, SPAWN_RIGHT, SPAWN_TOP};
 use crate::movement_patterns::MovementPatterns::SineWavePattern;
 use crate::GameState;
 use bevy::prelude::*;
 use crate::movement_patterns::sine_wave::create_sine_wave_pattern;
+use crate::movement_patterns::straight_line::{create_straight_line_pattern, StraightLine};
+use crate::spawns::{horizontal_line, SpawnTimeTracker};
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -33,7 +35,27 @@ fn level1_setup(
     mut commands: Commands,
     mut next_state: ResMut<NextState<FirstLevelState>>,
 ) {
-        let starting_position = Vec2::new(SPAWN_CENTER, SPAWN_TOP - 50.0);
+    let mut spawn_delay = SpawnTimeTracker::default();
+
+    for _ in 0..5 {
+        commands.spawn((
+            Name::new("EnemySpawner"),
+            EnemySpawner {
+                name: "Blue Fairy",
+                enemy_type: BlueFairy,
+                starting_position: Vec2::new(SPAWN_LEFT, SPAWN_TOP),
+                movement_pattern: create_straight_line_pattern(Rot2::degrees(315.0), 100.0),
+                bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
+            },
+            spawn_delay.timer_with_increment( 0.4),
+            GameObject,
+        ));
+    };
+
+    spawn_delay.increment(2.0);
+
+    let spawn_line = horizontal_line(FRAME_BORDER_LEFT, SPAWN_CENTER, SPAWN_TOP, 5);
+    for starting_position in spawn_line {
         commands.spawn((
             Name::new("EnemySpawner"),
             EnemySpawner {
@@ -41,13 +63,14 @@ fn level1_setup(
                 enemy_type: BlueFairy,
                 starting_position,
                 //movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 200.0, 20.0, Duration::from_secs(2)),
-                // movement_pattern: StraightLine(Rot2::degrees(270.0), 20.0),
-                movement_pattern: create_sine_wave_pattern(150.0, 100.0, 25.0, starting_position),
+                movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 50.0),
+                // movement_pattern: create_sine_wave_pattern(150.0, 100.0, 25.0, starting_position),
                 bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
             },
-            SpawnTimer(Timer::from_seconds(0.1, TimerMode::Once)),
+            spawn_delay.timer_with_increment( 0.2),
             GameObject,
         ));
+    }
     next_state.set(FirstLevelState::PreRumia);
 }
 
