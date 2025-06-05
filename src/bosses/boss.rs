@@ -4,7 +4,7 @@ use crate::enemy::EnemyType;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::{get_lateral_movement, is_finished, run_movement_pattern, DontMove, MovementPatterns};
 use crate::resources::sprites::{set_next_animation, AnimationIndices, Sprites};
-use crate::sprites::get_sprite_for_enemy_type;
+use crate::resources::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
 use crate::movement_patterns::MovementPatterns::{DontMovePattern};
 

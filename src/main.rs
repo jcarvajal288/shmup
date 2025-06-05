@@ -11,9 +11,9 @@ mod player_stats;
 mod menus;
 mod resources;
 mod bosses;
-mod sprites;
 mod testbed;
 mod spawns;
+mod effects;
 
 use crate::game::{game_plugin, ChosenLevel, GameObject, LevelState};
 use crate::menus::game_over_menu::game_over_menu_plugin;

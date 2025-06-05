@@ -1,4 +1,6 @@
 use bevy::prelude::*;
+use crate::enemy::EnemyType;
+use crate::enemy::EnemyType::{BlueFairy, Rumia};
 use crate::resources::images::Images;
 
 #[derive(Component, Clone, Default)]
@@ -44,6 +46,11 @@ pub struct Sprites {
     pub bullet_small_green_circle: Sprite,
     pub bullet_small_purple_circle: Sprite,
     pub bullet_small_blue_circle: Sprite,
+
+    pub effect_blue_explosion: Sprite,
+    pub effect_red_explosion: Sprite,
+    pub effect_yellow_explosion: Sprite,
+    pub effect_green_explosion: Sprite,
 }
 
 
@@ -113,6 +120,27 @@ pub fn load_sprites(
     sprites.bullet_small_green_circle = get_bullet_sprite(&images, 0, 240, 2, 1, 8);
     sprites.bullet_small_purple_circle = get_bullet_sprite(&images, 0, 240, 3, 0, 8);
     sprites.bullet_small_blue_circle = get_bullet_sprite(&images, 0, 240, 0, 1, 8);
+
+    sprites.effect_red_explosion = Sprite {
+        image: images.effects.clone(),
+        rect: Option::from(Rect::new(132.0, 18.0, 194.0, 80.0)),
+        ..Default::default()
+    };
+    sprites.effect_blue_explosion = Sprite {
+        image: images.effects.clone(),
+        rect: Option::from(Rect::new(196.0, 18.0, 258.0, 80.0)),
+        ..Default::default()
+    };
+    sprites.effect_yellow_explosion = Sprite {
+        image: images.effects.clone(),
+        rect: Option::from(Rect::new(4.0, 82.0, 66.0, 144.0)),
+        ..Default::default()
+    };
+    sprites.effect_green_explosion = Sprite {
+        image: images.effects.clone(),
+        rect: Option::from(Rect::new(68.0, 82.0, 130.0, 144.0)),
+        ..Default::default()
+    };
 }
 
 fn get_bullet_sprite(images: &ResMut<Images>, origin_x: usize, origin_y: usize, x_coord: usize, y_coord: usize, size: usize) -> Sprite {
@@ -182,4 +210,11 @@ fn load_sprite_sheet(
     animated_sprite.sprite_size = sprite_size;
     animated_sprite.animation_indices = animation_indices;
     animated_sprite.animation_timer = AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating));
+}
+
+pub fn get_sprite_for_enemy_type(sprites: &Res<Sprites>, enemy_type: &EnemyType) -> AnimatedSprite {
+    match enemy_type {
+        BlueFairy => sprites.blue_fairy.clone(),
+        Rumia => sprites.rumia.clone(),
+    }
 }

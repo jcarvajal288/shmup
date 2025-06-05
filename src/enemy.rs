@@ -6,9 +6,10 @@ use crate::movement_patterns::MovementPatterns::StraightLinePattern;
 use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
 use crate::player::PlayerShot;
 use crate::resources::sprites::{AnimatedSprite, Sprites};
-use crate::sprites;
+use crate::resources;
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
+use crate::bullet::BulletSpawnEvent;
 use crate::bullet_patterns::shoot_at_player::ShootAtPlayer;
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::movement_patterns::straight_line::StraightLine;
@@ -46,12 +47,18 @@ impl Default for EnemySpawner {
     }
 }
 
+#[derive(Event)]
+pub struct EnemyDeathEvent {
+    pub enemy_type: EnemyType,
+    pub position: Vec3,
+}
+
 #[derive(SystemSet, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct EnemySystemSet;
 
 pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mut EnemySpawner) {
     let enemy_spawner = std::mem::take(spawner);
-    let animated_sprite = sprites::get_sprite_for_enemy_type(sprites, &enemy_spawner.enemy_type);
+    let animated_sprite = resources::sprites::get_sprite_for_enemy_type(sprites, &enemy_spawner.enemy_type);
     commands.spawn((
         Name::new(enemy_spawner.name),
         Enemy {
@@ -117,9 +124,17 @@ pub fn check_shot_enemy_collision(
     }
 }
 
-pub fn check_for_enemy_death(mut commands: Commands, enemy_query: Query<(&Enemy, Entity)>) {
-    for (enemy, entity) in enemy_query.iter() {
+pub fn check_for_enemy_death(
+    mut commands: Commands,
+    enemy_query: Query<(&Enemy, &Transform, Entity)>,
+    mut enemy_death_events: EventWriter<EnemyDeathEvent>,
+) {
+    for (enemy, transform, entity) in enemy_query.iter() {
         if enemy.hit_points <= 0 {
+            enemy_death_events.send(EnemyDeathEvent {
+                enemy_type: enemy.enemy_type.clone(),
+                position: transform.translation,
+            });
             commands.entity(entity).despawn_recursive();
         }
     }

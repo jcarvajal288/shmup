@@ -11,6 +11,7 @@ pub struct Images {
     pub fairies: Handle<Image>,
     pub player_accessories: Handle<Image>,
     pub rumia: Handle<Image>,
+    pub effects: Handle<Image>,
 }
 
 
@@ -23,4 +24,5 @@ pub fn load_images(mut images: ResMut<Images>, asset_server: Res<AssetServer>) {
     images.fairies = asset_server.load("images/fairies1.png");
     images.player_accessories = asset_server.load("images/player-accessories.png");
     images.rumia = asset_server.load("images/rumia.png");
+    images.effects = asset_server.load("images/effects.png");
 }

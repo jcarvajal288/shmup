@@ -5,7 +5,8 @@ use crate::resources::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
 use crate::bosses::boss::{spawn_bosses, update_bosses};
-use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, move_enemies, spawn_enemies, Enemy, EnemySystemSet};
+use crate::effects::{animate_enemy_death_explosions, create_effects_on_enemy_death};
+use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, move_enemies, spawn_enemies, Enemy, EnemyDeathEvent, EnemySystemSet};
 use crate::level1::{level1_plugin, FirstLevelState};
 use crate::testbed::testbed_plugin;
 
@@ -77,6 +78,8 @@ pub fn game_plugin(app: &mut App) {
             animate_sprite,
             move_bullets,
             out_of_bounds_cleanup,
+            create_effects_on_enemy_death,
+            animate_enemy_death_explosions,
         ).run_if(in_state(GameState::PlayingGame)))
         .add_systems(OnEnter(LevelState::None), reset_levels)
         .add_plugins((
@@ -85,6 +88,7 @@ pub fn game_plugin(app: &mut App) {
         ))
         .init_state::<LevelState>()
         .add_event::<PlayerDeathEvent>()
+        .add_event::<EnemyDeathEvent>()
         .add_event::<PlayerContinueEvent>()
         .add_event::<BulletSpawnEvent>()
     ;
