@@ -7,7 +7,7 @@ use crate::movement_patterns::straight_line::create_straight_line_pattern;
 pub struct Starburst {
     pub bullets: Vec<BulletType>,
     pub num_lines: usize,
-    pub spread: Rot2,
+    pub spread: f32,
     pub speed_range: (f32, f32),
     pub offset: f32,
     pub angle: Rot2,
@@ -18,7 +18,7 @@ impl Default for Starburst {
         Self {
             bullets: vec![BulletType::WhiteArrow],
             num_lines: 0,
-            spread: Rot2::degrees(360.0),
+            spread: 2.0 * PI,
             speed_range: (0.0, 0.0),
             offset: 0.0,
             angle: Rot2::degrees(270.0),
@@ -34,8 +34,8 @@ impl Starburst {
         let speeds = (0..self.bullets.len()).map(|i| {
             self.speed_range.0 + (i as f32 * speed_increment)
         }).collect::<Vec<f32>>();
-        let step_size = self.spread.as_radians() / self.num_lines as f32;
-        let angles = (0..self.num_lines).map(|i: usize| {
+        let step_size = self.spread / self.num_lines as f32;
+        let angles = (0..self.num_lines + 1).map(|i: usize| {
             self.angle.as_radians() - PI + (i as f32 * step_size) + self.offset
         }).collect::<Vec<f32>>();
         for (bullet_type, speed) in self.bullets.iter()
