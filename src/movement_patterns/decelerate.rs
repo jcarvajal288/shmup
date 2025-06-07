@@ -54,18 +54,20 @@ impl MovementPattern for Decelerate {
     }
 }
 
-pub fn create_decelerate_pattern(angle: Rot2, starting_speed: f32, final_speed: f32, time_to_decelerate: Duration) -> Decelerate {
+pub fn create_decelerate_pattern(angle: Rot2, starting_speed: f32, final_speed: f32, time_to_decelerate: Duration) -> MovementPatterns {
     let deceleration = if time_to_decelerate.as_secs_f32() == 0.0 {
         0.0
     } else {
         (final_speed - starting_speed) / time_to_decelerate.as_secs_f32()
     };
-    Decelerate {
-        angle,
-        current_speed: starting_speed,
-        final_speed,
-        deceleration,
-    }
+    DeceleratePattern(
+        Decelerate {
+            angle,
+            current_speed: starting_speed,
+            final_speed,
+            deceleration,
+        }
+    )
 }
 
 pub fn create_move_to_pattern(starting_position: Vec2, destination: Vec2, time: Duration) -> MovementPatterns {

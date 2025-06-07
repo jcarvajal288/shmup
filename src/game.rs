@@ -15,11 +15,6 @@ pub const FRAME_BORDER_TOP: f32 = 266.0;
 pub const FRAME_BORDER_RIGHT: f32 = 97.0;
 pub const FRAME_BORDER_BOTTOM: f32 = -258.0;
 
-pub const SPAWN_LEFT: f32 = FRAME_BORDER_LEFT - 50.0;
-pub const SPAWN_RIGHT: f32 = FRAME_BORDER_RIGHT + 50.0;
-pub const SPAWN_TOP: f32 = FRAME_BORDER_TOP + 50.0;
-pub const SPAWN_CENTER: f32 =  -128.0;
-
 #[derive(Component)]
 pub struct GameObject;
 

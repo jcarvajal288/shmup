@@ -1,17 +1,18 @@
 use bevy::math::Vec2;
 use bevy::prelude::{Timer, TimerMode};
-use crate::game::SpawnTimer;
+use crate::game::{SpawnTimer, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 
+pub const SPAWN_OUTSIDE_LEFT: f32 = FRAME_BORDER_LEFT - 50.0;
+pub const SPAWN_OUTSIDE_RIGHT: f32 = FRAME_BORDER_RIGHT + 50.0;
+pub const SPAWN_TOP: f32 = FRAME_BORDER_TOP + 50.0;
+pub const SPAWN_CENTER: f32 =  -128.0;
+
+pub const SPAWN_LEFTMOST: f32 = FRAME_BORDER_LEFT + 10.0;
+pub const SPAWN_RIGHTMOST: f32 = FRAME_BORDER_RIGHT - 10.0;
+
+#[derive(Clone, Default)]
 pub struct SpawnTimeTracker {
     elapsed: f32
-}
-
-impl Default for SpawnTimeTracker {
-    fn default() -> Self {
-        Self {
-            elapsed: 0.0,
-        }
-    }
 }
 
 impl SpawnTimeTracker {
