@@ -51,10 +51,10 @@ pub fn reset_spell1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
-    player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    // player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
+    // let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
         commands.spawn((
@@ -63,7 +63,6 @@ fn phase1_setup(
                     bullets: vec![BlueRimmedCircle; 5],
                     num_lines: 16,
                     speed_range: (120.0, 200.0),
-                    target: player_transform.translation.truncate(),
                     ..default()
                 },
                 ShotSchedule::default()
@@ -133,7 +132,7 @@ fn phase2_setup(
                         num_lines: 64,
                         speed_range: (120.0, 200.0),
                         offset: wave.1,
-                        target: boss_transform.translation.with_y(boss_transform.translation.y - 1.0).truncate(),
+                        ..default()
                     },
                     ShotSchedule {
                         delay: Timer::from_seconds(0.2 * wave.1, TimerMode::Once),

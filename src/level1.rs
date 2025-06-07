@@ -1,3 +1,4 @@
+use std::f32::consts::PI;
 use crate::bosses::rumia::{rumia_plugin, RumiaState};
 use crate::bullet::BulletType::*;
 use crate::bullet_patterns::shoot_at_player::shoot_at_player_pattern;
@@ -8,6 +9,9 @@ use crate::game::{GameObject, LevelState, SpawnTimer, FRAME_BORDER_LEFT, FRAME_B
 use crate::movement_patterns::MovementPatterns::SineWavePattern;
 use crate::GameState;
 use bevy::prelude::*;
+use crate::bullet_patterns::BulletPatterns::StarburstPattern;
+use crate::bullet_patterns::shot_schedule::ShotSchedule;
+use crate::bullet_patterns::starburst::Starburst;
 use crate::movement_patterns::sine_wave::create_sine_wave_pattern;
 use crate::movement_patterns::straight_line::{create_straight_line_pattern, StraightLine};
 use crate::spawns::{horizontal_line, SpawnTimeTracker};
@@ -71,6 +75,38 @@ fn level1_setup(
             GameObject,
         ));
     }
+
+    spawn_delay.increment(2.0);
+
+    for _ in (0..3) {
+        commands.spawn((
+            Name::new("EnemySpawner"),
+            EnemySpawner {
+                name: "Blue Fairy",
+                enemy_type: BlueFairy,
+                starting_position: Vec2::new(FRAME_BORDER_RIGHT - 10.0, SPAWN_TOP),
+                movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 100.0),
+                bullet_pattern: StarburstPattern(
+                    Starburst {
+                        bullets: vec![BlueRimmedCircle],
+                        num_lines: 6,
+                        speed_range: (200.0, 400.0),
+                        spread: Rot2::radians(PI),
+                        angle: Rot2::degrees(90.0),
+                        ..default()
+                    },
+                    ShotSchedule {
+                        delay: Timer::from_seconds(1.0, TimerMode::Once),
+                        interval: Timer::from_seconds(1.0, TimerMode::Once),
+                        repetitions: ENDLESS,
+                    }
+                ),
+            },
+            spawn_delay.timer_with_increment( 0.2),
+            GameObject,
+        ));
+    }
+
     next_state.set(FirstLevelState::PreRumia);
 }
 

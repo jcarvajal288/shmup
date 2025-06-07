@@ -1,9 +1,7 @@
-use std::time::Duration;
-use bevy::color::Alpha;
-use bevy::prelude::{Commands, Component, DespawnRecursiveExt, Entity, EventReader, Query, Res, Sprite, Time, TimerMode, Transform, Vec3, With};
-use bevy::time::Timer;
 use crate::enemy::{EnemyDeathEvent, EnemyType};
 use crate::resources::sprites::Sprites;
+use bevy::color::Alpha;
+use bevy::prelude::{Commands, Component, DespawnRecursiveExt, Entity, EventReader, Query, Res, Sprite, Time, Transform, Vec3, With};
 
 #[derive(Component)]
 pub struct ExplosionEffect;
