@@ -1,5 +1,3 @@
-pub mod move_away;
-pub mod move_distance_away;
 pub mod sine_wave;
 pub mod decelerate;
 pub mod straight_line;
