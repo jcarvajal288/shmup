@@ -172,3 +172,8 @@ fn reset_levels(
 ) {
     first_level_state.set(FirstLevelState::Inactive);
 }
+
+pub fn is_in_playfield(position: Vec2) -> bool {
+    position.x > FRAME_BORDER_LEFT && position.x < FRAME_BORDER_RIGHT
+    && position.y > FRAME_BORDER_BOTTOM && position.y < FRAME_BORDER_TOP
+}

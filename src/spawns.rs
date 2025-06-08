@@ -21,7 +21,7 @@ impl SpawnTimeTracker {
         self.elapsed += time_to_add;
     }
 
-    pub fn timer_with_increment(&mut self, time_to_add: f32) -> SpawnTimer {
+    pub fn create_timer_and_increment(&mut self, time_to_add: f32) -> SpawnTimer {
         self.increment(time_to_add);
         SpawnTimer(Timer::from_seconds(self.elapsed, TimerMode::Once))
     }

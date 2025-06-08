@@ -1,5 +1,5 @@
 use std::time::Duration;
-use crate::game::{GameObject, SpawnTimer};
+use crate::game::{is_in_playfield, GameObject, SpawnTimer};
 use crate::movement_patterns::MovementPatterns::DontMovePattern;
 use crate::movement_patterns::{run_movement_pattern, DontMove, MovementPatterns};
 use crate::resources::sprites::Sprites;
@@ -62,7 +62,9 @@ pub fn read_bullet_spawn_events(
             position: event.position,
             movement_pattern: event.movement_pattern.clone(),
         };
-        spawn_bullet(&sprites, &mut commands, &spawner);
+        if is_in_playfield(event.position) {
+            spawn_bullet(&sprites, &mut commands, &spawner);
+        }
     }
 }
 

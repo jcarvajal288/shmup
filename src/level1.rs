@@ -51,7 +51,7 @@ fn level1_setup(
                 movement_pattern: create_straight_line_pattern(Rot2::degrees(315.0), 100.0),
                 bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
             },
-            spawn_delay.timer_with_increment( 0.4),
+            spawn_delay.create_timer_and_increment(0.4),
             GameObject,
         ));
     };
@@ -69,7 +69,7 @@ fn level1_setup(
                 movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 400.0, 20.0, Duration::from_secs(2)),
                 bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
             },
-            spawn_delay.timer_with_increment( 0.2),
+            spawn_delay.create_timer_and_increment(0.2),
             GameObject,
         ));
     }
@@ -101,7 +101,7 @@ fn level1_setup(
                     }
                 ),
             },
-            spawn_delay.timer_with_increment(0.4),
+            spawn_delay.create_timer_and_increment(0.4),
             GameObject,
         ));
     }
@@ -130,7 +130,7 @@ fn level1_setup(
                     }
                 ),
             },
-            spawn_delay_2.timer_with_increment(0.4),
+            spawn_delay_2.create_timer_and_increment(0.4),
             GameObject,
         ));
     }
