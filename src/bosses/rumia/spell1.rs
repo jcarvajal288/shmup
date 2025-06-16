@@ -1,11 +1,11 @@
-use crate::bosses::boss::Boss;
+use crate::bosses::boss::{Boss};
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType;
-use crate::bullet::BulletType::BlueRimmedCircle;
+use crate::bullet::BulletType::{BlueRimmedCircle, WhiteArrow};
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::bullet_patterns::starburst::Starburst;
 use crate::bullet_patterns::BulletPatterns::StarburstPattern;
-use crate::game::{GameObject, LevelState};
+use crate::game::{GameObject, LevelState, FRAME_BORDER_TOP};
 use crate::movement_patterns::decelerate::create_move_to_pattern;
 use crate::movement_patterns::{is_finished, MovementPatterns};
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
@@ -23,6 +23,9 @@ pub enum Spell1State {
     Phase1,
     MoveToPhase2,
     Phase2,
+    MoveToPhase3,
+    Phase3,
+    MoveToPhase1,
 }
 
 pub fn spell1_plugin(app: &mut App) {
@@ -31,12 +34,26 @@ pub fn spell1_plugin(app: &mut App) {
         .add_systems(OnEnter(RumiaState::Spell1), phase1_setup)
         .add_systems(Update, phase1_countdown
             .run_if(in_state(Spell1State::Phase1)))
+
         .add_systems(OnEnter(Spell1State::MoveToPhase2), move_to_phase2_setup)
         .add_systems(Update, wait_for_move_to_phase2
             .run_if(in_state(Spell1State::MoveToPhase2)))
+
         .add_systems(OnEnter(Spell1State::Phase2), phase2_setup)
-        .add_systems(Update, phase2_update
+        .add_systems(Update, phase2_countdown
             .run_if(in_state(Spell1State::Phase2)))
+
+        .add_systems(OnEnter(Spell1State::MoveToPhase3), move_to_phase3_setup)
+        .add_systems(Update, wait_for_move_to_phase3
+            .run_if(in_state(Spell1State::MoveToPhase3)))
+
+        .add_systems(OnEnter(Spell1State::Phase3), phase3_setup)
+        .add_systems(Update, phase3_countdown
+            .run_if(in_state(Spell1State::Phase3)))
+
+        .add_systems(OnEnter(Spell1State::MoveToPhase1), move_to_phase1_setup)
+        .add_systems(Update, wait_for_move_to_phase1
+            .run_if(in_state(Spell1State::MoveToPhase1)))
         .init_state::<Spell1State>()
     ;
 }
@@ -53,6 +70,7 @@ fn phase1_setup(
     // player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
+    println!("phase1_setup");
     // let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
@@ -70,7 +88,7 @@ fn phase1_setup(
         ));
     }
     commands.spawn((
-        Name::new("Spell Timer 1"),
+        Name::new("Rumia Phase 1 Timer"),
         SpellTimer(Timer::from_seconds(1.0, TimerMode::Once)),
         GameObject,
     ));
@@ -78,20 +96,24 @@ fn phase1_setup(
 }
 
 fn phase1_countdown(
+    mut commands: Commands,
+    mut timer_query: Query<(&mut SpellTimer, &Name, Entity)>,
     time: Res<Time>,
-    mut timer_query: Query<&mut SpellTimer>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    for mut timer in timer_query.iter_mut() {
-        if timer.0.tick(time.delta()).just_finished() {
+    println!("phase1_countdown");
+    for (mut timer, name, entity) in timer_query.iter_mut() {
+        if name.as_str() == "Rumia Phase 1 Timer" && timer.0.tick(time.delta()).just_finished() {
             next_state.set(Spell1State::MoveToPhase2);
-        };
+            commands.entity(entity).despawn();
+        }
     }
 }
 
 fn move_to_phase2_setup(
     mut rumia_query: Query<(&Boss, &Transform, &mut MovementPatterns)>,
 ) {
+    println!("move_to_phase2_setup");
     for (_boss, transform, mut movement_pattern) in rumia_query.iter_mut() {
         let start = transform.translation.xy();
         let destination = Vec2::new(SPAWN_CENTER, SPAWN_TOP - 100.0);
@@ -103,6 +125,7 @@ fn wait_for_move_to_phase2(
     rumia_query: Query<(&Boss, &MovementPatterns)>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
+    println!("wait_for_move_to_phase2");
     for (_boss, movement_pattern) in rumia_query.iter() {
         if is_finished(movement_pattern) {
             next_state.set(Spell1State::Phase2);
@@ -114,6 +137,7 @@ fn phase2_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
 ) {
+    println!("phase2_setup");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
         let waves = [
@@ -142,25 +166,116 @@ fn phase2_setup(
             ));
         }
     }
+
+    commands.spawn((
+        Name::new("Rumia Phase 2 Timer"),
+        SpellTimer(Timer::from_seconds(1.0, TimerMode::Once)),
+        GameObject,
+    ));
 }
 
-fn phase2_update(
-    mut rumia_query: Query<(&Boss, &Transform)>,
-    mut query: Query<&mut MovementPatterns>,
+fn phase2_countdown(
+    mut commands: Commands,
+    mut timer_query: Query<(&mut SpellTimer, &Name, Entity)>,
+    time: Res<Time>,
+    mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    // for mut movement_pattern in query.iter_mut()
-    //     .filter(|m| m.name() == "phase2_part1") {
-    //
-    //     for (_boss, transform) in rumia_query.iter_mut() {
-    //         if movement_pattern.is_finished() {
-    //             let new_movement_pattern = Box::new(build_move_away(MoveAwayBuilder {
-    //                 repulsion_point: transform.translation,
-    //                 starting_velocity: 0.0,
-    //                 final_velocity: 350.0,
-    //                 time_to_final_velocity: Duration::from_secs(1),
-    //             }));
-    //             let _old_movement_pattern = std::mem::replace(&mut movement_pattern.0, new_movement_pattern);
-    //         }
-    //     }
-    // }
+    println!("phase2_countdown");
+    for (mut timer, name, entity) in timer_query.iter_mut() {
+        if name.as_str() == "Rumia Phase 2 Timer" && timer.0.tick(time.delta()).just_finished() {
+            next_state.set(Spell1State::MoveToPhase3);
+            commands.entity(entity).despawn();
+        }
+    }
+}
+
+fn move_to_phase3_setup(
+    mut rumia_query: Query<(&Boss, &Transform, &mut MovementPatterns)>,
+) {
+    println!("move_to_phase3_setup");
+    for (_boss, transform, mut movement_pattern) in rumia_query.iter_mut() {
+        let start = transform.translation.xy();
+        let destination = Vec2::new(SPAWN_CENTER - 150.0, FRAME_BORDER_TOP - 100.0);
+        *movement_pattern = create_move_to_pattern(start, destination, Duration::from_millis(1500));
+    }
+}
+
+fn wait_for_move_to_phase3(
+    rumia_query: Query<(&Boss, &MovementPatterns)>,
+    mut next_state: ResMut<NextState<Spell1State>>,
+) {
+    println!("wait_for_move_to_phase3");
+    for (_boss, movement_pattern) in rumia_query.iter() {
+        if is_finished(movement_pattern) {
+            next_state.set(Spell1State::Phase3);
+        }
+    }
+}
+
+fn phase3_setup(
+    mut commands: Commands,
+    mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
+    // player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    mut state: ResMut<NextState<Spell1State>>,
+) {
+    println!("phase3_setup");
+    // let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
+    for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
+        set_one_off_animation(&mut animation_indices, 0, 3);
+        commands.spawn((
+            StarburstPattern(
+                Starburst {
+                    bullets: vec![WhiteArrow; 5],
+                    num_lines: 16,
+                    speed_range: (120.0, 200.0),
+                    ..default()
+                },
+                ShotSchedule::default()
+            ),
+            Transform::from_translation(boss_transform.translation),
+        ));
+    }
+    commands.spawn((
+        Name::new("Rumia Phase 3 Timer"),
+        SpellTimer(Timer::from_seconds(1.0, TimerMode::Once)),
+        GameObject,
+    ));
+}
+
+fn phase3_countdown(
+    mut commands: Commands,
+    mut timer_query: Query<(&mut SpellTimer, &Name, Entity)>,
+    time: Res<Time>,
+    mut next_state: ResMut<NextState<Spell1State>>,
+) {
+    println!("phase3_countdown");
+    for (mut timer, name, entity) in timer_query.iter_mut() {
+        if name.as_str() == "Rumia Phase 3 Timer" && timer.0.tick(time.delta()).just_finished() {
+            next_state.set(Spell1State::MoveToPhase1);
+            commands.entity(entity).despawn();
+        }
+    }
+}
+
+fn move_to_phase1_setup(
+    mut rumia_query: Query<(&Boss, &Transform, &mut MovementPatterns)>,
+) {
+    println!("move_to_phase1_setup");
+    for (_boss, transform, mut movement_pattern) in rumia_query.iter_mut() {
+        let start = transform.translation.xy();
+        let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
+        *movement_pattern = create_move_to_pattern(start, destination, Duration::from_millis(1500));
+    }
+}
+
+fn wait_for_move_to_phase1(
+    rumia_query: Query<(&Boss, &MovementPatterns)>,
+    mut next_state: ResMut<NextState<Spell1State>>,
+) {
+    println!("wait_for_move_to_phase1");
+    for (_boss, movement_pattern) in rumia_query.iter() {
+        if is_finished(movement_pattern) {
+            next_state.set(Spell1State::Phase1);
+        }
+    }
 }
