@@ -77,7 +77,6 @@ fn phase1_setup(
     // player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("phase1_setup");
     // let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
@@ -108,7 +107,6 @@ fn phase1_countdown(
     time: Res<Time>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("phase1_countdown");
     for (mut timer, name, entity) in timer_query.iter_mut() {
         if name.as_str() == "Rumia Phase 1 Timer" && timer.0.tick(time.delta()).just_finished() {
             next_state.set(Spell1State::MoveToPhase2);
@@ -120,7 +118,6 @@ fn phase1_countdown(
 fn move_to_phase2_setup(
     mut rumia_query: Query<(&Boss, &Transform, &mut MovementPatterns)>,
 ) {
-    println!("move_to_phase2_setup");
     for (_boss, transform, mut movement_pattern) in rumia_query.iter_mut() {
         let start = transform.translation.xy();
         let destination = Vec2::new(SPAWN_CENTER, SPAWN_TOP - 100.0);
@@ -132,7 +129,6 @@ fn wait_for_move_to_phase2(
     rumia_query: Query<(&Boss, &MovementPatterns)>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("wait_for_move_to_phase2");
     for (_boss, movement_pattern) in rumia_query.iter() {
         if is_finished(movement_pattern) {
             next_state.set(Spell1State::Phase2);
@@ -144,7 +140,6 @@ fn phase2_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
 ) {
-    println!("phase2_setup");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
         let waves = [
@@ -187,7 +182,6 @@ fn phase2_countdown(
     time: Res<Time>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("phase2_countdown");
     for (mut timer, name, entity) in timer_query.iter_mut() {
         if name.as_str() == "Rumia Phase 2 Timer" && timer.0.tick(time.delta()).just_finished() {
             next_state.set(Spell1State::MoveToPhase3);
@@ -199,7 +193,6 @@ fn phase2_countdown(
 fn move_to_phase3_setup(
     mut rumia_query: Query<(&Boss, &Transform, &mut MovementPatterns)>,
 ) {
-    println!("move_to_phase3_setup");
     for (_boss, transform, mut movement_pattern) in rumia_query.iter_mut() {
         let start = transform.translation.xy();
         let destination = Vec2::new(SPAWN_CENTER - 150.0, FRAME_BORDER_TOP - 100.0);
@@ -211,7 +204,6 @@ fn wait_for_move_to_phase3(
     rumia_query: Query<(&Boss, &MovementPatterns)>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("wait_for_move_to_phase3");
     for (_boss, movement_pattern) in rumia_query.iter() {
         if is_finished(movement_pattern) {
             next_state.set(Spell1State::Phase3);
@@ -225,7 +217,6 @@ fn phase3_setup(
     // player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("phase3_setup");
     // let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
@@ -255,7 +246,6 @@ fn phase3_countdown(
     time: Res<Time>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("phase3_countdown");
     for (mut timer, name, entity) in timer_query.iter_mut() {
         if name.as_str() == "Rumia Phase 3 Timer" && timer.0.tick(time.delta()).just_finished() {
             next_state.set(Spell1State::MoveToPhase1);
@@ -267,7 +257,6 @@ fn phase3_countdown(
 fn move_to_phase1_setup(
     mut rumia_query: Query<(&Boss, &Transform, &mut MovementPatterns)>,
 ) {
-    println!("move_to_phase1_setup");
     for (_boss, transform, mut movement_pattern) in rumia_query.iter_mut() {
         let start = transform.translation.xy();
         let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
@@ -279,7 +268,6 @@ fn wait_for_move_to_phase1(
     rumia_query: Query<(&Boss, &MovementPatterns)>,
     mut next_state: ResMut<NextState<Spell1State>>,
 ) {
-    println!("wait_for_move_to_phase1");
     for (_boss, movement_pattern) in rumia_query.iter() {
         if is_finished(movement_pattern) {
             next_state.set(Spell1State::Phase1);
