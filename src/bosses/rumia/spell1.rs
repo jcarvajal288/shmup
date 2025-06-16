@@ -31,7 +31,8 @@ pub enum Spell1State {
 pub fn spell1_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(LevelState::None), reset_spell1)
-        .add_systems(OnEnter(RumiaState::Spell1), phase1_setup)
+        .add_systems(OnEnter(RumiaState::Spell1), enter_spell1)
+        .add_systems(OnEnter(Spell1State::Phase1), phase1_setup)
         .add_systems(Update, phase1_countdown
             .run_if(in_state(Spell1State::Phase1)))
 
@@ -62,6 +63,12 @@ pub fn reset_spell1(
     mut state: ResMut<NextState<Spell1State>>,
 ) {
     state.set(Spell1State::Inactive);
+}
+
+fn enter_spell1(
+    mut state: ResMut<NextState<Spell1State>>,
+) {
+    state.set(Spell1State::Phase1);
 }
 
 fn phase1_setup(
