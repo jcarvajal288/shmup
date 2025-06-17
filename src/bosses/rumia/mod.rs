@@ -8,6 +8,7 @@ use crate::level1::FirstLevelState;
 use crate::movement_patterns::{is_finished, MovementPatterns};
 use bevy::prelude::*;
 use std::time::Duration;
+use crate::bosses::boss_health_bar::{spawn_boss_health_bar, BossHealthBar};
 use crate::movement_patterns::decelerate::create_move_to_pattern;
 use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 
@@ -20,7 +21,7 @@ pub enum RumiaState {
 
 pub fn rumia_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(FirstLevelState::Rumia), rumia_setup)
+        .add_systems(OnEnter(FirstLevelState::Rumia), (rumia_setup, spawn_boss_health_bar))
         .add_systems(Update, rumia_orchestrator)
         .add_systems(OnEnter(RumiaState::Inactive), rumia_cleanup)
         .add_plugins(spell1_plugin)
@@ -31,6 +32,7 @@ pub fn rumia_plugin(app: &mut App) {
 pub fn rumia_setup(
     mut commands: Commands,
 ) {
+    println!("setup");
     let start = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
     let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
     commands.spawn((
@@ -43,6 +45,13 @@ pub fn rumia_setup(
         },
         SpawnTimer(Timer::from_seconds(1.0, TimerMode::Once)),
         GameObject,
+    ));
+    commands.spawn((
+        BossHealthBar {
+            current: 100,
+            maximum: 100,
+        },
+        GameObject
     ));
 }
 
