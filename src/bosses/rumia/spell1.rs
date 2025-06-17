@@ -1,16 +1,18 @@
 use crate::bosses::boss::{Boss};
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType;
-use crate::bullet::BulletType::{BlueRimmedCircle, WhiteArrow};
+use crate::bullet::BulletType::{BlueRimmedCircle, RedRimmedCircle, WhiteArrow};
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::bullet_patterns::starburst::Starburst;
 use crate::bullet_patterns::BulletPatterns::StarburstPattern;
-use crate::game::{GameObject, LevelState, FRAME_BORDER_TOP};
+use crate::game::{angle_to_transform, GameObject, LevelState, FRAME_BORDER_TOP};
 use crate::movement_patterns::decelerate::create_move_to_pattern;
 use crate::movement_patterns::{is_finished, MovementPatterns};
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use bevy::prelude::*;
 use std::time::Duration;
+use crate::enemy::Enemy;
+use crate::player::Player;
 use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 
 #[derive(Component)]
@@ -74,18 +76,20 @@ fn enter_spell1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
-    // player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
+    player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    // let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
+    let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
+        let angle = angle_to_transform(*boss_transform, player_transform);
         commands.spawn((
             StarburstPattern(
                 Starburst {
                     bullets: vec![BlueRimmedCircle; 5],
                     num_lines: 16,
                     speed_range: (120.0, 200.0),
+                    angle,
                     ..default()
                 },
                 ShotSchedule::default()
@@ -214,18 +218,19 @@ fn wait_for_move_to_phase3(
 fn phase3_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
-    // player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
-    mut state: ResMut<NextState<Spell1State>>,
+    player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
 ) {
-    // let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
+    let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
+        let angle = angle_to_transform(*boss_transform, player_transform);
         set_one_off_animation(&mut animation_indices, 0, 3);
         commands.spawn((
             StarburstPattern(
                 Starburst {
-                    bullets: vec![WhiteArrow; 5],
+                    bullets: vec![RedRimmedCircle; 5],
                     num_lines: 16,
                     speed_range: (120.0, 200.0),
+                    angle,
                     ..default()
                 },
                 ShotSchedule::default()

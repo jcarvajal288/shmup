@@ -41,6 +41,7 @@ pub struct Sprites {
 
     pub bullet_white_arrow: Sprite,
     pub bullet_blue_rimmed_circle: Sprite,
+    pub bullet_red_rimmed_circle: Sprite,
     pub bullet_small_red_circle: Sprite,
     pub bullet_small_yellow_circle: Sprite,
     pub bullet_small_green_circle: Sprite,
@@ -115,6 +116,7 @@ pub fn load_sprites(
 
     sprites.bullet_white_arrow = get_bullet_sprite(&images, 0, 0, 0, 1, 16);
     sprites.bullet_blue_rimmed_circle = get_bullet_sprite(&images, 0, 0, 5, 2, 16);
+    sprites.bullet_red_rimmed_circle = get_bullet_sprite(&images, 0, 0, 2, 2, 16);
     sprites.bullet_small_red_circle = get_bullet_sprite(&images, 0, 240, 1, 0, 8);
     sprites.bullet_small_yellow_circle = get_bullet_sprite(&images, 0, 240, 4, 1, 8);
     sprites.bullet_small_green_circle = get_bullet_sprite(&images, 0, 240, 2, 1, 8);

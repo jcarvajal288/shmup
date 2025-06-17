@@ -5,6 +5,7 @@ use crate::bullet_patterns::BulletPatterns;
 use crate::movement_patterns::MovementPatterns::StraightLinePattern;
 use bevy::math::Rot2;
 use bevy::prelude::{default, EventWriter, Timer, TimerMode, Transform};
+use crate::game::angle_to_transform;
 use crate::movement_patterns::straight_line::create_straight_line_pattern;
 
 pub struct ShootAtPlayer {
@@ -29,12 +30,11 @@ impl ShootAtPlayer {
         player_transform: &Transform,
         bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>,
     ) {
-        let diff = player_transform.translation.truncate() - origin.translation.truncate();
-        let angle = diff.y.atan2(diff.x);
+        let angle = angle_to_transform(*origin, *player_transform);
         bullet_spawn_events.send(BulletSpawnEvent {
             bullet_type: self.bullet_type,
             position: origin.translation.truncate(),
-            movement_pattern: create_straight_line_pattern(Rot2::radians(angle), self.speed),
+            movement_pattern: create_straight_line_pattern(angle, self.speed),
             ..default()
         });
     }

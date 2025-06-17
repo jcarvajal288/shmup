@@ -20,6 +20,7 @@ pub struct BulletProps {
 pub enum BulletType {
     WhiteArrow,
     BlueRimmedCircle,
+    RedRimmedCircle,
     SmallRedCircle,
     SmallYellowCircle,
     SmallGreenCircle,
@@ -114,6 +115,7 @@ fn sprite_for_bullet_type(bullet_type: &BulletType, sprites: &Sprites) -> Sprite
     match bullet_type {
         BulletType::WhiteArrow => sprites.bullet_white_arrow.clone(),
         BulletType::BlueRimmedCircle => sprites.bullet_blue_rimmed_circle.clone(),
+        BulletType::RedRimmedCircle => sprites.bullet_red_rimmed_circle.clone(),
         BulletType::SmallRedCircle => sprites.bullet_small_red_circle.clone(),
         BulletType::SmallYellowCircle => sprites.bullet_small_yellow_circle.clone(),
         BulletType::SmallGreenCircle => sprites.bullet_small_green_circle.clone(),
