@@ -9,7 +9,6 @@ use crate::resources::sprites::{AnimatedSprite, Sprites};
 use crate::resources;
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
-use crate::bullet::BulletSpawnEvent;
 use crate::bullet_patterns::shoot_at_player::ShootAtPlayer;
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::movement_patterns::straight_line::StraightLine;
@@ -106,12 +105,12 @@ pub fn check_shot_enemy_collision(
     shot_query: Query<(&PlayerShot, &Transform, &Sprite, Entity)>,
 ) {
     for (mut enemy, enemy_sprite, enemy_transform) in enemy_query.iter_mut() {
+        // TODO: turn this into a box to account for different x and y
+        let enemy_hit_circle = BoundingCircle::new(
+            enemy_transform.translation.truncate(),
+            enemy_sprite.sprite_size.x as f32 / 2.0
+        );
         for (shot, shot_transform, shot_sprite, shot_entity) in shot_query.iter() {
-            // TODO: turn this into a box to account for different x and y
-            let enemy_hit_circle = BoundingCircle::new(
-                enemy_transform.translation.truncate(),
-                enemy_sprite.sprite_size.x as f32 / 2.0
-            );
             let shot_hit_box = Aabb2d::new(
                 shot_transform.translation.truncate(),
                 shot_sprite.rect.unwrap().half_size(),

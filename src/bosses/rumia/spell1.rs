@@ -1,4 +1,4 @@
-use crate::bosses::boss::Boss;
+use crate::bosses::boss::{check_boss_being_shot, Boss};
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType;
 use crate::bullet::BulletType::{BlueRimmedCircle, RedRimmedCircle};
@@ -14,6 +14,7 @@ use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 use bevy::prelude::*;
 use std::time::Duration;
+use crate::bosses::boss_health_bar::listen_for_boss_damage;
 
 #[derive(Component)]
 struct SpellTimer(Timer);
@@ -35,6 +36,7 @@ pub fn spell1_plugin(app: &mut App) {
         .add_systems(OnEnter(LevelState::None), reset_spell1)
         .add_systems(OnEnter(RumiaState::Spell1), enter_spell1)
         .add_systems(OnEnter(Spell1State::Phase1), phase1_setup)
+        .add_systems(Update, (check_boss_being_shot, listen_for_boss_damage))
         .add_systems(Update, phase1_countdown
             .run_if(in_state(Spell1State::Phase1)))
 

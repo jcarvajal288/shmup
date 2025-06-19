@@ -1,6 +1,6 @@
 pub mod spell1;
 
-use crate::bosses::boss::{Boss, BossSpawner};
+use crate::bosses::boss::{check_boss_being_shot, Boss, BossSpawner};
 use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
 use crate::enemy::EnemyType::Rumia;
 use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP};
@@ -8,7 +8,7 @@ use crate::level1::FirstLevelState;
 use crate::movement_patterns::{is_finished, MovementPatterns};
 use bevy::prelude::*;
 use std::time::Duration;
-use crate::bosses::boss_health_bar::{spawn_boss_health_bar, BossHealthBar};
+use crate::bosses::boss_health_bar::{listen_for_boss_damage, spawn_boss_health_bar, BossHealthBar};
 use crate::movement_patterns::decelerate::create_move_to_pattern;
 use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 
@@ -32,7 +32,6 @@ pub fn rumia_plugin(app: &mut App) {
 pub fn rumia_setup(
     mut commands: Commands,
 ) {
-    println!("setup");
     let start = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
     let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
     commands.spawn((
