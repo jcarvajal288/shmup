@@ -1,16 +1,16 @@
 pub mod spell1;
 
-use crate::bosses::boss::{check_boss_being_shot, Boss, BossSpawner};
+use crate::bosses::boss::{Boss, BossSpawner};
+use crate::bosses::boss_health_bar::{spawn_boss_health_bar, BossHealthBar};
 use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
 use crate::enemy::EnemyType::Rumia;
 use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP};
 use crate::level1::FirstLevelState;
+use crate::movement_patterns::decelerate::create_move_to_pattern;
 use crate::movement_patterns::{is_finished, MovementPatterns};
+use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 use bevy::prelude::*;
 use std::time::Duration;
-use crate::bosses::boss_health_bar::{listen_for_boss_damage, spawn_boss_health_bar, BossHealthBar};
-use crate::movement_patterns::decelerate::create_move_to_pattern;
-use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum RumiaState {
@@ -67,7 +67,12 @@ pub fn rumia_orchestrator(
 }
 
 fn rumia_cleanup(
+    mut commands: Commands,
     mut state: ResMut<NextState<Spell1State>>,
+    mut health_bar_query: Query<Entity, With<BossHealthBar>>,
 ) {
     state.set(Spell1State::Inactive);
+    for entity in health_bar_query.iter() {
+        commands.entity(entity).try_despawn();
+    }
 }

@@ -1,6 +1,6 @@
 use bevy::asset::{Assets, Handle};
 use bevy::color::Color;
-use bevy::prelude::{Commands, Component, Event, EventReader, Mesh, Mesh2d, MeshMaterial2d, Query, Rectangle, ResMut, Transform};
+use bevy::prelude::{Commands, Component, Event, EventReader, Mesh, Mesh2d, MeshMaterial2d, Query, Rectangle, ResMut, Transform, With};
 use bevy::sprite::ColorMaterial;
 use crate::game::{FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::player::PlayerContinueEvent;
@@ -12,8 +12,11 @@ pub struct BossHealthBar {
     pub maximum: i32,
 }
 
+#[derive(Component)]
+pub struct BossHealthBarBundle;
+
 #[derive(Event)]
-pub struct BossDamageEvent;
+pub struct BossDamageEvent(pub i32);
 
 pub fn spawn_boss_health_bar(
     mut commands: Commands,
@@ -26,14 +29,32 @@ pub fn spawn_boss_health_bar(
         Mesh2d(bar_mesh_handle),
         MeshMaterial2d(materials.add(Color::hsl(1.0, 0.5, 0.5))),
         Transform::from_xyz(SPAWN_CENTER, FRAME_BORDER_TOP, 1.0),
+        BossHealthBarBundle
     ));
+}
+
+pub fn scale_boss_health_bar(
+    boss_health_bar_query: Query<&BossHealthBar>,
+    mut render_bundle_query: Query<&mut Transform, With<BossHealthBarBundle>>,
+) {
+    for health_bar in boss_health_bar_query.iter() {
+        for mut transform in render_bundle_query.iter_mut() {
+            //println!("{}/{}", health_bar.current, health_bar.maximum);
+            transform.scale.x = health_bar.current as f32 / health_bar.maximum as f32;
+        }
+    }
 }
 
 pub fn listen_for_boss_damage(
     mut boss_damage_event_reader: EventReader<BossDamageEvent>,
-    mut boss_health_bar_query: Query<&BossHealthBar>,
+    mut boss_health_bar_query: Query<&mut BossHealthBar>,
 ) {
     for event in boss_damage_event_reader.read() {
-        println!("boss damaged");
+        for mut health_bar in boss_health_bar_query.iter_mut() {
+            health_bar.current -= event.0;
+            if health_bar.current < 0 {
+                health_bar.current = 0;
+            }
+        }
     }
 }

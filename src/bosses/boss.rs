@@ -1,5 +1,5 @@
 use std::f32::consts::PI;
-use std::ops::Range;
+use std::ops::{Div, Range};
 use bevy::math::bounding::{Aabb2d, IntersectsVolume};
 use crate::enemy::EnemyType;
 use crate::game::{GameObject, SpawnTimer};
@@ -7,11 +7,12 @@ use crate::movement_patterns::{get_lateral_movement, is_finished, run_movement_p
 use crate::resources::sprites::{set_next_animation, AnimatedSprite, AnimationIndices, Sprites};
 use crate::resources::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
-use crate::bosses::boss_health_bar::BossDamageEvent;
+use crate::bosses::boss_health_bar::{listen_for_boss_damage, scale_boss_health_bar, BossDamageEvent};
 use crate::movement_patterns::MovementPatterns::{DontMovePattern};
 use crate::player::PlayerShot;
 
 const UP_DOWN_MOVEMENT_BRACKET: Range<f32> = 5.0 * PI / 12.0 .. 7.0 * PI / 12.0;
+
 
 #[derive(Component)]
 pub struct Boss;
@@ -94,15 +95,15 @@ pub fn check_boss_being_shot(
     for (boss_transform, boss_sprite) in boss_query.iter() {
         let boss_hit_box = Aabb2d::new(
             boss_transform.translation.truncate(),
-            boss_sprite.sprite_size.as_vec2(),
+            boss_sprite.sprite_size.as_vec2().div(2.0),
         );
-        for (_shot, shot_transform, shot_sprite, shot_entity) in shot_query.iter() {
+        for (shot, shot_transform, shot_sprite, shot_entity) in shot_query.iter() {
             let shot_hit_box = Aabb2d::new(
                 shot_transform.translation.truncate(),
                 shot_sprite.rect.unwrap().half_size(),
             );
             if boss_hit_box.intersects(&shot_hit_box) {
-                boss_damage_event_writer.send(BossDamageEvent);
+                boss_damage_event_writer.send(BossDamageEvent(shot.damage));
                 commands.entity(shot_entity).try_despawn();
             }
         }
