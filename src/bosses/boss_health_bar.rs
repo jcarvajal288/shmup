@@ -1,6 +1,6 @@
 use bevy::asset::{Assets, Handle};
 use bevy::color::Color;
-use bevy::prelude::{Commands, Component, Event, EventReader, Mesh, Mesh2d, MeshMaterial2d, Query, Rectangle, ResMut, Transform, With};
+use bevy::prelude::{Commands, Component, Entity, Event, EventReader, Mesh, Mesh2d, MeshMaterial2d, Query, Rectangle, ResMut, Transform, With};
 use bevy::sprite::ColorMaterial;
 use crate::game::{FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT, FRAME_BORDER_TOP};
 use crate::player::PlayerContinueEvent;
@@ -33,13 +33,21 @@ pub fn spawn_boss_health_bar(
     ));
 }
 
+pub fn despawn_boss_health_bar(
+    mut commands: Commands,
+    mut health_bar_query: Query<Entity, With<BossHealthBarBundle>>
+) {
+    for entity in health_bar_query.iter() {
+        commands.entity(entity).try_despawn();
+    }
+}
+
 pub fn scale_boss_health_bar(
     boss_health_bar_query: Query<&BossHealthBar>,
     mut render_bundle_query: Query<&mut Transform, With<BossHealthBarBundle>>,
 ) {
     for health_bar in boss_health_bar_query.iter() {
         for mut transform in render_bundle_query.iter_mut() {
-            //println!("{}/{}", health_bar.current, health_bar.maximum);
             transform.scale.x = health_bar.current as f32 / health_bar.maximum as f32;
         }
     }

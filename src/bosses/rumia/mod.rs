@@ -21,7 +21,7 @@ pub enum RumiaState {
 
 pub fn rumia_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(FirstLevelState::Rumia), (rumia_setup, spawn_boss_health_bar))
+        .add_systems(OnEnter(FirstLevelState::Rumia), rumia_setup)
         .add_systems(Update, rumia_orchestrator)
         .add_systems(OnEnter(RumiaState::Inactive), rumia_cleanup)
         .add_plugins(spell1_plugin)
