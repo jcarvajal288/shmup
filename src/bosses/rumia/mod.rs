@@ -1,8 +1,10 @@
 pub mod spell1;
+mod spell2;
 
 use crate::bosses::boss::{Boss, BossSpawner};
-use crate::bosses::boss_health_bar::{spawn_boss_health_bar, BossHealthBar};
+use crate::bosses::boss_health_bar::BossHealthBar;
 use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
+use crate::bosses::rumia::spell2::spell2_plugin;
 use crate::enemy::EnemyType::Rumia;
 use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP};
 use crate::level1::FirstLevelState;
@@ -17,6 +19,7 @@ pub enum RumiaState {
     #[default]
     Inactive,
     Spell1,
+    Spell2,
 }
 
 pub fn rumia_plugin(app: &mut App) {
@@ -25,6 +28,7 @@ pub fn rumia_plugin(app: &mut App) {
         .add_systems(Update, rumia_orchestrator)
         .add_systems(OnEnter(RumiaState::Inactive), rumia_cleanup)
         .add_plugins(spell1_plugin)
+        .add_plugins(spell2_plugin)
         .init_state::<RumiaState>()
     ;
 }
@@ -55,13 +59,26 @@ pub fn rumia_setup(
 }
 
 pub fn rumia_orchestrator(
+    mut commands: Commands,
     boss_query: Query<(&Boss, &MovementPatterns)>,
     rumia_state: Res<State<RumiaState>>,
     mut rumia_next_state: ResMut<NextState<RumiaState>>,
+    health_bar_query: Query<(&BossHealthBar, Entity)>,
 ) {
     for (_boss, movement_pattern) in boss_query.iter() {
         if *rumia_state.get() == RumiaState::Inactive && is_finished(movement_pattern) {
             rumia_next_state.set(RumiaState::Spell1);
+        }
+    }
+    for (health_bar, entity) in health_bar_query.iter() {
+        if health_bar.current <= 0 {
+            match *rumia_state.get() {
+                RumiaState::Spell1 => {
+                    rumia_next_state.set(RumiaState::Spell2)
+                },
+                _ => {}
+            }
+            commands.entity(entity).try_despawn();
         }
     }
 }
