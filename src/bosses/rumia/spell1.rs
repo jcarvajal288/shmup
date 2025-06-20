@@ -33,7 +33,6 @@ pub enum Spell1State {
 
 pub fn spell1_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(LevelState::None), reset_spell1)
         .add_systems(OnEnter(RumiaState::Spell1), (enter_spell1, spawn_boss_health_bar))
         .add_systems(Update, (check_boss_being_shot, listen_for_boss_damage, scale_boss_health_bar))
         .add_systems(OnEnter(Spell1State::Phase1), phase1_setup)
@@ -60,7 +59,8 @@ pub fn spell1_plugin(app: &mut App) {
         .add_systems(Update, wait_for_move_to_phase1
             .run_if(in_state(Spell1State::MoveToPhase1)))
         .add_systems(OnEnter(Spell1State::Inactive), despawn_boss_health_bar)
-        .add_systems(OnEnter(RumiaState::Spell2), reset_spell1)
+        .add_systems(OnExit(LevelState::Level1), reset_spell1)
+        .add_systems(OnExit(RumiaState::Spell1), reset_spell1)
         .init_state::<Spell1State>()
     ;
 }

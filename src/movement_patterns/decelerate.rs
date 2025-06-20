@@ -50,7 +50,9 @@ impl MovementPattern for Decelerate {
     }
 
     fn is_finished(&self) -> bool {
-        !(self.current_speed > self.final_speed  + 0.5)
+        // println!("Current Speed: {}", self.current_speed);
+        // println!("Final Speed: {}", self.final_speed);
+        !(self.current_speed > self.final_speed  + 1.0)
     }
 }
 
