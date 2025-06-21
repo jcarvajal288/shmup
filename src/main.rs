@@ -25,6 +25,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use resources::images::{load_images, Images};
 use resources::sprites::{load_sprites, Sprites};
 use crate::menus::pause_menu::pause_menu_plugin;
+use rand_core::RngCore;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
@@ -86,6 +87,7 @@ fn main() {
             game_over_menu_plugin,
             pause_menu_plugin,
         ))
+        // .add_plugins(EntropyPlugin::<WyRand>::default())
         // .add_plugins(WorldInspectorPlugin::new())
         .run();
 }

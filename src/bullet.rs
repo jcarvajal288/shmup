@@ -1,11 +1,10 @@
-use std::time::Duration;
+use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
 use crate::game::{is_in_playfield, GameObject, SpawnTimer};
 use crate::movement_patterns::MovementPatterns::DontMovePattern;
 use crate::movement_patterns::{run_movement_pattern, DontMove, MovementPatterns};
+use crate::player::Player;
 use crate::resources::sprites::Sprites;
 use bevy::prelude::*;
-use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
-use crate::player::Player;
 
 #[derive(Component)]
 pub struct Bullet {

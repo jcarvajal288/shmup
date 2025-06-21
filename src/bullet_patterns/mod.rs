@@ -1,13 +1,14 @@
 pub mod starburst;
 pub mod shoot_at_player;
 pub mod shot_schedule;
+pub mod shotgun;
 
 use crate::bullet::BulletSpawnEvent;
 use crate::bullet_patterns::shoot_at_player::ShootAtPlayer;
+use crate::bullet_patterns::shotgun::Shotgun;
 use crate::bullet_patterns::starburst::Starburst;
-use crate::bullet_patterns::BulletPatterns::{ShootAtPlayerPattern, StarburstPattern};
+use crate::bullet_patterns::BulletPatterns::{ShootAtPlayerPattern, ShotgunPattern, StarburstPattern};
 use bevy::prelude::{Component, EventWriter, Res, Time, Transform};
-use dyn_clone::DynClone;
 use shot_schedule::ShotSchedule;
 
 pub const ENDLESS: i32 = -1;
@@ -16,6 +17,7 @@ pub const ENDLESS: i32 = -1;
 pub enum BulletPatterns {
     ShootAtPlayerPattern(ShootAtPlayer, ShotSchedule),
     StarburstPattern(Starburst, ShotSchedule),
+    ShotgunPattern(Shotgun, ShotSchedule),
 }
 
 pub fn fire_bullet_pattern(
@@ -32,6 +34,10 @@ pub fn fire_bullet_pattern(
         }
         StarburstPattern(starburst, shot_schedule) => {
             let fire = || starburst.fire(origin, bullet_spawn_events);
+            run_schedule(fire, shot_schedule, time);
+        }
+        ShotgunPattern(shotgun, shot_schedule) => {
+            let fire = || shotgun.fire(origin, bullet_spawn_events);
             run_schedule(fire, shot_schedule, time);
         }
     }

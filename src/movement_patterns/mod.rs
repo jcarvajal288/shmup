@@ -8,7 +8,6 @@ use crate::movement_patterns::straight_line::StraightLine;
 use crate::movement_patterns::MovementPatterns::{DeceleratePattern, DontMovePattern, SineWavePattern, StraightLinePattern};
 use bevy::math::{Quat, Vec3};
 use bevy::prelude::{Component, Mut, Res, Time, Transform};
-use dyn_clone::DynClone;
 use std::f32::consts::PI;
 
 #[derive(Component, Clone, PartialEq)]
