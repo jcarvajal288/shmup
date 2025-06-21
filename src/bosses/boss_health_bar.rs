@@ -25,7 +25,6 @@ pub fn spawn_boss_health_bar(
 ) {
     let health_bar_width = FRAME_BORDER_RIGHT - FRAME_BORDER_LEFT;
     let bar_mesh_handle: Handle<Mesh> = meshes.add(Rectangle::new(health_bar_width, 5.0));
-    println!("spawn");
     commands.spawn((
         Mesh2d(bar_mesh_handle),
         MeshMaterial2d(materials.add(Color::hsl(1.0, 0.5, 0.5))),
@@ -39,7 +38,6 @@ pub fn despawn_boss_health_bar(
     mut health_bar_query: Query<Entity, With<BossHealthBarBundle>>
 ) {
     for entity in health_bar_query.iter() {
-        println!("despawn");
         commands.entity(entity).try_despawn();
     }
 }

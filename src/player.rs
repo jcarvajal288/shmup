@@ -183,6 +183,7 @@ pub fn fire_shot(
                 sprites.blue_fang_shot.clone(),
                 Transform::from_xyz(transform.translation.x, transform.translation.y, 0.4)
                     .with_rotation(Quat::from_rotation_z(shot_angle)),
+                GameObject,
             ));
             shot_timer.0.reset();
         }

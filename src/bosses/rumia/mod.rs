@@ -1,8 +1,8 @@
 pub mod spell1;
-mod spell2;
+pub mod spell2;
 
 use crate::bosses::boss::{Boss, BossSpawner};
-use crate::bosses::boss_health_bar::BossHealthBar;
+use crate::bosses::boss_health_bar::{despawn_boss_health_bar, BossHealthBar};
 use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
 use crate::bosses::rumia::spell2::spell2_plugin;
 use crate::enemy::EnemyType::Rumia;
@@ -25,8 +25,8 @@ pub enum RumiaState {
 pub fn rumia_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(FirstLevelState::Rumia), rumia_setup)
-        .add_systems(Update, rumia_orchestrator)
-        .add_systems(OnEnter(RumiaState::Inactive), rumia_cleanup)
+        .add_systems(Update, rumia_orchestrator.run_if(in_state(FirstLevelState::Rumia)))
+        .add_systems(OnEnter(RumiaState::Inactive), (rumia_cleanup, despawn_boss_health_bar))
         .add_plugins(spell1_plugin)
         .add_plugins(spell2_plugin)
         .init_state::<RumiaState>()
@@ -37,16 +37,15 @@ pub fn rumia_setup(
     mut commands: Commands,
 ) {
     let start = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
-    let destination = Vec2::new(SPAWN_CENTER + 150.0, FRAME_BORDER_TOP - 100.0);
     commands.spawn((
         Name::new("RumiaSpawner"),
         BossSpawner {
             name: "Rumia",
             enemy_type: Rumia,
             starting_position: start,
-            movement_pattern: create_move_to_pattern(start, destination, Duration::from_millis(1500)),
+            ..default()
         },
-        SpawnTimer(Timer::from_seconds(1.0, TimerMode::Once)),
+        SpawnTimer(Timer::from_seconds(0.0, TimerMode::Once)),
         GameObject,
     ));
     commands.spawn((
@@ -83,13 +82,8 @@ pub fn rumia_orchestrator(
     }
 }
 
-fn rumia_cleanup(
-    mut commands: Commands,
+pub fn rumia_cleanup(
     mut state: ResMut<NextState<Spell1State>>,
-    mut health_bar_query: Query<Entity, With<BossHealthBar>>,
 ) {
     state.set(Spell1State::Inactive);
-    for entity in health_bar_query.iter() {
-        commands.entity(entity).try_despawn();
-    }
 }
