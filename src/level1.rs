@@ -13,7 +13,7 @@ use crate::GameState;
 use bevy::prelude::*;
 use std::f32::consts::PI;
 use std::time::Duration;
-use crate::bullet_patterns::shoot_at_player::shoot_at_player_pattern;
+use crate::bullet_patterns::single_shot::single_shot_at_player;
 use crate::movement_patterns::decelerate::create_decelerate_pattern;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
@@ -49,7 +49,7 @@ fn level1_setup(
                 enemy_type: BlueFairy,
                 starting_position: Vec2::new(SPAWN_OUTSIDE_LEFT, SPAWN_TOP),
                 movement_pattern: create_straight_line_pattern(Rot2::degrees(315.0), 100.0),
-                bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
+                bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
             },
             spawn_delay.create_timer_and_increment(0.4),
             GameObject,
@@ -67,7 +67,7 @@ fn level1_setup(
                 enemy_type: BlueFairy,
                 starting_position,
                 movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 400.0, 20.0, Duration::from_secs(2)),
-                bullet_pattern: shoot_at_player_pattern(WhiteArrow, 200.0, 0.5, ENDLESS),
+                bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
             },
             spawn_delay.create_timer_and_increment(0.2),
             GameObject,
