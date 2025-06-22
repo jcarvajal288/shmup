@@ -17,7 +17,7 @@ use std::time::Duration;
 use bevy::time::Timer;
 use crate::bullet::BulletType::RedRimmedCircle;
 use crate::bullet_patterns::BulletPatterns::ShotgunPattern;
-use crate::bullet_patterns::ENDLESS;
+use crate::bullet_patterns::{Target, ENDLESS};
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::bullet_patterns::shotgun::Shotgun;
 
@@ -87,8 +87,8 @@ fn phase1_setup(
                     bullets: vec![RedRimmedCircle; 25],
                     spread: PI / 8.0,
                     speed_range: (100.0, 200.0),
-                    angle,
                 },
+                Target::Player,
                 ShotSchedule {
                     // interval is being treated as delay
                     interval: Timer::new(Duration::from_millis(1500), TimerMode::Once),
