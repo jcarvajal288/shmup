@@ -28,6 +28,15 @@ pub enum Target {
     Angle(Rot2),
 }
 
+impl Target {
+    pub fn get_angle(&self, origin: &Transform, player_transform: &Transform) -> Rot2 {
+        match self {
+            Target::Player => angle_to_transform(*origin, *player_transform),
+            Target::Angle(rot2) => *rot2,
+        }
+    }
+}
+
 pub fn fire_bullet_pattern(
     bullet_pattern: &mut BulletPatterns,
     time: &Res<Time>,
@@ -45,10 +54,7 @@ pub fn fire_bullet_pattern(
             run_schedule(fire, shot_schedule, time);
         }
         ShotgunPattern(shotgun, target, shot_schedule) => {
-            let angle = match target {
-                Target::Player => angle_to_transform(*origin, *player_transform),
-                Target::Angle(rot2) => *rot2,
-            };
+            let angle = target.get_angle(origin, player_transform);
             let fire = || shotgun.fire(origin, angle, bullet_spawn_events);
             run_schedule(fire, shot_schedule, time);
         }

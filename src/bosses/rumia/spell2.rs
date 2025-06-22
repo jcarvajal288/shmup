@@ -74,13 +74,10 @@ fn wait_for_move_to_phase1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
-    player_transform_query: Query<&Transform, (With<Player>, Without<Enemy>)>,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
-    let player_transform: Transform = *player_transform_query.get_single().expect("Error: could not find player transform.");
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
-        let angle = angle_to_transform(*boss_transform, player_transform);
         commands.spawn((
             ShotgunPattern(
                 Shotgun {
