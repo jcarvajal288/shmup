@@ -74,7 +74,6 @@ fn wait_for_move_to_phase1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
-    mut state: ResMut<NextState<Spell1State>>,
 ) {
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
@@ -87,7 +86,6 @@ fn phase1_setup(
                 },
                 Target::Player,
                 ShotSchedule {
-                    // interval is being treated as delay
                     interval: Timer::new(Duration::from_millis(1500), TimerMode::Once),
                     repetitions: ENDLESS,
                     ..default()

@@ -66,7 +66,10 @@ pub fn fire_bullet_pattern(
 fn run_schedule<F>(mut fire: F, shot_schedule: &mut ShotSchedule, time: &Res<Time>)
 where F: FnMut()
 {
-    if shot_schedule.delay.tick(time.delta()).finished() {
+    if shot_schedule.delay.tick(time.delta()).just_finished() {
+        fire();
+        return;
+    } else if shot_schedule.delay.tick(time.delta()).finished() {
         if shot_schedule.repetitions != 0 {
             if shot_schedule.interval.tick(time.delta()).just_finished() {
                 fire();
