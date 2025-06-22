@@ -3,7 +3,7 @@ use crate::bullet::BulletType::*;
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::bullet_patterns::starburst::Starburst;
 use crate::bullet_patterns::BulletPatterns::StarburstPattern;
-use crate::bullet_patterns::ENDLESS;
+use crate::bullet_patterns::{Target, ENDLESS};
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
 use crate::game::{GameObject, LevelState, FRAME_BORDER_LEFT, FRAME_BORDER_RIGHT};
@@ -91,9 +91,9 @@ fn level1_setup(
                         num_lines: 6,
                         speed_range: (200.0, 400.0),
                         spread: PI,
-                        angle: Rot2::degrees(-90.0),
                         ..default()
                     },
+                    Target::Angle(Rot2::degrees(-90.0)),
                     ShotSchedule {
                         delay: Timer::from_seconds(0.5, TimerMode::Once),
                         interval: Timer::from_seconds(1.0, TimerMode::Once),
@@ -120,9 +120,9 @@ fn level1_setup(
                         num_lines: 6,
                         speed_range: (200.0, 400.0),
                         spread: PI,
-                        angle: Rot2::degrees(90.0),
                         ..default()
                     },
+                    Target::Angle(Rot2::degrees(90.0)),
                     ShotSchedule {
                         delay: Timer::from_seconds(0.5, TimerMode::Once),
                         interval: Timer::from_seconds(1.0, TimerMode::Once),

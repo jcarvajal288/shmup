@@ -10,7 +10,6 @@ pub struct Starburst {
     pub spread: f32,
     pub speed_range: (f32, f32),
     pub offset: f32,
-    pub angle: Rot2,
 }
 
 impl Default for Starburst {
@@ -21,7 +20,6 @@ impl Default for Starburst {
             spread: 2.0 * PI,
             speed_range: (0.0, 0.0),
             offset: 0.0,
-            angle: Rot2::degrees(270.0),
         }
     }
 }
@@ -29,14 +27,14 @@ impl Default for Starburst {
 
 impl Starburst {
 
-    pub fn fire(&self, origin: &Transform, bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>) {
+    pub fn fire(&self, origin: &Transform, angle: Rot2, bullet_spawn_events: &mut EventWriter<BulletSpawnEvent>) {
         let speed_increment = (self.speed_range.1 - self.speed_range.0) / self.bullets.len() as f32;
         let speeds = (0..self.bullets.len()).map(|i| {
             self.speed_range.0 + (i as f32 * speed_increment)
         }).collect::<Vec<f32>>();
         let step_size = self.spread / self.num_lines as f32;
         let angles = (0..self.num_lines + 1).map(|i: usize| {
-            self.angle.as_radians() - PI + (i as f32 * step_size) + self.offset
+            angle.as_radians() - PI + (i as f32 * step_size) + self.offset
         }).collect::<Vec<f32>>();
         for (bullet_type, speed) in self.bullets.iter()
             .zip(speeds.iter())

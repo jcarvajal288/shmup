@@ -18,7 +18,7 @@ pub const ENDLESS: i32 = -1;
 #[derive(Component)]
 pub enum BulletPatterns {
     SingleShotPattern(SingleShot, Target, ShotSchedule),
-    StarburstPattern(Starburst, ShotSchedule),
+    StarburstPattern(Starburst, Target, ShotSchedule),
     ShotgunPattern(Shotgun, Target, ShotSchedule),
 }
 
@@ -50,8 +50,9 @@ pub fn fire_bullet_pattern(
             let fire = || shoot_at_player.fire(origin, angle, bullet_spawn_events);
             run_schedule(fire, shot_schedule, time);
         }
-        StarburstPattern(starburst, shot_schedule) => {
-            let fire = || starburst.fire(origin, bullet_spawn_events);
+        StarburstPattern(starburst, target, shot_schedule) => {
+            let angle = target.get_angle(origin, player_transform);
+            let fire = || starburst.fire(origin, angle, bullet_spawn_events);
             run_schedule(fire, shot_schedule, time);
         }
         ShotgunPattern(shotgun, target, shot_schedule) => {
