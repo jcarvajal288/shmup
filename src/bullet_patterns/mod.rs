@@ -25,6 +25,7 @@ pub enum BulletPatterns {
 #[derive(Component)]
 pub enum Target {
     Player,
+    Down,
     Angle(Rot2),
 }
 
@@ -32,6 +33,7 @@ impl Target {
     pub fn get_angle(&self, origin: &Transform, player_transform: &Transform) -> Rot2 {
         match self {
             Target::Player => angle_to_transform(*origin, *player_transform),
+            Target::Down => Rot2::degrees(-270.0),
             Target::Angle(rot2) => *rot2,
         }
     }
@@ -68,7 +70,6 @@ where F: FnMut()
 {
     if shot_schedule.delay.tick(time.delta()).just_finished() {
         fire();
-        return;
     } else if shot_schedule.delay.tick(time.delta()).finished() {
         if shot_schedule.repetitions != 0 {
             if shot_schedule.interval.tick(time.delta()).just_finished() {
