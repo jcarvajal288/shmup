@@ -4,7 +4,7 @@ pub mod spell2;
 use crate::bosses::boss::{Boss, BossSpawner};
 use crate::bosses::boss_health_bar::{despawn_boss_health_bar, BossHealthBar};
 use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
-use crate::bosses::rumia::spell2::spell2_plugin;
+use crate::bosses::rumia::spell2::{spell2_plugin, Spell2State};
 use crate::enemy::EnemyType::Rumia;
 use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP};
 use crate::level1::FirstLevelState;
@@ -83,7 +83,9 @@ pub fn rumia_orchestrator(
 }
 
 pub fn rumia_cleanup(
-    mut state: ResMut<NextState<Spell1State>>,
+    mut spell1_state: ResMut<NextState<Spell1State>>,
+    mut spell2_state: ResMut<NextState<Spell2State>>,
 ) {
-    state.set(Spell1State::Inactive);
+    spell1_state.set(Spell1State::Inactive);
+    spell2_state.set(Spell2State::Inactive);
 }
