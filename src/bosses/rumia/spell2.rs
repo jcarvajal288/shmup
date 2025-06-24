@@ -1,5 +1,5 @@
-use crate::bosses::boss::Boss;
-use crate::bosses::boss_health_bar::spawn_boss_health_bar;
+use crate::bosses::boss::{check_boss_being_shot, Boss};
+use crate::bosses::boss_health_bar::{listen_for_boss_damage, scale_boss_health_bar, spawn_boss_health_bar};
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType::{BlueRimmedCircle, RedRimmedCircle};
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
@@ -30,6 +30,7 @@ pub enum Spell2State {
 pub fn spell2_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(RumiaState::Spell2), enter_spell2)
+        .add_systems(Update, (check_boss_being_shot, listen_for_boss_damage, scale_boss_health_bar))
         .add_systems(Update, wait_for_move_to_phase1
             .run_if(in_state(Spell2State::MoveToPhase1)))
 
