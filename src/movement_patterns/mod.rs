@@ -7,7 +7,7 @@ use crate::movement_patterns::sine_wave::SineWave;
 use crate::movement_patterns::straight_line::StraightLine;
 use crate::movement_patterns::MovementPatterns::{DeceleratePattern, DontMovePattern, SineWavePattern, StraightLinePattern};
 use bevy::math::{Quat, Vec3};
-use bevy::prelude::{Component, Mut, Res, Time, Transform};
+use bevy::prelude::{Component, Res, Time, Transform};
 use std::f32::consts::PI;
 
 #[derive(Component, Clone, PartialEq)]

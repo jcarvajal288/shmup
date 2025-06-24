@@ -1,7 +1,10 @@
+use std::f32::consts::PI;
 use crate::enemy::{EnemyDeathEvent, EnemyType};
 use crate::resources::sprites::Sprites;
 use bevy::color::Alpha;
+use bevy::math::Quat;
 use bevy::prelude::{Commands, Component, DespawnRecursiveExt, Entity, EventReader, Query, Res, Sprite, Time, Transform, Vec3, With};
+use rand::Rng;
 
 #[derive(Component)]
 pub struct ExplosionEffect;
@@ -11,14 +14,25 @@ pub fn create_effects_on_enemy_death(
     sprites: Res<Sprites>,
     mut enemy_death_events: EventReader<EnemyDeathEvent>,
 ) {
+    let mut rng = rand::rng();
     for event in enemy_death_events.read() {
         let explosion_sprite = match event.enemy_type {
             EnemyType::BlueFairy => sprites.effect_blue_explosion.clone(),
             EnemyType::Rumia => sprites.effect_blue_explosion.clone(),
         };
         commands.spawn((
-            explosion_sprite,
+            explosion_sprite.clone(),
             Transform::from_translation(event.position).with_scale(Vec3::splat(0.0)),
+            ExplosionEffect,
+        ));
+        let x = rng.random_range(0.5..1.5);
+        let y = rng.random_range(0.5..1.5);
+        let z = rng.random_range(0.5..1.5);
+        commands.spawn((
+            explosion_sprite,
+            Transform::from_translation(event.position)
+                .with_scale(Vec3::new(0.0, 0.0, 0.0))
+                .with_rotation(Quat::from_axis_angle(Vec3::new(x, y, z), PI / 4.0)),
             ExplosionEffect,
         ));
     }
