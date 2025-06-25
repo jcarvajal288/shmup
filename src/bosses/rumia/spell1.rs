@@ -5,7 +5,7 @@ use crate::bullet::BulletType;
 use crate::bullet::BulletType::{BlueRimmedCircle, RedRimmedCircle};
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
 use crate::bullet_patterns::starburst::Starburst;
-use crate::bullet_patterns::BulletPatterns::StarburstPattern;
+use crate::bullet_patterns::BulletPattern::StarburstPattern;
 use crate::bullet_patterns::Target;
 use crate::game::{GameObject, LevelState, FRAME_BORDER_TOP};
 use crate::movement_patterns::decelerate::create_move_to_pattern;

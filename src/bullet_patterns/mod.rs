@@ -8,7 +8,7 @@ use crate::bullet::BulletSpawnEvent;
 use crate::bullet_patterns::single_shot::SingleShot;
 use crate::bullet_patterns::shotgun::Shotgun;
 use crate::bullet_patterns::starburst::Starburst;
-use crate::bullet_patterns::BulletPatterns::{SingleShotPattern, ShotgunPattern, StarburstPattern};
+use crate::bullet_patterns::BulletPattern::{SingleShotPattern, ShotgunPattern, StarburstPattern};
 use bevy::prelude::{Component, EventWriter, Res, Time, Transform};
 use shot_schedule::ShotSchedule;
 use crate::game::angle_to_transform;
@@ -16,7 +16,7 @@ use crate::game::angle_to_transform;
 pub const ENDLESS: i32 = -1;
 
 #[derive(Component)]
-pub enum BulletPatterns {
+pub enum BulletPattern {
     SingleShotPattern(SingleShot, Target, ShotSchedule),
     StarburstPattern(Starburst, Target, ShotSchedule),
     ShotgunPattern(Shotgun, Target, ShotSchedule),
@@ -40,7 +40,7 @@ impl Target {
 }
 
 pub fn fire_bullet_pattern(
-    bullet_pattern: &mut BulletPatterns,
+    bullet_pattern: &mut BulletPattern,
     time: &Res<Time>,
     origin: &Transform,
     player_transform: &Transform,

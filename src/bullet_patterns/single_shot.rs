@@ -1,7 +1,7 @@
 use crate::bullet::{BulletSpawnEvent, BulletType};
 use crate::bullet_patterns::shot_schedule::ShotSchedule;
-use crate::bullet_patterns::BulletPatterns::SingleShotPattern;
-use crate::bullet_patterns::{BulletPatterns, Target};
+use crate::bullet_patterns::BulletPattern::SingleShotPattern;
+use crate::bullet_patterns::{BulletPattern, Target};
 use crate::movement_patterns::MovementPatterns::StraightLinePattern;
 use bevy::math::Rot2;
 use bevy::prelude::{default, EventWriter, Timer, TimerMode, Transform};
@@ -44,7 +44,7 @@ pub fn single_shot_at_player(
     speed: f32,
     interval_secs: f32,
     repetitions: i32,
-) -> BulletPatterns {
+) -> BulletPattern {
     SingleShotPattern(
         SingleShot {
             bullet_type,

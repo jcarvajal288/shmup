@@ -2,7 +2,8 @@ use bevy::math::Rot2;
 use bevy::prelude::{EventWriter, ResMut, Transform};
 use crate::bullet::{BulletSpawnEvent, BulletType};
 use rand::Rng;
-use crate::bullet_patterns::Target;
+use crate::bullet_patterns::{BulletPattern, Target};
+use crate::bullet_patterns::BulletPattern::ShotgunPattern;
 use crate::movement_patterns::straight_line::create_straight_line_pattern;
 
 pub struct Shotgun {

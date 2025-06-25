@@ -1,4 +1,4 @@
-use crate::bullet_patterns::{fire_bullet_pattern, BulletPatterns};
+use crate::bullet_patterns::{fire_bullet_pattern, BulletPattern};
 use crate::game::{is_in_playfield, GameObject, SpawnTimer};
 use crate::movement_patterns::MovementPatterns::DontMovePattern;
 use crate::movement_patterns::{run_movement_pattern, DontMove, MovementPatterns};
@@ -126,7 +126,7 @@ fn sprite_for_bullet_type(bullet_type: &BulletType, sprites: &Sprites) -> Sprite
 pub fn fire_bullet_patterns(
     time: Res<Time>,
     player_transform_query: Query<&Transform, With<Player>>,
-    mut enemy_query: Query<(&mut BulletPatterns, &mut Transform), Without<Player>>,
+    mut enemy_query: Query<(&mut BulletPattern, &mut Transform), Without<Player>>,
     mut bullet_spawn_events: EventWriter<BulletSpawnEvent>,
 ) {
     for (player_transform) in player_transform_query.iter() {

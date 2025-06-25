@@ -2,10 +2,10 @@ use crate::bosses::boss::{check_boss_being_shot, Boss};
 use crate::bosses::boss_health_bar::{listen_for_boss_damage, scale_boss_health_bar, spawn_boss_health_bar};
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType::{BlueRimmedCircle, RedRimmedCircle};
-use crate::bullet_patterns::shot_schedule::ShotSchedule;
+use crate::bullet_patterns::shot_schedule::create_shot_schedule;
 use crate::bullet_patterns::shotgun::Shotgun;
 use crate::bullet_patterns::starburst::Starburst;
-use crate::bullet_patterns::BulletPatterns::{ShotgunPattern, StarburstPattern};
+use crate::bullet_patterns::BulletPattern::{ShotgunPattern, StarburstPattern};
 use crate::bullet_patterns::{Target, ENDLESS};
 use crate::game::LevelState;
 use crate::movement_patterns::decelerate::create_move_to_pattern;
@@ -14,8 +14,7 @@ use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 use bevy::app::App;
 use bevy::math::{Vec2, Vec3Swizzles};
-use bevy::prelude::{default, in_state, AppExtStates, Commands, IntoSystemConfigs, NextState, OnEnter, OnExit, Query, ResMut, States, TimerMode, Transform, Update};
-use bevy::time::Timer;
+use bevy::prelude::{default, in_state, AppExtStates, Commands, IntoSystemConfigs, NextState, OnEnter, OnExit, Query, ResMut, States, Transform, Update};
 use std::f32::consts::PI;
 use std::time::Duration;
 
@@ -84,11 +83,7 @@ fn phase1_setup(
                     speed_range: (200.0, 300.0),
                 },
                 Target::Player,
-                ShotSchedule {
-                    interval: Timer::new(Duration::from_millis(1500), TimerMode::Once),
-                    repetitions: ENDLESS,
-                    delay: Timer::from_seconds(1.5, TimerMode::Once)
-                },
+                create_shot_schedule(1.5, 1.5, ENDLESS),
             ),
             Transform::from_translation(boss_transform.translation),
         ));
@@ -101,11 +96,7 @@ fn phase1_setup(
                     ..default()
                 },
                 Target::Down,
-                ShotSchedule {
-                    interval: Timer::from_seconds(5.0, TimerMode::Once),
-                    repetitions: ENDLESS,
-                    ..default()
-                },
+                create_shot_schedule(0.0, 5.0, ENDLESS),
             ),
             Transform::from_translation(boss_transform.translation),
         ));

@@ -1,8 +1,8 @@
 use crate::bosses::rumia::{rumia_plugin, RumiaState};
 use crate::bullet::BulletType::*;
-use crate::bullet_patterns::shot_schedule::ShotSchedule;
+use crate::bullet_patterns::shot_schedule::{create_shot_schedule, ShotSchedule};
 use crate::bullet_patterns::starburst::Starburst;
-use crate::bullet_patterns::BulletPatterns::StarburstPattern;
+use crate::bullet_patterns::BulletPattern::{ShotgunPattern, StarburstPattern};
 use crate::bullet_patterns::{Target, ENDLESS};
 use crate::enemy::EnemyType::*;
 use crate::enemy::{Enemy, EnemySpawner};
@@ -13,6 +13,7 @@ use crate::GameState;
 use bevy::prelude::*;
 use std::f32::consts::PI;
 use std::time::Duration;
+use crate::bullet_patterns::shotgun::Shotgun;
 use crate::bullet_patterns::single_shot::single_shot_at_player;
 use crate::movement_patterns::decelerate::create_decelerate_pattern;
 
@@ -48,8 +49,16 @@ fn level1_setup(
             enemy_type: BigFairy,
             hit_points: 25,
             starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP),
-            movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 100.0),
-            bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
+            movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 30.0),
+            bullet_pattern: ShotgunPattern(
+                Shotgun {
+                    bullets: vec![RedRimmedCircle; 5],
+                    spread: PI / 12.0,
+                    speed_range: (150.0, 200.0),
+                },
+                Target::Player,
+                create_shot_schedule(1.0, 1.0, ENDLESS),
+            ),
         },
         spawn_delay.create_timer_and_increment(1.0),
         GameObject,
@@ -110,11 +119,7 @@ fn level1_setup(
                         ..default()
                     },
                     Target::Angle(Rot2::degrees(-90.0)),
-                    ShotSchedule {
-                        delay: Timer::from_seconds(0.5, TimerMode::Once),
-                        interval: Timer::from_seconds(1.0, TimerMode::Once),
-                        repetitions: ENDLESS,
-                    }
+                    create_shot_schedule(0.5, 1.0, ENDLESS),
                 ),
                 ..default()
             },

@@ -1,5 +1,5 @@
-use crate::bullet_patterns::BulletPatterns::SingleShotPattern;
-use crate::bullet_patterns::{BulletPatterns, Target};
+use crate::bullet_patterns::BulletPattern::SingleShotPattern;
+use crate::bullet_patterns::{BulletPattern, Target};
 use crate::enemy::EnemyType::*;
 use crate::game::{GameObject, SpawnTimer};
 use crate::movement_patterns::MovementPatterns::StraightLinePattern;
@@ -33,7 +33,7 @@ pub struct EnemySpawner {
     pub hit_points: i32,
     pub starting_position: Vec2,
     pub movement_pattern: MovementPatterns,
-    pub bullet_pattern: BulletPatterns,
+    pub bullet_pattern: BulletPattern,
 }
 
 impl Default for EnemySpawner {
