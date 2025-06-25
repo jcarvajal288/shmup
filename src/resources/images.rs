@@ -9,6 +9,7 @@ pub struct Images {
     pub sidebar: Handle<Image>,
     pub remilia: Handle<Image>,
     pub fairies: Handle<Image>,
+    pub big_fairy: Handle<Image>,
     pub player_accessories: Handle<Image>,
     pub rumia: Handle<Image>,
     pub effects: Handle<Image>,
@@ -22,6 +23,7 @@ pub fn load_images(mut images: ResMut<Images>, asset_server: Res<AssetServer>) {
     images.sidebar = asset_server.load("images/sidebar.png");
     images.remilia = asset_server.load("images/remilia.png");
     images.fairies = asset_server.load("images/fairies1.png");
+    images.big_fairy = asset_server.load("images/big-fairy.png");
     images.player_accessories = asset_server.load("images/player-accessories.png");
     images.rumia = asset_server.load("images/rumia.png");
     images.effects = asset_server.load("images/effects.png");

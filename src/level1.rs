@@ -41,6 +41,20 @@ fn level1_setup(
 ) {
     let mut spawn_delay = SpawnTimeTracker::default();
 
+    commands.spawn((
+        Name::new("EnemySpawner"),
+        EnemySpawner {
+            name: "Big Fairy",
+            enemy_type: BigFairy,
+            hit_points: 25,
+            starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP),
+            movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 100.0),
+            bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
+        },
+        spawn_delay.create_timer_and_increment(1.0),
+        GameObject,
+    ));
+
     for _ in 0..5 {
         commands.spawn((
             Name::new("EnemySpawner"),
@@ -50,6 +64,7 @@ fn level1_setup(
                 starting_position: Vec2::new(SPAWN_OUTSIDE_LEFT, SPAWN_TOP),
                 movement_pattern: create_straight_line_pattern(Rot2::degrees(315.0), 100.0),
                 bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
+                ..default()
             },
             spawn_delay.create_timer_and_increment(0.4),
             GameObject,
@@ -68,6 +83,7 @@ fn level1_setup(
                 starting_position,
                 movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 400.0, 20.0, Duration::from_secs(2)),
                 bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
+                ..default()
             },
             spawn_delay.create_timer_and_increment(0.2),
             GameObject,
@@ -100,6 +116,7 @@ fn level1_setup(
                         repetitions: ENDLESS,
                     }
                 ),
+                ..default()
             },
             spawn_delay.create_timer_and_increment(0.4),
             GameObject,
@@ -129,6 +146,7 @@ fn level1_setup(
                         repetitions: ENDLESS,
                     }
                 ),
+                ..default()
             },
             spawn_delay_2.create_timer_and_increment(0.4),
             GameObject,

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use crate::enemy::EnemyType;
-use crate::enemy::EnemyType::{BlueFairy, Rumia};
+use crate::enemy::EnemyType::{BlueFairy, BigFairy, Rumia};
 use crate::resources::images::Images;
 
 #[derive(Component, Clone, Default)]
@@ -36,6 +36,7 @@ pub struct Sprites {
     pub red_fairy: AnimatedSprite,
     pub green_fairy: AnimatedSprite,
     pub yellow_fairy: AnimatedSprite,
+    pub big_fairy: AnimatedSprite,
 
     pub rumia: AnimatedSprite,
 
@@ -95,6 +96,7 @@ pub fn load_sprites(
     load_sprite_sheet(images.fairies.clone(), &mut sprites.red_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 12, 15);
     load_sprite_sheet(images.fairies.clone(), &mut sprites.green_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 24, 27);
     load_sprite_sheet(images.fairies.clone(), &mut sprites.yellow_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 36, 39);
+    load_sprite_sheet(images.big_fairy.clone(), &mut sprites.big_fairy, &mut texture_atlas_layouts, 64, 64, 4, 3, 0, 3);
     load_sprite_sheet(images.rumia.clone(), &mut sprites.rumia, &mut texture_atlas_layouts, 32, 48, 5, 2, 0, 0);
 
     sprites.player_spell_text = Sprite {
@@ -217,6 +219,7 @@ fn load_sprite_sheet(
 pub fn get_sprite_for_enemy_type(sprites: &Res<Sprites>, enemy_type: &EnemyType) -> AnimatedSprite {
     match enemy_type {
         BlueFairy => sprites.blue_fairy.clone(),
+        BigFairy => sprites.big_fairy.clone(),
         Rumia => sprites.rumia.clone(),
     }
 }

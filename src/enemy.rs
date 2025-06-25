@@ -22,6 +22,7 @@ pub struct Enemy {
 #[derive(Clone)]
 pub enum EnemyType {
     BlueFairy,
+    BigFairy,
     Rumia,
 }
 
@@ -29,6 +30,7 @@ pub enum EnemyType {
 pub struct EnemySpawner {
     pub name: &'static str,
     pub enemy_type: EnemyType,
+    pub hit_points: i32,
     pub starting_position: Vec2,
     pub movement_pattern: MovementPatterns,
     pub bullet_pattern: BulletPatterns,
@@ -39,6 +41,7 @@ impl Default for EnemySpawner {
         Self {
             name: "Enemy",
             enemy_type: BlueFairy,
+            hit_points: 5,
             starting_position: Vec2::default(),
             movement_pattern: StraightLinePattern(StraightLine::default()),
             bullet_pattern: SingleShotPattern(SingleShot::default(), Target::Player, ShotSchedule::default())
@@ -62,7 +65,7 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
         Name::new(enemy_spawner.name),
         Enemy {
             enemy_type: enemy_spawner.enemy_type.clone(),
-            hit_points: 5,
+            hit_points: enemy_spawner.hit_points,
         },
         Transform::from_xyz(enemy_spawner.starting_position.x, enemy_spawner.starting_position.y, 0.6),
         animated_sprite.clone(),

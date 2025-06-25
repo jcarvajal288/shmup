@@ -18,6 +18,7 @@ pub fn create_effects_on_enemy_death(
     for event in enemy_death_events.read() {
         let explosion_sprite = match event.enemy_type {
             EnemyType::BlueFairy => sprites.effect_blue_explosion.clone(),
+            EnemyType::BigFairy => sprites.effect_blue_explosion.clone(),
             EnemyType::Rumia => sprites.effect_blue_explosion.clone(),
         };
         commands.spawn((
@@ -25,14 +26,14 @@ pub fn create_effects_on_enemy_death(
             Transform::from_translation(event.position).with_scale(Vec3::splat(0.0)),
             ExplosionEffect,
         ));
-        let x = rng.random_range(0.5..1.5);
-        let y = rng.random_range(0.5..1.5);
-        let z = rng.random_range(0.5..1.5);
+        // let x = rng.random_range(0.0..1.5);
+        // let y = rng.random_range(0.0..1.5);
+        let rotation = rng.random_range(0.0..2.0 * PI);
         commands.spawn((
             explosion_sprite,
             Transform::from_translation(event.position)
                 .with_scale(Vec3::new(0.0, 0.0, 0.0))
-                .with_rotation(Quat::from_axis_angle(Vec3::new(x, y, z), PI / 4.0)),
+                .with_rotation(Quat::from_axis_angle(Vec3::new(0.5, 1.5, 0.0), rotation)),
             ExplosionEffect,
         ));
     }
