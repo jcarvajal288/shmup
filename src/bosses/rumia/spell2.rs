@@ -1,5 +1,5 @@
 use crate::bosses::boss::{check_boss_being_shot, Boss};
-use crate::bosses::boss_health_bar::{listen_for_boss_damage, scale_boss_health_bar, spawn_boss_health_bar};
+use crate::bosses::boss_health_bar::{listen_for_boss_damage, scale_boss_health_bar, spawn_boss_health_bar, BossHealthBar};
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType::{BlueRimmedCircle, RedRimmedCircle};
 use crate::bullet_patterns::shot_schedule::create_shot_schedule;
@@ -7,7 +7,7 @@ use crate::bullet_patterns::shotgun::Shotgun;
 use crate::bullet_patterns::starburst::Starburst;
 use crate::bullet_patterns::BulletPattern::{ShotgunPattern, StarburstPattern};
 use crate::bullet_patterns::{Target, ENDLESS};
-use crate::game::LevelState;
+use crate::game::{GameObject, LevelState};
 use crate::movement_patterns::decelerate::create_move_to_pattern;
 use crate::movement_patterns::{is_finished, MovementPatterns};
 use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
@@ -17,6 +17,7 @@ use bevy::math::{Vec2, Vec3Swizzles};
 use bevy::prelude::{default, in_state, AppExtStates, Commands, IntoSystemConfigs, NextState, OnEnter, OnExit, Query, ResMut, States, Transform, Update};
 use std::f32::consts::PI;
 use std::time::Duration;
+use bevy::core::Name;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum Spell2State {
@@ -29,14 +30,15 @@ pub enum Spell2State {
 pub fn spell2_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(RumiaState::Spell2), enter_spell2)
-        .add_systems(Update, (check_boss_being_shot, listen_for_boss_damage, scale_boss_health_bar))
+        .add_systems(Update, (check_boss_being_shot, listen_for_boss_damage, scale_boss_health_bar)
+            .run_if(in_state(RumiaState::Spell2)))
         .add_systems(Update, wait_for_move_to_phase1
             .run_if(in_state(Spell2State::MoveToPhase1)))
 
         .add_systems(OnEnter(Spell2State::Phase1), (phase1_setup, spawn_boss_health_bar))
 
-        .add_systems(OnExit(RumiaState::Spell2), reset_spell2)
         .add_systems(OnExit(LevelState::Level1), reset_spell2)
+        .add_systems(OnExit(RumiaState::Spell2), reset_spell2)
         .init_state::<Spell2State>()
     ;
 }
@@ -72,10 +74,12 @@ fn wait_for_move_to_phase1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
+    mut boss_health_bar_query: Query<&mut BossHealthBar>,
 ) {
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
         commands.spawn((
+            Name::new("Phase 2 Shotgun Pattern"),
             ShotgunPattern(
                 Shotgun {
                     bullets: vec![RedRimmedCircle; 25],
@@ -86,8 +90,10 @@ fn phase1_setup(
                 create_shot_schedule(1.5, 1.5, ENDLESS),
             ),
             Transform::from_translation(boss_transform.translation),
+            GameObject,
         ));
         commands.spawn((
+            Name::new("Phase 2 Starburst Pattern"),
             StarburstPattern(
                 Starburst {
                     bullets: vec![BlueRimmedCircle; 5],
@@ -99,6 +105,10 @@ fn phase1_setup(
                 create_shot_schedule(0.0, 5.0, ENDLESS),
             ),
             Transform::from_translation(boss_transform.translation),
+            GameObject,
         ));
+        for mut health_bar in boss_health_bar_query.iter_mut() {
+            health_bar.current = health_bar.maximum;
+        }
     }
 }

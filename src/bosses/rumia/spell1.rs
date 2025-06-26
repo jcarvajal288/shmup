@@ -33,7 +33,8 @@ pub enum Spell1State {
 pub fn spell1_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(RumiaState::Spell1), (enter_spell1, spawn_boss_health_bar))
-        .add_systems(Update, (check_boss_being_shot, listen_for_boss_damage, scale_boss_health_bar))
+        .add_systems(Update, (check_boss_being_shot, listen_for_boss_damage, scale_boss_health_bar)
+            .run_if(in_state(RumiaState::Spell1)))
         .add_systems(OnEnter(Spell1State::Phase1), phase1_setup)
         .add_systems(Update, phase1_countdown
             .run_if(in_state(Spell1State::Phase1)))
@@ -84,6 +85,7 @@ fn phase1_setup(
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
         commands.spawn((
+            Name::new("Phase 1 Blue Starburst Pattern"),
             StarburstPattern(
                 Starburst {
                     bullets: vec![BlueRimmedCircle; 5],
@@ -95,6 +97,7 @@ fn phase1_setup(
                 ShotSchedule::default()
             ),
             Transform::from_translation(boss_transform.translation),
+            GameObject,
         ));
     }
     commands.spawn((
@@ -155,6 +158,7 @@ fn phase2_setup(
         ];
         for wave in waves {
             commands.spawn((
+                Name::new("Phase 1 Rainbow Starburst Pattern"),
                 StarburstPattern(
                     Starburst {
                         bullets: vec![wave.0],
@@ -170,6 +174,7 @@ fn phase2_setup(
                     }
                 ),
                 Transform::from_translation(boss_transform.translation),
+                GameObject,
             ));
         }
     }
@@ -223,6 +228,7 @@ fn phase3_setup(
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
         commands.spawn((
+            Name::new("Phase 1 Red Starburst Pattern"),
             StarburstPattern(
                 Starburst {
                     bullets: vec![RedRimmedCircle; 5],
@@ -234,6 +240,7 @@ fn phase3_setup(
                 ShotSchedule::default()
             ),
             Transform::from_translation(boss_transform.translation),
+            GameObject,
         ));
     }
     commands.spawn((

@@ -6,13 +6,11 @@ use crate::bosses::boss_health_bar::{despawn_boss_health_bar, BossHealthBar};
 use crate::bosses::rumia::spell1::{spell1_plugin, Spell1State};
 use crate::bosses::rumia::spell2::{spell2_plugin, Spell2State};
 use crate::enemy::EnemyType::Rumia;
-use crate::game::{GameObject, SpawnTimer, FRAME_BORDER_TOP};
+use crate::game::{GameObject, SpawnTimer};
 use crate::level1::FirstLevelState;
-use crate::movement_patterns::decelerate::create_move_to_pattern;
 use crate::movement_patterns::{is_finished, MovementPatterns};
 use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 use bevy::prelude::*;
-use std::time::Duration;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum RumiaState {
@@ -49,6 +47,7 @@ pub fn rumia_setup(
         GameObject,
     ));
     commands.spawn((
+        Name::new("Rumia Health Bar"),
         BossHealthBar {
             current: 100,
             maximum: 100,
@@ -77,7 +76,7 @@ pub fn rumia_orchestrator(
                 },
                 _ => {}
             }
-            commands.entity(entity).try_despawn();
+            //commands.entity(entity).try_despawn();
         }
     }
 }
