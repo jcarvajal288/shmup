@@ -86,7 +86,7 @@ fn main() {
             game_over_menu_plugin,
             pause_menu_plugin,
         ))
-        .add_plugins(WorldInspectorPlugin::new())
+        // .add_plugins(WorldInspectorPlugin::new())
         .run();
 }
 

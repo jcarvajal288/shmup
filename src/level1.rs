@@ -15,7 +15,9 @@ use std::f32::consts::PI;
 use std::time::Duration;
 use crate::bullet_patterns::shotgun::Shotgun;
 use crate::bullet_patterns::single_shot::single_shot_at_player;
+use crate::movement_patterns::curved_line::CurvedLine;
 use crate::movement_patterns::decelerate::create_decelerate_pattern;
+use crate::movement_patterns::MovementPatterns::CurvedLinePattern;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum FirstLevelState {
@@ -42,36 +44,46 @@ fn level1_setup(
 ) {
     let mut spawn_delay = SpawnTimeTracker::default();
 
-    commands.spawn((
-        Name::new("EnemySpawner"),
-        EnemySpawner {
-            name: "Big Fairy",
-            enemy_type: BigFairy,
-            hit_points: 25,
-            starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP),
-            movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 30.0),
-            bullet_pattern: ShotgunPattern(
-                Shotgun {
-                    bullets: vec![RedRimmedCircle; 5],
-                    spread: PI / 12.0,
-                    speed_range: (150.0, 200.0),
-                },
-                Target::Player,
-                create_shot_schedule(1.0, 1.0, ENDLESS),
-            ),
-        },
-        spawn_delay.create_timer_and_increment(1.0),
-        GameObject,
-    ));
+    // commands.spawn((
+    //     Name::new("EnemySpawner"),
+    //     EnemySpawner {
+    //         name: "Big Fairy",
+    //         enemy_type: BigFairy,
+    //         hit_points: 25,
+    //         starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP),
+    //         movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 30.0),
+    //         bullet_pattern: ShotgunPattern(
+    //             Shotgun {
+    //                 bullets: vec![RedRimmedCircle; 5],
+    //                 spread: PI / 12.0,
+    //                 speed_range: (150.0, 200.0),
+    //             },
+    //             Target::Player,
+    //             create_shot_schedule(1.0, 1.0, ENDLESS),
+    //         ),
+    //     },
+    //     spawn_delay.create_timer_and_increment(1.0),
+    //     GameObject,
+    // ));
 
     for _ in 0..5 {
+        let starting_position = Vec2::new(SPAWN_CENTER, SPAWN_TOP);
         commands.spawn((
             Name::new("EnemySpawner"),
             EnemySpawner {
                 name: "Blue Fairy",
                 enemy_type: BlueFairy,
-                starting_position: Vec2::new(SPAWN_OUTSIDE_LEFT, SPAWN_TOP),
-                movement_pattern: create_straight_line_pattern(Rot2::degrees(315.0), 100.0),
+                starting_position,
+                movement_pattern: CurvedLinePattern(
+                    CurvedLine {
+                        speed: 150.0,
+                        distance_before_curve: 100.0,
+                        current_angle: Rot2::degrees(270.0),
+                        max_angle: Rot2::degrees(330.0),
+                        rate_of_change: 0.4,
+                        starting_position,
+                    },
+                ),
                 bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
                 ..default()
             },
