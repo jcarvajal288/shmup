@@ -44,128 +44,46 @@ fn level1_setup(
 ) {
     let mut spawn_delay = SpawnTimeTracker::default();
 
-    // commands.spawn((
-    //     Name::new("EnemySpawner"),
-    //     EnemySpawner {
-    //         name: "Big Fairy",
-    //         enemy_type: BigFairy,
-    //         hit_points: 25,
-    //         starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP),
-    //         movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 30.0),
-    //         bullet_pattern: ShotgunPattern(
-    //             Shotgun {
-    //                 bullets: vec![RedRimmedCircle; 5],
-    //                 spread: PI / 12.0,
-    //                 speed_range: (150.0, 200.0),
-    //             },
-    //             Target::Player,
-    //             create_shot_schedule(1.0, 1.0, ENDLESS),
-    //         ),
-    //     },
-    //     spawn_delay.create_timer_and_increment(1.0),
-    //     GameObject,
-    // ));
-
-    // initial curves
-    for _ in 0..5 {
-        let starting_position = Vec2::new(FRAME_BORDER_LEFT, SPAWN_TOP);
-        commands.spawn((
-            Name::new("EnemySpawner"),
-            EnemySpawner {
-                name: "Blue Fairy",
-                enemy_type: BlueFairy,
-                starting_position,
-                movement_pattern: CurvedLinePattern(
-                    CurvedLine {
-                        speed: 150.0,
-                        distance_before_curve: 100.0,
-                        current_angle: Rot2::degrees(270.0),
-                        max_angle: Rot2::degrees(330.0),
-                        rate_of_change: 0.4,
-                        starting_position,
-                    },
-                ),
-                bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
-                ..default()
-            },
-            spawn_delay.create_timer_and_increment(0.4),
-            GameObject,
-        ));
-    };
-
-    for _ in 0..5 {
-        let starting_position = Vec2::new(FRAME_BORDER_RIGHT, SPAWN_TOP);
-        commands.spawn((
-            Name::new("EnemySpawner"),
-            EnemySpawner {
-                name: "Blue Fairy",
-                enemy_type: BlueFairy,
-                starting_position,
-                movement_pattern: CurvedLinePattern(
-                    CurvedLine {
-                        speed: 150.0,
-                        distance_before_curve: 100.0,
-                        current_angle: Rot2::degrees(270.0),
-                        max_angle: Rot2::degrees(210.0),
-                        rate_of_change: -0.4,
-                        starting_position,
-                    },
-                ),
-                bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
-                ..default()
-            },
-            spawn_delay.create_timer_and_increment(0.4),
-            GameObject,
-        ));
-    };
-    // end initial curves
+    dual_curves(&mut commands, &mut spawn_delay);
+    shotgun_big_fairy(&mut commands, &mut spawn_delay);
 
     spawn_delay.increment(2.0);
 
-    // decelerate lines
-    for _ in 0..2 {
-        let spawn_line_left = horizontal_line(FRAME_BORDER_LEFT, SPAWN_CENTER, SPAWN_TOP, 5);
-        let spawn_line_right = horizontal_line(SPAWN_CENTER, FRAME_BORDER_RIGHT, SPAWN_TOP, 5);
-        for starting_position in spawn_line_left.clone() {
-            commands.spawn((
-                Name::new("EnemySpawner"),
-                EnemySpawner {
-                    name: "Blue Fairy",
-                    enemy_type: BlueFairy,
-                    starting_position,
-                    movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 400.0, 20.0, Duration::from_secs(2)),
-                    bullet_pattern: single_shot_at_player(BlueRimmedCircle, 200.0, 0.5, ENDLESS),
-                    ..default()
-                },
-                spawn_delay.create_timer_and_increment(0.2),
-                GameObject,
-            ));
-        }
-
-        spawn_delay.increment(1.0);
-
-        for starting_position in spawn_line_right.clone() {
-            commands.spawn((
-                Name::new("EnemySpawner"),
-                EnemySpawner {
-                    name: "Blue Fairy",
-                    enemy_type: BlueFairy,
-                    starting_position,
-                    movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 400.0, 20.0, Duration::from_secs(2)),
-                    bullet_pattern: single_shot_at_player(BlueRimmedCircle, 200.0, 0.5, ENDLESS),
-                    ..default()
-                },
-                spawn_delay.create_timer_and_increment(0.2),
-                GameObject,
-            ));
-        }
-    }
-    // end decelerate lines
+    decelerate_lines(&mut commands, &mut spawn_delay);
 
     spawn_delay.increment(2.0);
+
+    starbursts_from_sides(&mut commands, spawn_delay);
+
+    next_state.set(FirstLevelState::PreRumia);
+}
+
+fn shotgun_big_fairy(commands: &mut Commands, mut spawn_delay: &mut SpawnTimeTracker) {
+    commands.spawn((
+        Name::new("EnemySpawner"),
+        EnemySpawner {
+            name: "Big Fairy",
+            enemy_type: BigFairy,
+            hit_points: 25,
+            starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP),
+            movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 30.0),
+            bullet_pattern: ShotgunPattern(
+                Shotgun {
+                    bullets: vec![RedRimmedCircle; 5],
+                    spread: PI / 12.0,
+                    speed_range: (150.0, 200.0),
+                },
+                Target::Player,
+                create_shot_schedule(1.0, 1.0, ENDLESS),
+            ),
+        },
+        spawn_delay.create_timer_and_increment(1.0),
+        GameObject,
+    ));
+}
+
+fn starbursts_from_sides(commands: &mut Commands, mut spawn_delay: SpawnTimeTracker) {
     let mut spawn_delay_2 = spawn_delay.clone();
-
-    // starbursts from sides
     for _ in 0..3 {
         commands.spawn((
             Name::new("EnemySpawner"),
@@ -221,9 +139,100 @@ fn level1_setup(
             GameObject,
         ));
     }
-    // end starbursts from sides
+}
 
-    next_state.set(FirstLevelState::PreRumia);
+fn dual_curves(commands: &mut Commands, mut spawn_delay: &mut SpawnTimeTracker) {
+    for _ in 0..5 {
+        let starting_position = Vec2::new(FRAME_BORDER_LEFT, SPAWN_TOP);
+        commands.spawn((
+            Name::new("EnemySpawner"),
+            EnemySpawner {
+                name: "Blue Fairy",
+                enemy_type: BlueFairy,
+                starting_position,
+                movement_pattern: CurvedLinePattern(
+                    CurvedLine {
+                        speed: 150.0,
+                        distance_before_curve: 100.0,
+                        current_angle: Rot2::degrees(270.0),
+                        max_angle: Rot2::degrees(330.0),
+                        rate_of_change: 0.4,
+                        starting_position,
+                    },
+                ),
+                bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
+                ..default()
+            },
+            spawn_delay.create_timer_and_increment(0.4),
+            GameObject,
+        ));
+    };
+
+    for _ in 0..5 {
+        let starting_position = Vec2::new(FRAME_BORDER_RIGHT, SPAWN_TOP);
+        commands.spawn((
+            Name::new("EnemySpawner"),
+            EnemySpawner {
+                name: "Blue Fairy",
+                enemy_type: BlueFairy,
+                starting_position,
+                movement_pattern: CurvedLinePattern(
+                    CurvedLine {
+                        speed: 150.0,
+                        distance_before_curve: 100.0,
+                        current_angle: Rot2::degrees(270.0),
+                        max_angle: Rot2::degrees(210.0),
+                        rate_of_change: -0.4,
+                        starting_position,
+                    },
+                ),
+                bullet_pattern: single_shot_at_player(WhiteArrow, 200.0, 0.5, ENDLESS),
+                ..default()
+            },
+            spawn_delay.create_timer_and_increment(0.4),
+            GameObject,
+        ));
+    };
+}
+
+fn decelerate_lines(commands: &mut Commands, mut spawn_delay: &mut SpawnTimeTracker) {
+    for _ in 0..2 {
+        let spawn_line_left = horizontal_line(FRAME_BORDER_LEFT, SPAWN_CENTER, SPAWN_TOP, 5);
+        let spawn_line_right = horizontal_line(SPAWN_CENTER, FRAME_BORDER_RIGHT, SPAWN_TOP, 5);
+        for starting_position in spawn_line_left.clone() {
+            commands.spawn((
+                Name::new("EnemySpawner"),
+                EnemySpawner {
+                    name: "Blue Fairy",
+                    enemy_type: BlueFairy,
+                    starting_position,
+                    movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 400.0, 20.0, Duration::from_secs(2)),
+                    bullet_pattern: single_shot_at_player(BlueRimmedCircle, 200.0, 0.5, ENDLESS),
+                    ..default()
+                },
+                spawn_delay.create_timer_and_increment(0.2),
+                GameObject,
+            ));
+        }
+
+        spawn_delay.increment(1.0);
+
+        for starting_position in spawn_line_right.clone() {
+            commands.spawn((
+                Name::new("EnemySpawner"),
+                EnemySpawner {
+                    name: "Blue Fairy",
+                    enemy_type: BlueFairy,
+                    starting_position,
+                    movement_pattern: create_decelerate_pattern(Rot2::degrees(270.0), 400.0, 20.0, Duration::from_secs(2)),
+                    bullet_pattern: single_shot_at_player(BlueRimmedCircle, 200.0, 0.5, ENDLESS),
+                    ..default()
+                },
+                spawn_delay.create_timer_and_increment(0.2),
+                GameObject,
+            ));
+        }
+    }
 }
 
 fn listen_for_rumia_entrance(

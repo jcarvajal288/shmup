@@ -4,11 +4,14 @@ use crate::player_stats::{initialize_player_stats, listen_for_player_continue, l
 use crate::resources::sprites::{animate_sprite, Sprites};
 use crate::GameState;
 use bevy::prelude::*;
+use std::ops::Range;
+use std::f32::consts::PI;
 use crate::bosses::boss::{spawn_bosses, update_bosses};
 use crate::bosses::boss_health_bar::BossDamageEvent;
 use crate::effects::{animate_enemy_death_explosions, create_effects_on_enemy_death};
 use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, move_enemies, spawn_enemies, Enemy, EnemyDeathEvent, EnemySystemSet};
 use crate::level1::{level1_plugin, FirstLevelState};
+use crate::movement_patterns::{is_finished, MovementPatterns};
 use crate::testbed::testbed_plugin;
 
 pub const FRAME_BORDER_LEFT: f32 = -353.0;
@@ -183,4 +186,9 @@ pub fn is_in_playfield(position: Vec2) -> bool {
 pub fn angle_to_transform(origin: Transform, target: Transform) -> Rot2 {
     let diff = target.translation.truncate() - origin.translation.truncate();
     Rot2::radians(diff.y.atan2(diff.x))
+}
+
+pub const UP_DOWN_MOVEMENT_BRACKET: Range<f32> = 5.0 * PI / 12.0 .. 7.0 * PI / 12.0;
+pub fn is_moving_laterally(movement_pattern: Mut<MovementPatterns>, lateral_movement: f32) -> bool {
+    !UP_DOWN_MOVEMENT_BRACKET.contains(&lateral_movement.abs()) && !is_finished(&*movement_pattern)
 }

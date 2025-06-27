@@ -9,6 +9,8 @@ pub struct AnimationIndices {
     pub last: usize,
     pub next_first: usize,
     pub next_last: usize,
+    pub straight_indices: (usize, usize),
+    pub side_indices: (usize, usize),
 }
 
 #[derive(Component, Deref, DerefMut, Default, Clone)]
@@ -91,13 +93,13 @@ pub fn load_sprites(
         ..Default::default()
     };
 
-    load_sprite_sheet(images.remilia.clone(), &mut sprites.remilia, &mut texture_atlas_layouts, 45, 45, 4, 2, 0, 3);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.blue_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 0, 3);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.red_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 12, 15);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.green_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 24, 27);
-    load_sprite_sheet(images.fairies.clone(), &mut sprites.yellow_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, 36, 39);
-    load_sprite_sheet(images.big_fairy.clone(), &mut sprites.big_fairy, &mut texture_atlas_layouts, 64, 64, 4, 3, 0, 3);
-    load_sprite_sheet(images.rumia.clone(), &mut sprites.rumia, &mut texture_atlas_layouts, 32, 48, 5, 2, 0, 0);
+    load_sprite_sheet(images.remilia.clone(), &mut sprites.remilia, &mut texture_atlas_layouts, 45, 45, 4, 2, (0, 3), (8, 11));
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.blue_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, (0, 3), (8, 11));
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.red_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, (12, 15), (20, 23));
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.green_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, (24, 27), (32, 35));
+    load_sprite_sheet(images.fairies.clone(), &mut sprites.yellow_fairy, &mut texture_atlas_layouts, 32, 32, 12, 1, (36, 39), (44, 47));
+    load_sprite_sheet(images.big_fairy.clone(), &mut sprites.big_fairy, &mut texture_atlas_layouts, 64, 64, 4, 3, (0, 3), (8, 11));
+    load_sprite_sheet(images.rumia.clone(), &mut sprites.rumia, &mut texture_atlas_layouts, 32, 48, 5, 2, (0, 0), (5, 5));
 
     sprites.player_spell_text = Sprite {
         image: images.sidebar.clone(),
@@ -177,6 +179,16 @@ pub fn set_one_off_animation(indices: &mut AnimationIndices, new_first: usize, n
     indices.last = new_last;
 }
 
+pub fn use_side_indices(indices: &mut AnimationIndices) {
+    indices.next_first = indices.side_indices.0;
+    indices.next_last = indices.side_indices.1;
+}
+
+pub fn use_straight_indices(indices: &mut AnimationIndices) {
+    indices.next_first = indices.straight_indices.0;
+    indices.next_last = indices.straight_indices.1;
+}
+
 fn next_animation(indices: &mut AnimationIndices) {
     indices.first = indices.next_first;
     indices.last = indices.next_last;
@@ -191,18 +203,20 @@ fn load_sprite_sheet(
     sprite_size_y: u32,
     columns: u32,
     rows: u32,
-    first_index: usize,
-    last_index: usize,
+    straight_indices: (usize, usize),
+    side_indices: (usize, usize),
 ) {
     let sprite_size = UVec2::new(sprite_size_x, sprite_size_y);
     let layout = TextureAtlasLayout::from_grid(sprite_size, columns, rows, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
     let animation_indices = AnimationIndices {
-        first: first_index,
-        last: last_index,
-        next_first: first_index,
-        next_last: last_index,
+        first: straight_indices.0,
+        last: straight_indices.1,
+        next_first: straight_indices.0,
+        next_last: straight_indices.1,
+        straight_indices,
+        side_indices,
     };
     animated_sprite.sprite = Sprite::from_atlas_image(
         texture,

@@ -1,20 +1,16 @@
 use std::f32::consts::PI;
-use std::ops::{Div, Range};
-use std::time::Duration;
+use std::ops::Div;
 use bevy::math::bounding::{Aabb2d, IntersectsVolume};
 use crate::enemy::EnemyType;
 use crate::game::{GameObject, SpawnTimer};
-use crate::movement_patterns::{get_lateral_movement, is_finished, run_movement_pattern, DontMove, MovementPatterns};
+use crate::movement_patterns::{get_lateral_movement, run_movement_pattern, DontMove, MovementPatterns};
 use crate::resources::sprites::{set_next_animation, AnimatedSprite, AnimationIndices, Sprites};
 use crate::resources::sprites::get_sprite_for_enemy_type;
 use bevy::prelude::*;
-use crate::bosses::boss_health_bar::{listen_for_boss_damage, scale_boss_health_bar, BossDamageEvent};
-use crate::movement_patterns::decelerate::create_move_to_pattern;
-use crate::movement_patterns::MovementPatterns::{DontMovePattern};
+use crate::bosses::boss_health_bar::BossDamageEvent;
+use crate::game;
+use crate::movement_patterns::MovementPatterns::DontMovePattern;
 use crate::player::PlayerShot;
-use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
-
-const UP_DOWN_MOVEMENT_BRACKET: Range<f32> = 5.0 * PI / 12.0 .. 7.0 * PI / 12.0;
 
 
 #[derive(Component)]
@@ -62,17 +58,13 @@ pub fn update_bosses(
     for (_boss, mut transform, mut movement_pattern, mut sprite, mut indices) in boss_query.iter_mut() {
         run_movement_pattern(&mut *movement_pattern, &mut *transform, &time, false);
         let lateral_movement = get_lateral_movement(&*movement_pattern);
-        if is_moving_laterally(movement_pattern, lateral_movement) {
+        if game::is_moving_laterally(movement_pattern, lateral_movement) {
             set_next_animation(&mut indices, 5, 5);
         } else {
             set_next_animation(&mut indices, 4, 4);
         }
         sprite.flip_x = lateral_movement >= PI / 2.0;
     }
-}
-
-fn is_moving_laterally(movement_pattern: Mut<MovementPatterns>, lateral_movement: f32) -> bool {
-    !UP_DOWN_MOVEMENT_BRACKET.contains(&lateral_movement.abs()) && !is_finished(&*movement_pattern)
 }
 
 pub fn spawn_bosses(

@@ -1,11 +1,12 @@
+use std::f32::consts::PI;
 use crate::bullet_patterns::BulletPattern::SingleShotPattern;
 use crate::bullet_patterns::{BulletPattern, Target};
 use crate::enemy::EnemyType::*;
-use crate::game::{GameObject, SpawnTimer};
+use crate::game::{is_moving_laterally, GameObject, SpawnTimer, UP_DOWN_MOVEMENT_BRACKET};
 use crate::movement_patterns::MovementPatterns::StraightLinePattern;
-use crate::movement_patterns::{run_movement_pattern, MovementPatterns};
+use crate::movement_patterns::{get_lateral_movement, run_movement_pattern, MovementPatterns};
 use crate::player::PlayerShot;
-use crate::resources::sprites::{AnimatedSprite, Sprites};
+use crate::resources::sprites::{use_side_indices, use_straight_indices, AnimatedSprite, AnimationIndices, Sprites};
 use crate::resources;
 use bevy::math::bounding::{Aabb2d, BoundingCircle, IntersectsVolume};
 use bevy::prelude::*;
@@ -80,10 +81,17 @@ pub fn spawn_enemy(commands: &mut Commands, sprites: &Res<Sprites>, spawner: &mu
 
 pub fn move_enemies(
     time: Res<Time>,
-    mut enemy_query: Query<(&Enemy, &mut MovementPatterns, &mut Transform)>,
+    mut enemy_query: Query<(&mut Sprite, &mut MovementPatterns, &mut Transform, &mut AnimationIndices), With<Enemy>>,
 ) {
-    for (_enemy, mut movement_pattern, mut transform) in enemy_query.iter_mut() {
+    for (mut sprite, mut movement_pattern, mut transform, mut animation_indices) in enemy_query.iter_mut() {
         run_movement_pattern(&mut movement_pattern, &mut transform, &time, false);
+        let lateral_movement = get_lateral_movement(&*movement_pattern);
+        if is_moving_laterally(movement_pattern, lateral_movement) {
+            use_side_indices(&mut animation_indices);
+        } else {
+            use_straight_indices(&mut animation_indices);
+        }
+        sprite.flip_x = f32::abs(lateral_movement) >= UP_DOWN_MOVEMENT_BRACKET.end;
     }
 }
 
