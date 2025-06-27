@@ -23,7 +23,6 @@ pub fn spawn_boss_health_bar(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>
 ) {
-    println!("spawn");
     let health_bar_width = FRAME_BORDER_RIGHT - FRAME_BORDER_LEFT;
     let bar_mesh_handle: Handle<Mesh> = meshes.add(Rectangle::new(health_bar_width, 5.0));
     commands.spawn((
@@ -60,9 +59,7 @@ pub fn listen_for_boss_damage(
     mut boss_health_bar_query: Query<&mut BossHealthBar>,
 ) {
     for event in boss_damage_event_reader.read() {
-        // println!("event");
         for mut health_bar in boss_health_bar_query.iter_mut() {
-            // println!("hit");
             health_bar.current -= event.0;
             if health_bar.current < 0 {
                 health_bar.current = 0;

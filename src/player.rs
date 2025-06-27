@@ -178,7 +178,7 @@ pub fn fire_shot(
                 PlayerShot {
                     speed: 1000.0,
                     angle: shot_angle,
-                    damage: 10,
+                    damage: 2,
                 },
                 sprites.blue_fang_shot.clone(),
                 Transform::from_xyz(transform.translation.x, transform.translation.y, 0.4)
