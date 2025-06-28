@@ -1,5 +1,5 @@
 use crate::bosses::boss::{check_boss_being_shot, Boss};
-use crate::bosses::boss_health_bar::{despawn_boss_health_bar, listen_for_boss_damage, scale_boss_health_bar, spawn_boss_health_bar};
+use crate::bosses::boss_health_bar::{despawn_boss_health_bar, listen_for_boss_damage, scale_boss_health_bar, spawn_boss_health_bar, BossHealthBar};
 use crate::bosses::rumia::RumiaState;
 use crate::bullet::BulletType;
 use crate::bullet::BulletType::{BlueRimmedCircle, RedRimmedCircle};
@@ -72,9 +72,18 @@ pub fn reset_spell1(
 }
 
 fn enter_spell1(
+    mut commands: Commands,
     mut state: ResMut<NextState<Spell1State>>,
 ) {
     state.set(Spell1State::MoveToPhase1);
+    commands.spawn((
+        Name::new("Rumia Spell 1 Health Bar"),
+        BossHealthBar {
+            current: 100,
+            maximum: 100,
+        },
+        GameObject
+    ));
 }
 
 fn phase1_setup(

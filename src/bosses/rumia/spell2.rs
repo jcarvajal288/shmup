@@ -14,10 +14,11 @@ use crate::resources::sprites::{set_one_off_animation, AnimationIndices};
 use crate::spawns::{SPAWN_CENTER, SPAWN_TOP};
 use bevy::app::App;
 use bevy::math::{Vec2, Vec3Swizzles};
-use bevy::prelude::{default, in_state, AppExtStates, Commands, IntoSystemConfigs, NextState, OnEnter, OnExit, Query, ResMut, States, Transform, Update};
+use bevy::prelude::{default, in_state, AppExtStates, Commands, Component, Entity, IntoSystemConfigs, NextState, OnEnter, OnExit, Query, ResMut, States, Transform, Update, With};
 use std::f32::consts::PI;
 use std::time::Duration;
 use bevy::core::Name;
+use crate::bullet::Bullet;
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 pub enum Spell2State {
@@ -26,6 +27,9 @@ pub enum Spell2State {
     MoveToPhase1,
     Phase1,
 }
+
+#[derive(Component)]
+struct RumiaSpell2Object;
 
 pub fn spell2_plugin(app: &mut App) {
     app
@@ -44,9 +48,18 @@ pub fn spell2_plugin(app: &mut App) {
 }
 
 pub fn reset_spell2(
+    mut commands: Commands,
     mut next_state: ResMut<NextState<Spell2State>>,
+    mut spell_query: Query<Entity, With<RumiaSpell2Object>>,
+    mut bullet_query: Query<Entity, With<Bullet>>
 ) {
     next_state.set(Spell2State::Inactive);
+    for entity in spell_query.iter() {
+        commands.entity(entity).try_despawn();
+    }
+    for entity in bullet_query.iter() {
+        commands.entity(entity).try_despawn();
+    }
 }
 
 fn enter_spell2(
@@ -74,7 +87,6 @@ fn wait_for_move_to_phase1(
 fn phase1_setup(
     mut commands: Commands,
     mut rumia_query: Query<(&Boss, &Transform, &mut AnimationIndices)>,
-    mut boss_health_bar_query: Query<&mut BossHealthBar>,
 ) {
     for (_boss, boss_transform, mut animation_indices) in rumia_query.iter_mut() {
         set_one_off_animation(&mut animation_indices, 0, 3);
@@ -91,6 +103,7 @@ fn phase1_setup(
             ),
             Transform::from_translation(boss_transform.translation),
             GameObject,
+            RumiaSpell2Object,
         ));
         commands.spawn((
             Name::new("Phase 2 Starburst Pattern"),
@@ -106,9 +119,16 @@ fn phase1_setup(
             ),
             Transform::from_translation(boss_transform.translation),
             GameObject,
+            RumiaSpell2Object,
         ));
-        for mut health_bar in boss_health_bar_query.iter_mut() {
-            health_bar.current = health_bar.maximum;
-        }
+        commands.spawn((
+            Name::new("Rumia Spell 2 Health Bar"),
+            BossHealthBar {
+                current: 100,
+                maximum: 100,
+            },
+            GameObject,
+            RumiaSpell2Object,
+        ));
     }
 }

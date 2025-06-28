@@ -25,35 +25,37 @@ pub enum FirstLevelState {
     Inactive,
     PreRumia,
     Rumia,
+    PostRumia,
 }
 
 pub fn level1_plugin(app: &mut App) {
     app
-        .add_systems(OnEnter(LevelState::Level1), level1_setup)
+        .add_systems(OnEnter(LevelState::Level1), pre_rumia_setup)
         .add_systems(Update, listen_for_rumia_entrance
             .run_if(in_state(FirstLevelState::PreRumia)))
+        .add_systems(OnEnter(FirstLevelState::PostRumia), post_rumia_setup)
         .add_systems(OnEnter(FirstLevelState::Inactive), first_level_cleanup)
         .add_plugins(rumia_plugin)
         .init_state::<FirstLevelState>()
     ;
 }
 
-fn level1_setup(
+fn pre_rumia_setup(
     mut commands: Commands,
     mut next_state: ResMut<NextState<FirstLevelState>>,
 ) {
     let mut spawn_delay = SpawnTimeTracker::default();
 
-    dual_curves(&mut commands, &mut spawn_delay);
-    shotgun_big_fairy(&mut commands, &mut spawn_delay);
-
-    spawn_delay.increment(2.0);
-
-    decelerate_lines(&mut commands, &mut spawn_delay);
-
-    spawn_delay.increment(2.0);
-
-    starbursts_from_sides(&mut commands, spawn_delay);
+    // dual_curves(&mut commands, &mut spawn_delay);
+    // shotgun_big_fairy(&mut commands, &mut spawn_delay);
+    //
+    // spawn_delay.increment(2.0);
+    //
+    // decelerate_lines(&mut commands, &mut spawn_delay);
+    //
+    // spawn_delay.increment(2.0);
+    //
+    // starbursts_from_sides(&mut commands, spawn_delay);
 
     next_state.set(FirstLevelState::PreRumia);
 }
@@ -250,6 +252,11 @@ fn listen_for_rumia_entrance(
         next_first_level_state.set(FirstLevelState::Rumia);
     }
 }
+
+fn post_rumia_setup() {
+    println!("Start Post Rumia");
+}
+
 
 fn first_level_cleanup(
     mut state: ResMut<NextState<RumiaState>>,

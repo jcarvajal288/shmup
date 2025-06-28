@@ -18,12 +18,14 @@ pub enum RumiaState {
     Inactive,
     Spell1,
     Spell2,
+    Complete,
 }
 
 pub fn rumia_plugin(app: &mut App) {
     app
         .add_systems(OnEnter(FirstLevelState::Rumia), rumia_setup)
         .add_systems(Update, rumia_orchestrator.run_if(in_state(FirstLevelState::Rumia)))
+        .add_systems(OnEnter(RumiaState::Complete), transition_out_of_fight)
         .add_systems(OnEnter(RumiaState::Inactive), (rumia_cleanup, despawn_boss_health_bar))
         .add_plugins(spell1_plugin)
         .add_plugins(spell2_plugin)
@@ -46,14 +48,6 @@ pub fn rumia_setup(
         SpawnTimer(Timer::from_seconds(0.0, TimerMode::Once)),
         GameObject,
     ));
-    commands.spawn((
-        Name::new("Rumia Health Bar"),
-        BossHealthBar {
-            current: 100,
-            maximum: 100,
-        },
-        GameObject
-    ));
 }
 
 pub fn rumia_orchestrator(
@@ -72,19 +66,40 @@ pub fn rumia_orchestrator(
         if health_bar.current <= 0 {
             match *rumia_state.get() {
                 RumiaState::Spell1 => {
-                    rumia_next_state.set(RumiaState::Spell2)
+                    rumia_next_state.set(RumiaState::Spell2);
+                    commands.entity(entity).try_despawn();
                 },
+                RumiaState::Spell2 => {
+                    rumia_next_state.set(RumiaState::Complete);
+                    commands.entity(entity).try_despawn();
+                }
                 _ => {}
             }
-            //commands.entity(entity).try_despawn();
         }
     }
 }
 
+fn transition_out_of_fight(
+    mut first_level_next_state: ResMut<NextState<FirstLevelState>>,
+    mut rumia_next_state: ResMut<NextState<RumiaState>>,
+) {
+    first_level_next_state.set(FirstLevelState::PostRumia);
+    rumia_next_state.set(RumiaState::Inactive);
+}
+
 pub fn rumia_cleanup(
+    mut commands: Commands,
+    boss_query: Query<Entity, With<Boss>>,
+    health_bar_query: Query<Entity, With<BossHealthBar>>,
     mut spell1_state: ResMut<NextState<Spell1State>>,
     mut spell2_state: ResMut<NextState<Spell2State>>,
 ) {
+    for boss_entity in boss_query.iter() {
+        commands.entity(boss_entity).try_despawn();
+    }
+    for health_bar_entity in health_bar_query.iter() {
+        commands.entity(health_bar_entity).try_despawn();
+    }
     spell1_state.set(Spell1State::Inactive);
     spell2_state.set(Spell2State::Inactive);
 }
