@@ -47,7 +47,7 @@ fn pre_rumia_setup(
     let mut spawn_delay = SpawnTimeTracker::default();
 
     // dual_curves(&mut commands, &mut spawn_delay);
-    // shotgun_big_fairy(&mut commands, &mut spawn_delay);
+    shotgun_big_fairy(&mut commands, &mut spawn_delay, Vec2::new(SPAWN_CENTER, SPAWN_TOP));
     //
     // spawn_delay.increment(2.0);
     //
@@ -60,14 +60,26 @@ fn pre_rumia_setup(
     next_state.set(FirstLevelState::PreRumia);
 }
 
-fn shotgun_big_fairy(commands: &mut Commands, mut spawn_delay: &mut SpawnTimeTracker) {
+fn post_rumia_setup(
+    mut commands: Commands,
+    mut next_state: ResMut<NextState<FirstLevelState>>,
+) {
+    let mut spawn_delay = SpawnTimeTracker::default();
+    shotgun_big_fairy(&mut commands, &mut spawn_delay, Vec2::new(FRAME_BORDER_LEFT, SPAWN_TOP));
+    shotgun_big_fairy(&mut commands, &mut spawn_delay, Vec2::new(SPAWN_CENTER, SPAWN_TOP));
+    shotgun_big_fairy(&mut commands, &mut spawn_delay, Vec2::new(FRAME_BORDER_RIGHT, SPAWN_TOP));
+
+    next_state.set(FirstLevelState::PostRumia);
+}
+
+fn shotgun_big_fairy(commands: &mut Commands, mut spawn_delay: &mut SpawnTimeTracker, starting_position: Vec2) {
     commands.spawn((
         Name::new("EnemySpawner"),
         EnemySpawner {
             name: "Big Fairy",
             enemy_type: BigFairy,
             hit_points: 25,
-            starting_position: Vec2::new(SPAWN_CENTER, SPAWN_TOP),
+            starting_position,
             movement_pattern: create_straight_line_pattern(Rot2::degrees(270.0), 30.0),
             bullet_pattern: ShotgunPattern(
                 Shotgun {
@@ -251,10 +263,6 @@ fn listen_for_rumia_entrance(
     {
         next_first_level_state.set(FirstLevelState::Rumia);
     }
-}
-
-fn post_rumia_setup() {
-    println!("Start Post Rumia");
 }
 
 

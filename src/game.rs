@@ -179,8 +179,8 @@ fn reset_levels(
 }
 
 pub fn is_in_playfield(position: Vec2) -> bool {
-    position.x > FRAME_BORDER_LEFT && position.x < FRAME_BORDER_RIGHT
-    && position.y > FRAME_BORDER_BOTTOM && position.y < FRAME_BORDER_TOP
+    position.x >= FRAME_BORDER_LEFT && position.x <= FRAME_BORDER_RIGHT
+    && position.y >= FRAME_BORDER_BOTTOM && position.y <= FRAME_BORDER_TOP
 }
 
 pub fn angle_to_transform(origin: Transform, target: Transform) -> Rot2 {
