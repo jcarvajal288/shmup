@@ -12,6 +12,7 @@ use crate::effects::{animate_enemy_death_explosions, create_effects_on_enemy_dea
 use crate::enemy::{check_for_enemy_death, check_shot_enemy_collision, move_enemies, spawn_enemies, Enemy, EnemyDeathEvent, EnemySystemSet};
 use crate::level1::{level1_plugin, FirstLevelState};
 use crate::movement_patterns::{is_finished, MovementPatterns};
+use crate::resources::sounds::{listen_for_play_sound_events, PlaySoundEvent};
 use crate::testbed::testbed_plugin;
 
 pub const FRAME_BORDER_LEFT: f32 = -353.0;
@@ -52,6 +53,7 @@ pub fn game_plugin(app: &mut App) {
             game_setup,
             initialize_player_stats,
         ))
+        .add_systems(Update, listen_for_play_sound_events)
         .add_systems(Update, (
             (
                 move_player,
@@ -91,6 +93,7 @@ pub fn game_plugin(app: &mut App) {
         .add_event::<PlayerContinueEvent>()
         .add_event::<BulletSpawnEvent>()
         .add_event::<BossDamageEvent>()
+        .add_event::<PlaySoundEvent>()
     ;
 
 }

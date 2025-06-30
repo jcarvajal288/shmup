@@ -2,6 +2,7 @@ use bevy::{prelude::*};
 use crate::{despawn_screen, GameState};
 use crate::game::{ChosenLevel, LevelState};
 use crate::menus::{SELECTED_COLOR, UNSELECTED_COLOR};
+use crate::resources::sounds::{PlaySoundEvent, SoundEffect};
 
 // implement menu as a vector of MainMenuStates
 #[derive(Resource)]
@@ -76,13 +77,17 @@ fn handle_input(
     app_exit_events: EventWriter<AppExit>,
     game_state: ResMut<NextState<GameState>>,
     chosen_level: ResMut<ChosenLevel>,
+    mut play_sound_event_writer: EventWriter<PlaySoundEvent>,
 ) {
     if keyboard_input.just_pressed(KeyCode::ArrowUp) {
         menu_state.selected = if menu_state.selected == 0 { menu_state.options.len() - 1 } else { menu_state.selected - 1 };
+        play_sound_event_writer.send(PlaySoundEvent(SoundEffect::MenuSelect));
     } else if keyboard_input.just_pressed(KeyCode::ArrowDown) {
         menu_state.selected = if menu_state.selected == menu_state.options.len() - 1 { 0 } else { menu_state.selected + 1 };
+        play_sound_event_writer.send(PlaySoundEvent(SoundEffect::MenuSelect));
     } else if keyboard_input.just_pressed(KeyCode::KeyZ) {
         run_main_menu_action(menu_state.selected, app_exit_events, game_state, chosen_level);
+        play_sound_event_writer.send(PlaySoundEvent(SoundEffect::MenuSelect));
     }
 }
 

@@ -25,6 +25,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use resources::images::{load_images, Images};
 use resources::sprites::{load_sprites, Sprites};
 use crate::menus::pause_menu::pause_menu_plugin;
+use crate::resources::sounds::{load_sounds, Sounds};
 
 #[derive(Clone, Copy, Default, Eq, PartialEq, Debug, Hash, States)]
 enum GameState {
@@ -79,7 +80,7 @@ fn main() {
             clear_levels,
             restart_game,
         ).chain())
-        .add_systems(Startup, (setup, load_images, load_sprites).chain())
+        .add_systems(Startup, (setup, load_images, load_sprites, load_sounds).chain())
         .add_plugins((
             main_menu_plugin,
             game_plugin,
@@ -95,6 +96,7 @@ fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
     commands.insert_resource(Sprites::default());
     commands.insert_resource(Images::default());
+    commands.insert_resource(Sounds::default());
     commands.insert_resource(PlayerStats::default());
     commands.insert_resource(ChosenLevel::default());
 }
